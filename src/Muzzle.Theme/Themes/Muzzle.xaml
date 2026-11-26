@@ -51,6 +51,7 @@
         <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Controls/Growl.xaml" />
         <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Controls/Dialog.xaml" />
         <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Controls/Drawer.xaml" />
+        <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Controls/Menu.xaml" />
 
         <!-- Navigation & layout -->
         <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Controls/NavigationView.xaml" />

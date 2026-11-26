@@ -227,6 +227,11 @@ public class MuzzleWindow : Window {
         source?.AddHook(WndProc);
         ApplyDwmAttributes(handle);
         MuzzleThemeManager.ThemeChanged += OnThemeChanged;
+        if (SizeToContent != SizeToContent.Manual) {
+            // The first size-to-content pass ran before WindowChrome removed the stock frame, so it added that
+            // frame's size to the window. Measure again now that the client area covers the whole window.
+            InvalidateMeasure();
+        }
     }
 
     /// <inheritdoc />

@@ -57,12 +57,15 @@ tests/
 | Card / Border | `mz:Card`, `Muzzle.Surface`, `Muzzle.Surface.Flat`, `Muzzle.Chip` | Soft elevation |
 | ScrollViewer / ScrollBar | `Muzzle.ScrollViewer`, `Muzzle.ScrollBar` | Slim thumb widens on hover |
 | ListBox, ToolTip | `Muzzle.ListBox`, `Muzzle.ToolTip` | Rounded rows; tooltip pops in |
+| Menu, ContextMenu, MenuItem, Separator | `Muzzle.Menu`, `Muzzle.ContextMenu`, `Muzzle.MenuItem`, `Muzzle.MenuSeparator` (all implicit) | Rounded cards pop in; nested submenus, gesture text, checkable rows. `Muzzle.MenuItem` picks its template from the item's `Role`, so it also works for a loose `MenuItem` in a panel |
 | Growl, Dialog, Drawer | `Muzzle.GrowlCard`, `Muzzle.Dialog`, `Muzzle.Drawer` | Toasts, modal overlays, edge panels (below) |
 | Badge, Skeleton, LoadingSpinner, InfoBar, Popover, ToolTip | `Muzzle.Badge`, `Muzzle.Skeleton`, `Muzzle.LoadingSpinner`, `Muzzle.InfoBar`, `Muzzle.Popover`, `Muzzle.ToolTip` | Feedback & status (below) |
 | NumericUpDown, TagInput, SearchBar, ColorPicker (+DropDown), DatePicker / Calendar, TimePicker, Rating | `Muzzle.NumericUpDown`, `Muzzle.TagInput`, `Muzzle.SearchBar`, `Muzzle.ColorPicker`, `Muzzle.DatePicker`, `Muzzle.Calendar`, `Muzzle.TimePicker`, `Muzzle.Rating` | Inputs & pickers (below) |
 | NavigationView, BreadcrumbBar, Pagination, TransitioningContentControl, StepBar | `Muzzle.NavigationView`, `Muzzle.BreadcrumbBar`, `Muzzle.Pagination`, `Muzzle.TransitioningContentControl`, `Muzzle.StepBar` | Navigation & layout (below) |
 
 All templates keep keyboard navigation and a lavender keyboard `FocusVisualStyle`, and disabled states fade to ~50% opacity instead of turning grey.
+
+ListBox, ComboBox and TreeView leave `ItemContainerStyle` unset, so an implicit `ListBoxItem`, `ComboBoxItem` or `TreeViewItem` style in your app (based on the `Muzzle.*Item` key) applies to every list without extra markup.
 
 ### `MuzzleAssist` attached properties
 
@@ -103,6 +106,7 @@ From code: `Jelly.Wobble(element)`, `MuzzleEasings.Get(element, MuzzleEasings.Je
 - Maximized frame compensation from `GetSystemMetricsForDpi` (per-monitor DPI aware).
 - Properties: `NonClientAreaContent`, `NonClientAreaContentTemplate`, `NonClientAreaHeight`, `NonClientAreaBackground`, `ShowTitle`, `ShowIcon`, `ShowMinimizeButton`, `ShowMaximizeButton`. `ResizeMode` hides buttons automatically.
 - Elements in `NonClientAreaContent` are hit-test visible in chrome; empty space still drags the window.
+- `SizeToContent` works with the custom chrome: the window re-measures once its handle exists, so it fits the content, title bar and border exactly.
 
 ### PropertyGrid
 

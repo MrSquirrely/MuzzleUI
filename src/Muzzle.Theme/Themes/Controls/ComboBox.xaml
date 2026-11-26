@@ -164,7 +164,6 @@
         <Setter Property="ScrollViewer.PanningMode" Value="Both" />
         <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-        <Setter Property="ItemContainerStyle" Value="{StaticResource Muzzle.ComboBoxItem}" />
         <Setter Property="mz:MuzzleAssist.CornerRadius" Value="10" />
         <Setter Property="mz:MuzzleAssist.ShadowDepth" Value="None" />
         <Setter Property="Template">

@@ -472,6 +472,26 @@ public static class Snippets {
         <GridSplitter Grid.Column="1" Width="10" HorizontalAlignment="Center" />
         """;
 
+    public const string Menus = """
+        <!-- No keys needed: Menu, ContextMenu, MenuItem and Separator are styled implicitly -->
+        <Menu>
+            <MenuItem Header="_File">
+                <MenuItem Header="_Save" InputGestureText="Ctrl+S" />
+                <MenuItem Header="_Export">
+                    <MenuItem Header="PDF" />
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Autosave" IsCheckable="True" IsChecked="True" />
+            </MenuItem>
+        </Menu>
+
+        <Border.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Pet" />
+            </ContextMenu>
+        </Border.ContextMenu>
+        """;
+
     public const string SmallControls = """
         <mz:EmptyState IconKind="Inbox" Title="No treats yet" Description="Treats you save show up here.">
             <mz:EmptyState.ActionContent>

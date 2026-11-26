@@ -1,0 +1,340 @@
+<!--
+    Menu / ContextMenu / MenuItem / Separator: rounded surface cards that pop in, with flat rounded rows.
+    Muzzle.MenuItem picks its template from the item's Role, so the same style serves a menu bar, a context menu,
+    a nested submenu and a loose MenuItem in a drop-down or tray card.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mz="clr-namespace:Muzzle.Theme"
+                    xmlns:mzc="clr-namespace:Muzzle.Theme.Controls">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Animations/JellyEasings.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <!-- A leaf row inside a submenu, context menu or drop-down: icon / check, header, gesture text. -->
+    <ControlTemplate x:Key="Muzzle.MenuItem.SubmenuItemTemplate" TargetType="{x:Type MenuItem}">
+        <Border x:Name="Row" Padding="{TemplateBinding Padding}" CornerRadius="8" Background="{TemplateBinding Background}"
+                mz:JellyBehavior.EnablePressSquish="True" mz:JellyBehavior.PressSquishScale="0.97">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="26" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <ContentPresenter x:Name="IconHost" VerticalAlignment="Center" HorizontalAlignment="Left" ContentSource="Icon"
+                                  TextElement.Foreground="{DynamicResource Muzzle.Brush.TextSecondary}" />
+                <mzc:MuzzleIcon x:Name="CheckMark" Kind="Check" IconSize="15" HorizontalAlignment="Left" Visibility="Collapsed"
+                                Foreground="{DynamicResource Muzzle.Brush.PrimaryText}" />
+                <ContentPresenter Grid.Column="1" VerticalAlignment="Center" ContentSource="Header" RecognizesAccessKey="True" />
+                <TextBlock Grid.Column="2" Margin="18,0,0,0" VerticalAlignment="Center" FontSize="12"
+                           Text="{TemplateBinding InputGestureText}" Foreground="{DynamicResource Muzzle.Brush.TextTertiary}" />
+            </Grid>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="{DynamicResource Muzzle.Brush.PrimarySoft}" />
+                <Setter TargetName="IconHost" Property="TextElement.Foreground" Value="{DynamicResource Muzzle.Brush.PrimaryText}" />
+            </Trigger>
+            <Trigger Property="IsHighlighted" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="{DynamicResource Muzzle.Brush.PrimarySoft}" />
+                <Setter TargetName="IconHost" Property="TextElement.Foreground" Value="{DynamicResource Muzzle.Brush.PrimaryText}" />
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="{DynamicResource Muzzle.Brush.PrimarySoft}" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter TargetName="CheckMark" Property="Visibility" Value="Visible" />
+                <Setter TargetName="IconHost" Property="Visibility" Value="Collapsed" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.45" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!-- A row that opens a nested submenu to its side: the leaf row plus a chevron and the submenu card. -->
+    <ControlTemplate x:Key="Muzzle.MenuItem.SubmenuHeaderTemplate" TargetType="{x:Type MenuItem}">
+        <Border x:Name="Row" Padding="{TemplateBinding Padding}" CornerRadius="8" Background="{TemplateBinding Background}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="26" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <ContentPresenter x:Name="IconHost" VerticalAlignment="Center" HorizontalAlignment="Left" ContentSource="Icon"
+                                  TextElement.Foreground="{DynamicResource Muzzle.Brush.TextSecondary}" />
+                <ContentPresenter Grid.Column="1" VerticalAlignment="Center" ContentSource="Header" RecognizesAccessKey="True" />
+                <mzc:MuzzleIcon x:Name="Chevron" Grid.Column="2" Margin="18,0,-2,0" Kind="ChevronRight" IconSize="13" StrokeThickness="2.2"
+                                VerticalAlignment="Center" Foreground="{DynamicResource Muzzle.Brush.TextTertiary}" />
+                <Popup x:Name="PART_Popup"
+                       AllowsTransparency="True"
+                       Focusable="False"
+                       Placement="Right"
+                       HorizontalOffset="0"
+                       VerticalOffset="-17"
+                       PopupAnimation="None"
+                       IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}">
+                    <Grid x:Name="SubmenuHost" Margin="12,4,12,20" RenderTransformOrigin="0,0">
+                        <Grid.RenderTransform>
+                            <ScaleTransform />
+                        </Grid.RenderTransform>
+                        <Border Background="{DynamicResource Muzzle.Brush.Surface}"
+                                BorderBrush="{DynamicResource Muzzle.Brush.SurfaceRim}"
+                                BorderThickness="1"
+                                CornerRadius="12"
+                                Effect="{DynamicResource Muzzle.Shadow.Floating}" />
+                        <ScrollViewer Margin="6" Focusable="False" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                            <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Cycle" KeyboardNavigation.TabNavigation="Cycle" />
+                        </ScrollViewer>
+                    </Grid>
+                </Popup>
+            </Grid>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="{DynamicResource Muzzle.Brush.PrimarySoft}" />
+                <Setter TargetName="IconHost" Property="TextElement.Foreground" Value="{DynamicResource Muzzle.Brush.PrimaryText}" />
+            </Trigger>
+            <Trigger Property="IsHighlighted" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="{DynamicResource Muzzle.Brush.PrimarySoft}" />
+                <Setter TargetName="IconHost" Property="TextElement.Foreground" Value="{DynamicResource Muzzle.Brush.PrimaryText}" />
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="{DynamicResource Muzzle.Brush.PrimarySoft}" />
+            </Trigger>
+            <Trigger Property="IsSubmenuOpen" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="{DynamicResource Muzzle.Brush.PrimarySoft}" />
+                <Setter TargetName="Chevron" Property="Foreground" Value="{DynamicResource Muzzle.Brush.PrimaryText}" />
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="SubmenuHost" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.14" />
+                            <DoubleAnimation Storyboard.TargetName="SubmenuHost" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                             From="0.9" To="1" Duration="0:0:0.38" EasingFunction="{StaticResource Muzzle.Ease.BackStrong}" />
+                            <DoubleAnimation Storyboard.TargetName="SubmenuHost" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                             From="0.9" To="1" Duration="0:0:0.38" EasingFunction="{StaticResource Muzzle.Ease.BackStrong}" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.45" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!-- A menu-bar entry that runs a command directly. -->
+    <ControlTemplate x:Key="Muzzle.MenuItem.TopLevelItemTemplate" TargetType="{x:Type MenuItem}">
+        <Border x:Name="Row" Padding="{TemplateBinding Padding}" CornerRadius="8" Background="{TemplateBinding Background}"
+                mz:JellyBehavior.EnablePressSquish="True" mz:JellyBehavior.PressSquishScale="0.97">
+            <StackPanel Orientation="Horizontal">
+                <ContentPresenter x:Name="IconHost" Margin="0,0,8,0" VerticalAlignment="Center" ContentSource="Icon"
+                                  TextElement.Foreground="{DynamicResource Muzzle.Brush.TextSecondary}" />
+                <ContentPresenter VerticalAlignment="Center" ContentSource="Header" RecognizesAccessKey="True" />
+            </StackPanel>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="Icon" Value="{x:Null}">
+                <Setter TargetName="IconHost" Property="Visibility" Value="Collapsed" />
+            </Trigger>
+            <Trigger Property="IsHighlighted" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="{DynamicResource Muzzle.Brush.PrimarySoft}" />
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="{DynamicResource Muzzle.Brush.PrimarySoft}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.45" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!-- A menu-bar entry that drops a submenu card below itself. -->
+    <ControlTemplate x:Key="Muzzle.MenuItem.TopLevelHeaderTemplate" TargetType="{x:Type MenuItem}">
+        <Border x:Name="Row" Padding="{TemplateBinding Padding}" CornerRadius="8" Background="{TemplateBinding Background}">
+            <Grid>
+                <StackPanel Orientation="Horizontal">
+                    <ContentPresenter x:Name="IconHost" Margin="0,0,8,0" VerticalAlignment="Center" ContentSource="Icon"
+                                      TextElement.Foreground="{DynamicResource Muzzle.Brush.TextSecondary}" />
+                    <ContentPresenter VerticalAlignment="Center" ContentSource="Header" RecognizesAccessKey="True" />
+                </StackPanel>
+                <Popup x:Name="PART_Popup"
+                       AllowsTransparency="True"
+                       Focusable="False"
+                       Placement="Bottom"
+                       HorizontalOffset="-22"
+                       VerticalOffset="6"
+                       PopupAnimation="None"
+                       IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}">
+                    <Grid x:Name="SubmenuHost" Margin="12,4,12,20" RenderTransformOrigin="0,0">
+                        <Grid.RenderTransform>
+                            <ScaleTransform />
+                        </Grid.RenderTransform>
+                        <Border Background="{DynamicResource Muzzle.Brush.Surface}"
+                                BorderBrush="{DynamicResource Muzzle.Brush.SurfaceRim}"
+                                BorderThickness="1"
+                                CornerRadius="12"
+                                Effect="{DynamicResource Muzzle.Shadow.Floating}" />
+                        <ScrollViewer Margin="6" Focusable="False" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                            <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Cycle" KeyboardNavigation.TabNavigation="Cycle" />
+                        </ScrollViewer>
+                    </Grid>
+                </Popup>
+            </Grid>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="Icon" Value="{x:Null}">
+                <Setter TargetName="IconHost" Property="Visibility" Value="Collapsed" />
+            </Trigger>
+            <Trigger Property="IsHighlighted" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="{DynamicResource Muzzle.Brush.PrimarySoft}" />
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="{DynamicResource Muzzle.Brush.PrimarySoft}" />
+            </Trigger>
+            <Trigger Property="IsSubmenuOpen" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="{DynamicResource Muzzle.Brush.PrimarySoft}" />
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="SubmenuHost" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.14" />
+                            <DoubleAnimation Storyboard.TargetName="SubmenuHost" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                             From="0.9" To="1" Duration="0:0:0.38" EasingFunction="{StaticResource Muzzle.Ease.BackStrong}" />
+                            <DoubleAnimation Storyboard.TargetName="SubmenuHost" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                             From="0.9" To="1" Duration="0:0:0.38" EasingFunction="{StaticResource Muzzle.Ease.BackStrong}" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.45" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="Muzzle.MenuItem" TargetType="{x:Type MenuItem}">
+        <!-- Own templates for every role: skip the stock theme style (and its ItemsControl-ancestor bindings). -->
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="10,7" />
+        <Setter Property="MinWidth" Value="180" />
+        <Setter Property="FontSize" Value="13.5" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <!-- Set here so the stock theme's ItemsControl-ancestor bindings never run (menus may live in a plain panel). -->
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template" Value="{StaticResource Muzzle.MenuItem.SubmenuItemTemplate}" />
+        <Style.Triggers>
+            <Trigger Property="Role" Value="SubmenuHeader">
+                <Setter Property="Template" Value="{StaticResource Muzzle.MenuItem.SubmenuHeaderTemplate}" />
+            </Trigger>
+            <Trigger Property="Role" Value="TopLevelItem">
+                <Setter Property="Template" Value="{StaticResource Muzzle.MenuItem.TopLevelItemTemplate}" />
+                <Setter Property="MinWidth" Value="0" />
+                <Setter Property="Padding" Value="11,6" />
+            </Trigger>
+            <Trigger Property="Role" Value="TopLevelHeader">
+                <Setter Property="Template" Value="{StaticResource Muzzle.MenuItem.TopLevelHeaderTemplate}" />
+                <Setter Property="MinWidth" Value="0" />
+                <Setter Property="Padding" Value="11,6" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="Muzzle.MenuSeparator" TargetType="{x:Type Separator}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Margin" Value="6,4" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Separator}">
+                    <Border Height="1" Background="{DynamicResource Muzzle.Brush.SurfaceBorder}" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Muzzle.Menu" TargetType="{x:Type Menu}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="2" />
+        <Setter Property="FontFamily" Value="{DynamicResource Muzzle.FontFamily}" />
+        <Setter Property="FontSize" Value="13.5" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Menu}">
+                    <Border Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding mz:MuzzleAssist.CornerRadius}">
+                        <ItemsPresenter />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Muzzle.ContextMenu" TargetType="{x:Type ContextMenu}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="HasDropShadow" Value="False" />
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="Background" Value="{DynamicResource Muzzle.Brush.Surface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.SurfaceRim}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="6" />
+        <Setter Property="FontFamily" Value="{DynamicResource Muzzle.FontFamily}" />
+        <Setter Property="FontSize" Value="13.5" />
+        <!-- The card sits inside a transparent margin that leaves room for its shadow; pull it back to the cursor. -->
+        <Setter Property="HorizontalOffset" Value="-12" />
+        <Setter Property="VerticalOffset" Value="-4" />
+        <Setter Property="mz:MuzzleAssist.CornerRadius" Value="12" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ContextMenu}">
+                    <Grid x:Name="Root" Margin="12,4,12,20" RenderTransformOrigin="0,0">
+                        <Grid.RenderTransform>
+                            <ScaleTransform />
+                        </Grid.RenderTransform>
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding mz:MuzzleAssist.CornerRadius}"
+                                Effect="{DynamicResource Muzzle.Shadow.Floating}" />
+                        <ScrollViewer Margin="{TemplateBinding Padding}" Focusable="False" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                            <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Cycle" />
+                        </ScrollViewer>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsOpen" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Root" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.14" />
+                                        <DoubleAnimation Storyboard.TargetName="Root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         From="0.9" To="1" Duration="0:0:0.38" EasingFunction="{StaticResource Muzzle.Ease.BackStrong}" />
+                                        <DoubleAnimation Storyboard.TargetName="Root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                         From="0.9" To="1" Duration="0:0:0.38" EasingFunction="{StaticResource Muzzle.Ease.BackStrong}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Menu}" BasedOn="{StaticResource Muzzle.Menu}" />
+    <Style TargetType="{x:Type ContextMenu}" BasedOn="{StaticResource Muzzle.ContextMenu}" />
+    <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource Muzzle.MenuItem}" />
+    <Style TargetType="{x:Type Separator}" BasedOn="{StaticResource Muzzle.MenuSeparator}" />
+    <!-- Menu, ContextMenu and MenuItem give their Separator children this key rather than the implicit style. -->
+    <Style x:Key="{x:Static MenuItem.SeparatorStyleKey}" TargetType="{x:Type Separator}" BasedOn="{StaticResource Muzzle.MenuSeparator}" />
+
+</ResourceDictionary>

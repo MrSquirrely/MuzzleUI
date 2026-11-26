@@ -102,7 +102,18 @@ public sealed class ControlTemplateTests(MuzzleWpfTestFixture fixture) {
         ["ListBox"] = static () => new ListBox { ItemsSource = new[] { "A", "B" }, SelectedIndex = 1 },
         ["ScrollViewer"] = static () => new ScrollViewer { Height = 80, Content = new Border { Height = 400 } },
         ["GridSplitter"] = static () => new GridSplitter { Width = 10, Height = 100 },
-        ["ToolTip"] = static () => new Button { Content = "Hover", ToolTip = new ToolTip { Content = "Tip" } }
+        ["ToolTip"] = static () => new Button { Content = "Hover", ToolTip = new ToolTip { Content = "Tip" } },
+        ["Menu"] = static () => {
+            Menu menu = new();
+            MenuItem file = new() { Header = "_File" };
+            file.Items.Add(new MenuItem { Header = "_Open", InputGestureText = "Ctrl+O" });
+            file.Items.Add(new Separator());
+            file.Items.Add(new MenuItem { Header = "Autosave", IsCheckable = true, IsChecked = true });
+            menu.Items.Add(file);
+            menu.Items.Add(new MenuItem { Header = "_Help" });
+            return menu;
+        },
+        ["Separator"] = static () => new Separator { Width = 120 }
     };
 
     public static TheoryData<string> ControlNames() {

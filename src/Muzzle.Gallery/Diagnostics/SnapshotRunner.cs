@@ -800,6 +800,29 @@ internal static class SnapshotRunner {
         }
         split.Close();
 
+        // Menu: a real click drops the File menu; its Export row opens a nested submenu to the side.
+        MenuItem fileMenu = (MenuItem)page.FindName("DemoFileMenu");
+        MenuItem exportMenu = (MenuItem)page.FindName("DemoExportMenu");
+        // Scroll the whole card in, so the menus drop inside the window that the screen capture covers.
+        (((FrameworkElement)page.FindName("DemoMenu")).Parent as FrameworkElement)?.BringIntoView();
+        await Task.Delay(500);
+        if (await RealClickAsync(window, fileMenu)) {
+            await Task.Delay(700);
+            log.WriteLine($"menu: real click on File -> open {fileMenu.IsSubmenuOpen} (expect True), role {fileMenu.Role} (expect TopLevelHeader)");
+            exportMenu.IsSubmenuOpen = true;
+            await Task.Delay(700);
+            log.WriteLine($"menu: Export submenu -> open {exportMenu.IsSubmenuOpen} (expect True), role {exportMenu.Role} (expect SubmenuHeader)");
+            SaveScreen(window, Path.Combine(directory, "menu-open.png"));
+            exportMenu.IsSubmenuOpen = false;
+            bool menuEscaped = await RealKeysAsync(window, 0x1B);
+            await Task.Delay(400);
+            log.WriteLine($"menu: real Esc ({(menuEscaped ? "sent" : "skipped")}) -> open {fileMenu.IsSubmenuOpen} (expect False)");
+        }
+        else {
+            log.WriteLine("menu: real-click check skipped");
+        }
+        fileMenu.IsSubmenuOpen = false;
+
         // Range slider coercion and the password meter.
         Theme.Controls.RangeSlider range = (Theme.Controls.RangeSlider)page.FindName("PriceRange");
         range.LowerValue = 95;
