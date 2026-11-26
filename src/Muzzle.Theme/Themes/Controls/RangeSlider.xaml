@@ -105,8 +105,8 @@
                         <Border Height="6" Margin="10,0" VerticalAlignment="Center" CornerRadius="3" Background="{DynamicResource Muzzle.Brush.Track}" />
                         <Canvas x:Name="PART_Canvas" Background="Transparent" ClipToBounds="False">
                             <Border x:Name="PART_Range" Height="6" CornerRadius="3" Background="{DynamicResource Muzzle.Brush.Primary}" />
-                            <Thumb x:Name="PART_LowerThumb" Style="{StaticResource Muzzle.RangeSlider.Thumb}" AutomationProperties.Name="Lower value" />
-                            <Thumb x:Name="PART_UpperThumb" Style="{StaticResource Muzzle.RangeSlider.Thumb}" AutomationProperties.Name="Upper value" />
+                            <Thumb x:Name="PART_LowerThumb" Style="{StaticResource Muzzle.RangeSlider.Thumb}" AutomationProperties.Name="{DynamicResource Muzzle.String.RangeSlider.Lower}" />
+                            <Thumb x:Name="PART_UpperThumb" Style="{StaticResource Muzzle.RangeSlider.Thumb}" AutomationProperties.Name="{DynamicResource Muzzle.String.RangeSlider.Upper}" />
                         </Canvas>
                     </Grid>
                     <ControlTemplate.Triggers>

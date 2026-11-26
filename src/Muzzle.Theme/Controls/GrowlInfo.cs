@@ -45,10 +45,10 @@ public sealed class GrowlInfo {
     public bool IsGlobal { get; set; }
 
     /// <summary>Gets or sets the confirm pill's text for <see cref="GrowlType.Ask"/> toasts.</summary>
-    public string ConfirmText { get; set; } = "Yes";
+    public string ConfirmText { get; set; } = MuzzleStrings.Get("Growl.Yes", "Yes");
 
     /// <summary>Gets or sets the cancel pill's text for <see cref="GrowlType.Ask"/> toasts.</summary>
-    public string CancelText { get; set; } = "No";
+    public string CancelText { get; set; } = MuzzleStrings.Get("Growl.No", "No");
 
     /// <summary>For <see cref="GrowlType.Ask"/>: called with true (confirm) or false (cancel / dismissed).</summary>
     public Action<bool>? Callback { get; set; }

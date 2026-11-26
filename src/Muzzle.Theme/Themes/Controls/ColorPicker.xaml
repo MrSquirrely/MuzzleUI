@@ -58,7 +58,7 @@
                               Focusable="True"
                               Cursor="Cross"
                               FocusVisualStyle="{DynamicResource Muzzle.FocusVisual}"
-                              AutomationProperties.Name="Saturation and brightness">
+                              AutomationProperties.Name="{DynamicResource Muzzle.String.ColorPicker.SaturationBrightness}">
                             <Border CornerRadius="12" Background="{TemplateBinding HueBrush}" />
                             <Border CornerRadius="12">
                                 <Border.Background>
@@ -101,7 +101,7 @@
                                         Background="{StaticResource Muzzle.ColorPicker.HueSpectrum}"
                                         Foreground="Transparent"
                                         Value="{Binding Hue, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                        AutomationProperties.Name="Hue" />
+                                        AutomationProperties.Name="{DynamicResource Muzzle.String.ColorPicker.Hue}" />
                                 <Grid x:Name="AlphaRow" Margin="0,2,0,0">
                                     <Border Height="6" Margin="0,0,0,0" CornerRadius="3" VerticalAlignment="Center"
                                             Background="{DynamicResource Muzzle.Brush.Checker}" />
@@ -109,13 +109,13 @@
                                             Background="{TemplateBinding AlphaGradient}"
                                             Foreground="Transparent"
                                             Value="{Binding Alpha, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                            AutomationProperties.Name="Opacity" />
+                                            AutomationProperties.Name="{DynamicResource Muzzle.String.ColorPicker.Opacity}" />
                                 </Grid>
                             </StackPanel>
                         </Grid>
 
                         <!-- Presets -->
-                        <TextBlock Margin="2,14,0,8" Text="Pastels" Style="{DynamicResource Muzzle.Text.Overline}" />
+                        <TextBlock Margin="2,14,0,8" Text="{DynamicResource Muzzle.String.ColorPicker.Presets}" Style="{DynamicResource Muzzle.Text.Overline}" />
                         <ItemsControl Focusable="False" ItemsSource="{TemplateBinding Presets}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -140,31 +140,31 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock VerticalAlignment="Center" Text="Hex" Style="{DynamicResource Muzzle.Text.Caption}" Width="30" />
+                            <TextBlock VerticalAlignment="Center" Text="{DynamicResource Muzzle.String.ColorPicker.Hex}" Style="{DynamicResource Muzzle.Text.Caption}" Width="30" />
                             <TextBox Grid.Column="1"
                                      Style="{DynamicResource Muzzle.TextBox.Compact}"
                                      FontFamily="{DynamicResource Muzzle.FontFamily.Mono}"
                                      Text="{Binding HexText, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                     AutomationProperties.Name="Hex colour" />
+                                     AutomationProperties.Name="{DynamicResource Muzzle.String.ColorPicker.HexColor}" />
                         </Grid>
                         <UniformGrid Margin="0,8,0,0" Columns="3">
                             <DockPanel Margin="0,0,6,0">
                                 <TextBlock DockPanel.Dock="Top" Margin="2,0,0,4" Text="R" Style="{DynamicResource Muzzle.Text.Caption}" />
                                 <mzc:NumericUpDown Minimum="0" Maximum="255" MinHeight="32" Padding="10,0,6,0" FontSize="13" ShowSpinButtons="False" mz:MuzzleAssist.CornerRadius="8"
                                                    Value="{Binding Red, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                                   AutomationProperties.Name="Red" />
+                                                   AutomationProperties.Name="{DynamicResource Muzzle.String.ColorPicker.Red}" />
                             </DockPanel>
                             <DockPanel Margin="3,0">
                                 <TextBlock DockPanel.Dock="Top" Margin="2,0,0,4" Text="G" Style="{DynamicResource Muzzle.Text.Caption}" />
                                 <mzc:NumericUpDown Minimum="0" Maximum="255" MinHeight="32" Padding="10,0,6,0" FontSize="13" ShowSpinButtons="False" mz:MuzzleAssist.CornerRadius="8"
                                                    Value="{Binding Green, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                                   AutomationProperties.Name="Green" />
+                                                   AutomationProperties.Name="{DynamicResource Muzzle.String.ColorPicker.Green}" />
                             </DockPanel>
                             <DockPanel Margin="6,0,0,0">
                                 <TextBlock DockPanel.Dock="Top" Margin="2,0,0,4" Text="B" Style="{DynamicResource Muzzle.Text.Caption}" />
                                 <mzc:NumericUpDown Minimum="0" Maximum="255" MinHeight="32" Padding="10,0,6,0" FontSize="13" ShowSpinButtons="False" mz:MuzzleAssist.CornerRadius="8"
                                                    Value="{Binding Blue, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                                   AutomationProperties.Name="Blue" />
+                                                   AutomationProperties.Name="{DynamicResource Muzzle.String.ColorPicker.Blue}" />
                             </DockPanel>
                         </UniformGrid>
                     </StackPanel>

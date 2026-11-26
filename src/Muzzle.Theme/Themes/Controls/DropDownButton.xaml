@@ -101,7 +101,7 @@
                                     Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" />
                             <Button x:Name="PART_ToggleButton" Margin="2,0,0,0" Padding="9,8" Style="{TemplateBinding SegmentStyle}"
                                     mz:MuzzleAssist.CornerRadius="4,10,10,4" mz:MuzzleAssist.Jelly="All"
-                                    ToolTip="More options" AutomationProperties.Name="More options">
+                                    ToolTip="{DynamicResource Muzzle.String.SplitButton.MoreOptions}" AutomationProperties.Name="{DynamicResource Muzzle.String.SplitButton.MoreOptions}">
                                 <mzc:MuzzleIcon x:Name="Chevron" Kind="ChevronDown" IconSize="14" StrokeThickness="2.2" RenderTransformOrigin="0.5,0.5">
                                     <mzc:MuzzleIcon.RenderTransform>
                                         <RotateTransform />

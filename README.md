@@ -116,6 +116,8 @@ MuzzleThemeManager.AccentChanged += (_, e) => Debug.WriteLine(e.Accent);
 
 Theme and accent are independent: changing one keeps the other. To let users choose, drop `<mz:ThemeToggleButton />` (it cycles Light → Dark → System) or `<mz:AccentSwatch Accent="Peach" />` anywhere. Your own resources follow the theme when you use `{DynamicResource Muzzle.Brush.*}`.
 
+Built-in text (tooltips, placeholders, button captions, screen-reader names) comes from `Muzzle.String.*` resources. Declare a key in your own resources to translate it; see [Localisation](docs/REFERENCE.md#localisation).
+
 ## Guides
 
 ### MuzzleWindow

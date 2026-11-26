@@ -92,7 +92,7 @@
                                              Margin="12,0"
                                              Style="{StaticResource Muzzle.CommandPalette.SearchBox}"
                                              Text="{Binding SearchText, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                             AutomationProperties.Name="Search commands" />
+                                             AutomationProperties.Name="{DynamicResource Muzzle.String.CommandPalette.Search}" />
                                     <TextBlock Grid.Column="1" Margin="14,0" VerticalAlignment="Center" IsHitTestVisible="False" FontSize="16"
                                                Text="{TemplateBinding Placeholder}" Foreground="{DynamicResource Muzzle.Brush.TextTertiary}"
                                                Visibility="{Binding SearchText, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static mzv:NullToVisibilityConverter.Inverted}}" />
@@ -103,11 +103,11 @@
                                     <StackPanel Orientation="Horizontal" TextElement.FontSize="12" TextElement.Foreground="{DynamicResource Muzzle.Brush.TextTertiary}">
                                         <mzc:Keycap KeyText="↑" />
                                         <mzc:Keycap Margin="3,0,6,0" KeyText="↓" />
-                                        <TextBlock VerticalAlignment="Center" Text="to navigate" />
+                                        <TextBlock VerticalAlignment="Center" Text="{DynamicResource Muzzle.String.CommandPalette.ToNavigate}" />
                                         <mzc:Keycap Margin="16,0,6,0" KeyText="Enter" />
-                                        <TextBlock VerticalAlignment="Center" Text="to run" />
+                                        <TextBlock VerticalAlignment="Center" Text="{DynamicResource Muzzle.String.CommandPalette.ToRun}" />
                                         <mzc:Keycap Margin="16,0,6,0" KeyText="Esc" />
-                                        <TextBlock VerticalAlignment="Center" Text="to close" />
+                                        <TextBlock VerticalAlignment="Center" Text="{DynamicResource Muzzle.String.CommandPalette.ToClose}" />
                                     </StackPanel>
                                 </Border>
                                 <Grid MaxHeight="380">
@@ -125,8 +125,8 @@
                                             </Style>
                                         </ListBox.ItemContainerStyle>
                                     </ListBox>
-                                    <mzc:EmptyState x:Name="NoResults" Padding="16,22" IconKind="Search" Title="No matches"
-                                                    Description="Try fewer letters, or another word."
+                                    <mzc:EmptyState x:Name="NoResults" Padding="16,22" IconKind="Search" Title="{DynamicResource Muzzle.String.CommandPalette.NoMatches}"
+                                                    Description="{DynamicResource Muzzle.String.CommandPalette.NoMatchesHint}"
                                                     Visibility="{TemplateBinding HasResults, Converter={x:Static mzv:BoolToVisibilityConverter.Inverted}}" />
                                 </Grid>
                             </DockPanel>

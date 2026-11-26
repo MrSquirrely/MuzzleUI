@@ -36,7 +36,7 @@
                               mz:FocusTrap.IsEnabled="True"
                               KeyboardNavigation.ControlTabNavigation="Cycle"
                               KeyboardNavigation.DirectionalNavigation="Contained"
-                              AutomationProperties.Name="Dialog">
+                              AutomationProperties.Name="{DynamicResource Muzzle.String.Dialog.Name}">
                             <mzc:SoftBorder Background="{TemplateBinding Background}"
                                             BorderBrush="{TemplateBinding BorderBrush}"
                                             BorderThickness="{TemplateBinding BorderThickness}"

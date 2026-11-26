@@ -49,6 +49,7 @@ public class PasswordStrengthMeter : Control {
     public static readonly DependencyProperty LabelBrushProperty = LabelBrushPropertyKey.DependencyProperty;
 
     private static readonly string[] Labels = ["Too weak", "Weak", "Fair", "Good", "Strong"];
+    private static readonly string[] LabelKeys = ["PasswordStrength.TooWeak", "PasswordStrength.Weak", "PasswordStrength.Fair", "PasswordStrength.Good", "PasswordStrength.Strong"];
     private static readonly string[] FillKeys = ["Muzzle.Color.Error", "Muzzle.Color.Error", "Muzzle.Color.Peach", "Muzzle.Color.Warning", "Muzzle.Color.Success"];
     private static readonly string[] TextKeys = ["Muzzle.Brush.ErrorText", "Muzzle.Brush.ErrorText", "Muzzle.Brush.WarningText", "Muzzle.Brush.WarningText", "Muzzle.Brush.SuccessText"];
 
@@ -229,7 +230,7 @@ public class PasswordStrengthMeter : Control {
     private void Update(bool animate) {
         int score = StrengthScore;
         bool empty = string.IsNullOrEmpty(Password) && (score == 0);
-        SetValue(StrengthLabelPropertyKey, empty ? "Enter a password" : Labels[score]);
+        SetValue(StrengthLabelPropertyKey, empty ? MuzzleStrings.Get("PasswordStrength.Empty", "Enter a password") : MuzzleStrings.Get(LabelKeys[score], Labels[score]));
         SetValue(LabelBrushPropertyKey, TryFindResource(empty ? "Muzzle.Brush.TextTertiary" : TextKeys[score]) as Brush);
         Color target = (TryFindResource(FillKeys[score]) is Color color) ? color : Colors.Gray;
         bool motion = animate && IsLoaded && Jelly.IsMotionEnabled(this);

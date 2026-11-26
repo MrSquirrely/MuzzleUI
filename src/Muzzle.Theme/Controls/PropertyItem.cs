@@ -367,7 +367,7 @@ public sealed class PropertyItem : INotifyPropertyChanged {
     }
 
     private void SetError(string? message) {
-        ErrorText = message ?? "That value doesn't fit here.";
+        ErrorText = message ?? MuzzleStrings.Get("PropertyGrid.InvalidValue", "That value doesn't fit here.");
         HasError = true;
     }
 
@@ -420,7 +420,7 @@ public sealed class PropertyItem : INotifyPropertyChanged {
                     trimmed = "#" + trimmed;
                 }
                 if (ColorConverter.ConvertFromString(trimmed) is not Color color) {
-                    error = "Enter a hex colour such as #F497A9.";
+                    error = MuzzleStrings.Get("PropertyGrid.InvalidColor", "Enter a hex colour such as #F497A9.");
                     return false;
                 }
                 result = EditorKind == PropertyEditorKind.Color ? color : CreateBrush(color);
@@ -431,7 +431,7 @@ public sealed class PropertyItem : INotifyPropertyChanged {
             if (hasRange && (result is not null)) {
                 double number = System.Convert.ToDouble(result, CultureInfo.InvariantCulture);
                 if ((number < Minimum) || (number > Maximum)) {
-                    error = string.Create(CultureInfo.CurrentCulture, $"Keep it between {Minimum} and {Maximum}.");
+                    error = string.Format(CultureInfo.CurrentCulture, MuzzleStrings.Get("PropertyGrid.OutOfRange", "Keep it between {0} and {1}."), Minimum, Maximum);
                     return false;
                 }
             }

@@ -465,6 +465,27 @@ MuzzleThemeManager.ThemeChanged += (_, e) => Debug.WriteLine($"{e.Theme} -> {e.E
 - **Your own resources**: use `{DynamicResource Muzzle.Brush.*}` / `{DynamicResource Muzzle.Color.*}` (including on `GradientStop.Color`) and they follow the theme. Values read once in code (`TryFindResource`) won't; use `SetResourceReference`, or refresh on `ThemeChanged`.
 - **Starting in dark**: call `MuzzleThemeManager.ApplyTheme(MuzzleTheme.System)` in `App.OnStartup`, or merge `Muzzle.Dark.xaml` after `Muzzle.xaml` in App.xaml. That top-level slot is the one the manager swaps.
 
+## Localisation
+
+Every piece of text the theme shows on its own (tooltips, placeholders, screen-reader names, button captions, validation messages) is a `Muzzle.String.*` resource in [Themes/Tokens/Strings.xaml](../src/Muzzle.Theme/Themes/Tokens/Strings.xaml), read with `DynamicResource`. To translate or reword one, declare the same key in your application's resources, after the Muzzle dictionary:
+
+```xml
+<Application.Resources>
+    <ResourceDictionary xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+        <ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary Source="pack://application:,,,/Muzzle.Theme;component/Themes/Muzzle.xaml" />
+            <ResourceDictionary Source="Strings.de.xaml" />   <!-- your translations, any number of keys -->
+        </ResourceDictionary.MergedDictionaries>
+        <sys:String x:Key="Muzzle.String.Window.Close">Schließen</sys:String>
+    </ResourceDictionary>
+</Application.Resources>
+```
+
+- Keys are grouped by control: `Window.*`, `SearchBar.*`, `Pagination.*`, `PropertyGrid.*`, `MessageBox.*`, `Growl.*`, `PasswordStrength.*`, `ColorPicker.*`, `CodeBlock.*`, `Carousel.*`, `ImageViewer.*`, `Calendar.*`, `DatePicker.*`, `TimePicker.*`, `TagInput.*`, `CommandPalette.*` and so on. A key you leave out keeps its English text.
+- Swapping the dictionary at runtime updates templates that are already on screen.
+- `MuzzleStrings.Get("Window.Close")` reads a string from code, overrides included. `GrowlInfo.ConfirmText` / `CancelText`, the `PasswordStrengthMeter` labels and the `PropertyGrid` validation messages come from the same resources. `Muzzle.String.PropertyGrid.OutOfRange` is a format string with `{0}` and `{1}` for the bounds.
+- The package ships English only.
+
 ## Accent colours
 
 Accents sit on top of either base theme and switch independently of it: changing Light ↔ Dark keeps the accent, and changing the accent keeps the theme. **Coral** (toe-bean blush) is the default and reproduces the original palette exactly, so existing apps look the same.

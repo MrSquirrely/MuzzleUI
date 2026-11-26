@@ -200,12 +200,12 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <Button x:Name="PART_PreviousButton" Style="{StaticResource Muzzle.Calendar.NavButton}" Focusable="False" AutomationProperties.Name="Previous">
+                            <Button x:Name="PART_PreviousButton" Style="{StaticResource Muzzle.Calendar.NavButton}" Focusable="False" AutomationProperties.Name="{DynamicResource Muzzle.String.Calendar.Previous}">
                                 <Path Width="8" Height="10" Data="M 6,1 L 2,5 L 6,9" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                                       StrokeThickness="1.7" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
                             </Button>
                             <Button x:Name="PART_HeaderButton" Grid.Column="1" Style="{StaticResource Muzzle.Calendar.HeaderButton}" />
-                            <Button x:Name="PART_NextButton" Grid.Column="2" Style="{StaticResource Muzzle.Calendar.NavButton}" Focusable="False" AutomationProperties.Name="Next">
+                            <Button x:Name="PART_NextButton" Grid.Column="2" Style="{StaticResource Muzzle.Calendar.NavButton}" Focusable="False" AutomationProperties.Name="{DynamicResource Muzzle.String.Calendar.Next}">
                                 <Path Width="8" Height="10" Data="M 2,1 L 6,5 L 2,9" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                                       StrokeThickness="1.7" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
                             </Button>
@@ -390,8 +390,8 @@
                                     Grid.Column="1"
                                     Margin="6,0,0,0"
                                     Style="{StaticResource Muzzle.SquishPillButton}"
-                                    ToolTip="Open calendar"
-                                    AutomationProperties.Name="Open calendar">
+                                    ToolTip="{DynamicResource Muzzle.String.DatePicker.OpenCalendar}"
+                                    AutomationProperties.Name="{DynamicResource Muzzle.String.DatePicker.OpenCalendar}">
                                 <Path Width="14" Height="14" Data="M 2,3.5 H 12 A 1,1 0 0 1 13,4.5 V 12 A 1,1 0 0 1 12,13 H 2 A 1,1 0 0 1 1,12 V 4.5 A 1,1 0 0 1 2,3.5 Z M 1,6.5 H 13 M 4.5,1.5 V 4.5 M 9.5,1.5 V 4.5"
                                       Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                                       StrokeThickness="1.4" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />

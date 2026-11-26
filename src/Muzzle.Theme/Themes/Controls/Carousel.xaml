@@ -62,8 +62,8 @@
                                 VerticalAlignment="Center"
                                 Style="{StaticResource Muzzle.Button.Floating}"
                                 Visibility="{TemplateBinding ShowNavigationButtons, Converter={StaticResource Muzzle.Carousel.BoolToVisibility}}"
-                                ToolTip="Previous"
-                                AutomationProperties.Name="Previous">
+                                ToolTip="{DynamicResource Muzzle.String.Carousel.Previous}"
+                                AutomationProperties.Name="{DynamicResource Muzzle.String.Carousel.Previous}">
                             <Path Width="7" Height="12" Data="M 6,1 L 1.5,6 L 6,11" Stroke="{DynamicResource Muzzle.Brush.TextPrimary}"
                                   StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" Margin="0,0,1,0" />
                         </Button>
@@ -73,8 +73,8 @@
                                 VerticalAlignment="Center"
                                 Style="{StaticResource Muzzle.Button.Floating}"
                                 Visibility="{TemplateBinding ShowNavigationButtons, Converter={StaticResource Muzzle.Carousel.BoolToVisibility}}"
-                                ToolTip="Next"
-                                AutomationProperties.Name="Next">
+                                ToolTip="{DynamicResource Muzzle.String.Carousel.Next}"
+                                AutomationProperties.Name="{DynamicResource Muzzle.String.Carousel.Next}">
                             <Path Width="7" Height="12" Data="M 1,1 L 5.5,6 L 1,11" Stroke="{DynamicResource Muzzle.Brush.TextPrimary}"
                                   StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" Margin="1,0,0,0" />
                         </Button>
@@ -132,18 +132,18 @@
                                             Effect="{Binding (mz:MuzzleAssist.ShadowDepth), RelativeSource={RelativeSource Self}, Converter={x:Static mzv:ShadowDepthToEffectConverter.Instance}}" />
                             <StackPanel Margin="4" Orientation="Horizontal">
                                 <Button x:Name="PART_ZoomOutButton" Width="28" Height="28" Style="{StaticResource Muzzle.Button.Icon}" mz:MuzzleAssist.CornerRadius="999"
-                                        Focusable="False" ToolTip="Zoom out" AutomationProperties.Name="Zoom out">
+                                        Focusable="False" ToolTip="{DynamicResource Muzzle.String.ImageViewer.ZoomOut}" AutomationProperties.Name="{DynamicResource Muzzle.String.ImageViewer.ZoomOut}">
                                     <Path Width="10" Height="2" Data="M 1,1 H 9" Stroke="{DynamicResource Muzzle.Brush.TextPrimary}" StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
                                 </Button>
                                 <TextBlock MinWidth="44" VerticalAlignment="Center" TextAlignment="Center" FontSize="12" FontWeight="SemiBold"
                                            Foreground="{DynamicResource Muzzle.Brush.TextSecondary}"
                                            Text="{Binding Zoom, RelativeSource={RelativeSource TemplatedParent}, StringFormat={}{0:P0}}" />
                                 <Button x:Name="PART_ZoomInButton" Width="28" Height="28" Style="{StaticResource Muzzle.Button.Icon}" mz:MuzzleAssist.CornerRadius="999"
-                                        Focusable="False" ToolTip="Zoom in" AutomationProperties.Name="Zoom in">
+                                        Focusable="False" ToolTip="{DynamicResource Muzzle.String.ImageViewer.ZoomIn}" AutomationProperties.Name="{DynamicResource Muzzle.String.ImageViewer.ZoomIn}">
                                     <Path Width="10" Height="10" Data="M 1,5 H 9 M 5,1 V 9" Stroke="{DynamicResource Muzzle.Brush.TextPrimary}" StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
                                 </Button>
                                 <Button x:Name="PART_ResetButton" Width="28" Height="28" Margin="2,0,0,0" Style="{StaticResource Muzzle.Button.Icon}" mz:MuzzleAssist.CornerRadius="999"
-                                        Focusable="False" ToolTip="Reset to 100% (double-click)" AutomationProperties.Name="Reset zoom">
+                                        Focusable="False" ToolTip="{DynamicResource Muzzle.String.ImageViewer.ResetZoomTip}" AutomationProperties.Name="{DynamicResource Muzzle.String.ImageViewer.ResetZoom}">
                                     <Path Width="12" Height="12" Data="M 2.2,7.6 A 4.2,4.2 0 1 0 3,3.2 M 1.6,1.2 V 3.8 H 4.2"
                                           Stroke="{DynamicResource Muzzle.Brush.TextPrimary}" StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
                                 </Button>

@@ -11,7 +11,7 @@
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="FocusVisualStyle" Value="{DynamicResource Muzzle.FocusVisual}" />
-        <Setter Property="AutomationProperties.Name" Value="Rating" />
+        <Setter Property="AutomationProperties.Name" Value="{DynamicResource Muzzle.String.Rating.Name}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type mzc:Rating}">

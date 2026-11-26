@@ -21,8 +21,8 @@
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextSecondary}" />
         <Setter Property="FocusVisualStyle" Value="{DynamicResource Muzzle.FocusVisual}" />
-        <Setter Property="ToolTip" Value="Toggle navigation pane" />
-        <Setter Property="AutomationProperties.Name" Value="Toggle navigation pane" />
+        <Setter Property="ToolTip" Value="{DynamicResource Muzzle.String.NavigationView.TogglePane}" />
+        <Setter Property="AutomationProperties.Name" Value="{DynamicResource Muzzle.String.NavigationView.TogglePane}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">

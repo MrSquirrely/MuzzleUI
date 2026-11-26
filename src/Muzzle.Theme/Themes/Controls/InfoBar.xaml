@@ -60,8 +60,8 @@
                                     Style="{DynamicResource Muzzle.Button.Icon}"
                                     mz:MuzzleAssist.CornerRadius="14"
                                     Visibility="{Binding IsClosable, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Muzzle.InfoBar.BoolToVisibility}}"
-                                    ToolTip="Dismiss"
-                                    AutomationProperties.Name="Dismiss">
+                                    ToolTip="{DynamicResource Muzzle.String.InfoBar.Dismiss}"
+                                    AutomationProperties.Name="{DynamicResource Muzzle.String.InfoBar.Dismiss}">
                                 <Path Width="10" Height="10" Data="M 1,1 L 9,9 M 9,1 L 1,9" Stroke="{DynamicResource Muzzle.Brush.TextSecondary}"
                                       StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
                             </Button>

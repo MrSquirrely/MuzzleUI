@@ -69,19 +69,19 @@
                                         FontSize="12"
                                         Style="{StaticResource Muzzle.Button}"
                                         Visibility="{TemplateBinding ShowCopyButton, Converter={x:Static mzv:BoolToVisibilityConverter.Instance}}"
-                                        ToolTip="Copy to clipboard"
-                                        AutomationProperties.Name="Copy code">
+                                        ToolTip="{DynamicResource Muzzle.String.CodeBlock.CopyToClipboard}"
+                                        AutomationProperties.Name="{DynamicResource Muzzle.String.CodeBlock.CopyCode}">
                                     <Grid>
                                         <StackPanel x:Name="CopyFace" Orientation="Horizontal">
                                             <mzc:MuzzleIcon Kind="Copy" IconSize="14" />
-                                            <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" Text="Copy" />
+                                            <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" Text="{DynamicResource Muzzle.String.CodeBlock.Copy}" />
                                         </StackPanel>
                                         <StackPanel x:Name="CopiedFace" Orientation="Horizontal" Visibility="Collapsed" RenderTransformOrigin="0.5,0.5">
                                             <StackPanel.RenderTransform>
                                                 <ScaleTransform />
                                             </StackPanel.RenderTransform>
                                             <mzc:MuzzleIcon Kind="Check" IconSize="14" StrokeThickness="2.4" />
-                                            <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" Text="Copied!" />
+                                            <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" Text="{DynamicResource Muzzle.String.CodeBlock.Copied}" />
                                         </StackPanel>
                                     </Grid>
                                 </Button>
@@ -131,8 +131,8 @@
                                     Margin="6,0,0,0"
                                     Style="{StaticResource Muzzle.Button.Icon}"
                                     mz:MuzzleAssist.CornerRadius="999"
-                                    ToolTip="Copy"
-                                    AutomationProperties.Name="Copy">
+                                    ToolTip="{DynamicResource Muzzle.String.CodeBlock.Copy}"
+                                    AutomationProperties.Name="{DynamicResource Muzzle.String.CodeBlock.Copy}">
                                 <Grid>
                                     <mzc:MuzzleIcon x:Name="CopyIcon" Kind="Copy" IconSize="14" Foreground="{DynamicResource Muzzle.Brush.TextSecondary}" />
                                     <mzc:MuzzleIcon x:Name="CopiedFace" Kind="Check" IconSize="14" StrokeThickness="2.4" Visibility="Collapsed"
