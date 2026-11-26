@@ -165,7 +165,8 @@ public sealed class JellyBehaviorTests(MuzzleWpfTestFixture fixture) {
                 if (motion) {
                     Assert.True(element.HasAnimatedProperties, "The entrance should be animating right after Loaded.");
                 }
-                if (entrance == JellyEntrance.SlideUp) {
+                // With Windows animations off (as on CI runners) the entrance is skipped entirely, so no transform is installed.
+                if (motion && (entrance == JellyEntrance.SlideUp)) {
                     TransformGroup group = Assert.IsType<TransformGroup>(element.RenderTransform);
                     Assert.Single(group.Children.OfType<TranslateTransform>());
                 }
