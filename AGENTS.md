@@ -26,8 +26,17 @@ This file is for AI coding agents (Claude Code, Codex, Copilot and others) and f
 
 - **All work happens on `dev`.** Commit and push to `dev`, or to a feature branch with a PR into `dev`.
 - **`main` is production.** It is protected: changes arrive only through a pull request from `dev`, and that PR must pass CI. Open one only when the maintainer says to release.
-- **Every push to `main` releases.** `release.yml` builds, tests and packs, then creates a GitHub Release tagged `v<Version>` with the `.nupkg` and `.snupkg` attached. If the `NUGET_API_KEY` secret is set, it also pushes to NuGet.org.
-- **Bump the version for each release.** The `<Version>` in `src/Muzzle.Theme/Muzzle.Theme.csproj` must go up before merging to `main`. If the tag already exists, the release job skips publishing rather than overwriting it.
+- **Every push to `main` releases.** `release.yml` builds, tests and packs, then creates a GitHub Release tagged `v<Version>` with the `.nupkg` and `.snupkg` attached.
+- **NuGet.org uses Trusted Publishing; no API key is stored anywhere.** When the `NUGET_USER` repository variable holds the nuget.org profile name, `NuGet/login@v1` exchanges the job's GitHub OIDC token for a one-hour key and pushes with `--skip-duplicate`. Without the variable, the step is skipped with a notice.
+- **Bump the version for each release.** The `<Version>` in `src/Muzzle.Theme/Muzzle.Theme.csproj` must go up before merging to `main`. If the tag already exists, the job creates no new GitHub Release. The NuGet push still runs, but a version that is already on NuGet.org is skipped, so re-running a release is safe.
+
+### Trusted Publishing setup (one-time, done by the maintainer)
+
+1. **Create the policy on nuget.org.** Click your username, choose **Trusted Publishing**, and add a policy with Repository Owner `MrSquirrely`, Repository `MuzzleUI` and Workflow File `release.yml` (just the file name, without `.github/workflows/`). Leave Environment empty.
+2. **Set the repository variable.** On GitHub, open Settings → Secrets and variables → Actions → **Variables**, and add `NUGET_USER` with your nuget.org profile name (not your email address).
+3. **Activate the policy within 7 days.** A new policy may start out "temporarily active" for 7 days. The first successful publish makes it permanent, and you can restart the window from nuget.org if it lapses.
+
+If the workflow file is renamed, the policy must be updated to match.
 - **Never force-push** `main` or `dev`, and never skip hooks.
 
 ## Commands
