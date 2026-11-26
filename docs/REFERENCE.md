@@ -508,6 +508,11 @@ MuzzleThemeManager.AccentChanged += (_, e) => Debug.WriteLine(e.Accent);
   - `PrimaryText` is a deeper (light theme) or lighter (dark theme) shade for readable text.
   - `OnPrimary` is chosen by luminance: dark text on light accents, white on deep ones.
   - Secondary and tertiary come from the preset whose supporting hues sit furthest from the colour.
+- **Custom base palette**: `MuzzleThemeManager.ApplyCustomPalette(canvas, text, accent)` fits the theme to your own page colours, for example a sepia or dimmed reading profile.
+  - The surface, border, track, hover, scrollbar, tooltip and text tokens are re-derived: each keeps its place between the stock canvas and text colours, moved onto the line between yours. Accent, status and decorative colours stay as they are.
+  - The Light or Dark base (shadows, accent variant) follows from which of the two colours is lighter. The optional third argument is passed to `ApplyCustomAccent`.
+  - It stays in effect across accent changes. `ClearCustomPalette()` or any `ApplyTheme` call ends it. `CustomPaletteCanvas` / `CustomPaletteText` report it, and `ThemeChanged` is raised.
+  - It is one top-level dictionary swap per call, so it can follow a slider. `CreateCustomPaletteDictionary(canvas, text)` returns the dictionary on its own.
 - **Regenerating**: `tools/Generate-Palettes.ps1` writes both base palettes and all eight accent files from one token table. Edit the table there, not the generated XAML.
 
 ## Tests

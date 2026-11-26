@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -69,6 +70,9 @@ public static class MuzzleThemeManager {
     /// <summary>Resource key every accent dictionary defines, used to find the accent slot.</summary>
     public const string AccentSlotKey = "Muzzle.AccentSlot";
 
+    /// <summary>Resource key the dictionary of a custom palette defines, used to find and replace it.</summary>
+    public const string CustomPaletteSlotKey = "Muzzle.CustomPaletteSlot";
+
     /// <summary>Resource key holding the active accent's name ("Coral", …, "Custom").</summary>
     public const string AccentNameKey = "Muzzle.AccentName";
 
@@ -81,6 +85,17 @@ public static class MuzzleThemeManager {
     private static readonly string[] AccentTokens = [
         "Primary", "PrimaryHover", "PrimaryPressed", "PrimarySoft", "PrimarySoftHover", "PrimaryText", "OnPrimary", "FocusRing", "PrimaryWash"
     ];
+
+    // The palette tokens that sit on the canvas-to-text axis. A custom palette re-derives exactly these; accent,
+    // status and decorative colours keep their stock values.
+    private static readonly string[] NeutralTokens = [
+        "Canvas", "CanvasAlt", "Surface", "SurfaceRaised", "SurfaceBorder", "SurfaceRimHighlight", "ControlBackground",
+        "ControlBorder", "ControlBorderHover", "ControlBorderStrong", "Track", "TrackHover", "TextPrimary", "TextSecondary",
+        "TextTertiary", "TextDisabled", "HoverTint", "PressTint", "ScrollThumb", "ScrollThumbHover", "TooltipBackground",
+        "TooltipForeground", "OnStatus", "Backdrop", "BackdropCanvas"
+    ];
+
+    private static readonly ResourceDictionary?[] StockPalettes = new ResourceDictionary?[2];
 
     private static bool watchingSystem;
     private static MuzzleTheme? currentTheme;
@@ -117,6 +132,12 @@ public static class MuzzleThemeManager {
     /// <summary>The base colour of the custom accent, when <see cref="CurrentAccent"/> is Custom.</summary>
     public static Color? CustomAccentColor { get; private set; }
 
+    /// <summary>The canvas colour of the custom palette, while one from <see cref="ApplyCustomPalette"/> is in effect.</summary>
+    public static Color? CustomPaletteCanvas { get; private set; }
+
+    /// <summary>The text colour of the custom palette, while one from <see cref="ApplyCustomPalette"/> is in effect.</summary>
+    public static Color? CustomPaletteText { get; private set; }
+
     /// <summary>Length of the optional crossfade.</summary>
     public static TimeSpan TransitionDuration { get; set; } = TimeSpan.FromMilliseconds(380);
 
@@ -130,6 +151,12 @@ public static class MuzzleThemeManager {
             application.Dispatcher.BeginInvoke(new Action(() => ApplyTheme(theme, animate)));
             return;
         }
+        // Choosing a stock theme ends a custom palette; ApplyCustomPalette puts its own back afterwards.
+        RemoveCustomPalette(application);
+        ApplyThemeCore(application, theme, animate);
+    }
+
+    private static void ApplyThemeCore(Application application, MuzzleTheme theme, bool animate) {
         CurrentTheme = theme;
         WatchSystemTheme(theme == MuzzleTheme.System);
         MuzzleTheme effective = (theme == MuzzleTheme.System) ? (IsSystemDark() ? MuzzleTheme.Dark : MuzzleTheme.Light) : theme;
@@ -157,6 +184,136 @@ public static class MuzzleThemeManager {
     /// </summary>
     public static void ApplyCustomAccent(Color baseColor, bool animate = false) {
         ApplyAccentCore(MuzzleAccent.Custom, Color.FromRgb(baseColor.R, baseColor.G, baseColor.B), animate);
+    }
+
+    /// <summary>
+    /// Re-derives the surface, border, track, hover and text colours from your own page colours, the way
+    /// <see cref="ApplyCustomAccent"/> derives an accent ramp: each neutral token keeps its place between the stock
+    /// canvas and text colours, moved onto the line between <paramref name="canvas"/> and <paramref name="text"/>.
+    /// The Light or Dark base (shadows, accent variant, status colours) is picked from the canvas luminance.
+    /// It stays in effect across accent changes, until <see cref="ClearCustomPalette"/> or <see cref="ApplyTheme"/>.
+    /// It is cheap enough to call repeatedly, for example while a slider is dragged.
+    /// </summary>
+    /// <param name="canvas">The page background.</param>
+    /// <param name="text">The primary text colour on that background.</param>
+    /// <param name="accent">A base colour for <see cref="ApplyCustomAccent"/>, or <see langword="null"/> to keep the current accent.</param>
+    public static void ApplyCustomPalette(Color canvas, Color text, Color? accent = null) {
+        Application application = Application.Current ?? throw new InvalidOperationException("MuzzleThemeManager needs a running WPF Application.");
+        if (!application.Dispatcher.CheckAccess()) {
+            application.Dispatcher.BeginInvoke(new Action(() => ApplyCustomPalette(canvas, text, accent)));
+            return;
+        }
+        canvas = Color.FromRgb(canvas.R, canvas.G, canvas.B);
+        text = Color.FromRgb(text.R, text.G, text.B);
+        bool dark = Luma(canvas) < Luma(text);
+        MuzzleTheme wanted = dark ? MuzzleTheme.Dark : MuzzleTheme.Light;
+        if ((CurrentTheme != wanted) || (EffectiveTheme != wanted) || (FindEffectivePalette(application) is null)) {
+            CurrentTheme = wanted;
+            WatchSystemTheme(false);
+            Apply(application, wanted, CurrentAccent, CustomAccentColor, false);
+        }
+        if (accent is Color accentColor) {
+            ApplyCustomAccent(accentColor);
+        }
+        CustomPaletteCanvas = canvas;
+        CustomPaletteText = text;
+        ResourceDictionary overlay = CreateCustomPaletteDictionary(canvas, text);
+        Collection<ResourceDictionary> merged = application.Resources.MergedDictionaries;
+        int index = FindCustomPalette(application);
+        // One swap of a top-level dictionary is one application-wide resource notification.
+        if (index >= 0) {
+            merged[index] = overlay;
+        }
+        else {
+            merged.Add(overlay);
+        }
+        MuzzleShadows.Refresh();
+        ThemeChanged?.Invoke(null, new MuzzleThemeChangedEventArgs(wanted, wanted));
+    }
+
+    /// <summary>Removes the palette applied by <see cref="ApplyCustomPalette"/>, returning to the stock Light or Dark colours.</summary>
+    public static void ClearCustomPalette() {
+        Application application = Application.Current ?? throw new InvalidOperationException("MuzzleThemeManager needs a running WPF Application.");
+        if (!application.Dispatcher.CheckAccess()) {
+            application.Dispatcher.BeginInvoke(new Action(ClearCustomPalette));
+            return;
+        }
+        if (RemoveCustomPalette(application)) {
+            MuzzleShadows.Refresh();
+            ThemeChanged?.Invoke(null, new MuzzleThemeChangedEventArgs(CurrentTheme, EffectiveTheme));
+        }
+    }
+
+    /// <summary>
+    /// Builds the override dictionary <see cref="ApplyCustomPalette"/> merges after the theme: the neutral
+    /// <c>Muzzle.Color.*</c> / <c>Muzzle.Brush.*</c> keys derived from <paramref name="canvas"/> and <paramref name="text"/>.
+    /// </summary>
+    /// <param name="canvas">The page background.</param>
+    /// <param name="text">The primary text colour on that background.</param>
+    /// <returns>A dictionary carrying <see cref="CustomPaletteSlotKey"/> and the derived colours and brushes.</returns>
+    public static ResourceDictionary CreateCustomPaletteDictionary(Color canvas, Color text) {
+        bool dark = Luma(canvas) < Luma(text);
+        ResourceDictionary stock = StockPalettes[dark ? 1 : 0] ??= CreatePackDictionary(dark ? DarkFile : LightFile);
+        Color stockCanvas = (Color)stock["Muzzle.Color.Canvas"];
+        Color stockText = (Color)stock["Muzzle.Color.TextPrimary"];
+        double span = Luma(stockText) - Luma(stockCanvas);
+
+        Color Map(Color color) {
+            double t = (Luma(color) - Luma(stockCanvas)) / span;
+            return Color.FromArgb(color.A, Shift(canvas.R, text.R, t), Shift(canvas.G, text.G, t), Shift(canvas.B, text.B, t));
+        }
+
+        ResourceDictionary dictionary = new() { [CustomPaletteSlotKey] = true };
+        foreach (string token in NeutralTokens) {
+            if (stock["Muzzle.Color." + token] is not Color stockColor) {
+                continue;
+            }
+            Color color = Map(stockColor);
+            dictionary["Muzzle.Color." + token] = color;
+            SolidColorBrush brush = new(color);
+            brush.Freeze();
+            dictionary["Muzzle.Brush." + token] = brush;
+        }
+        // The one gradient built from neutral tokens: the lit top edge of cards.
+        if (stock["Muzzle.Brush.SurfaceRim"] is GradientBrush stockRim) {
+            GradientBrush rim = stockRim.Clone();
+            foreach (GradientStop stop in rim.GradientStops) {
+                stop.Color = Map(stop.Color);
+            }
+            rim.Freeze();
+            dictionary["Muzzle.Brush.SurfaceRim"] = rim;
+        }
+        return dictionary;
+    }
+
+    private static int FindCustomPalette(Application application) {
+        Collection<ResourceDictionary> merged = application.Resources.MergedDictionaries;
+        for (int i = 0; i < merged.Count; i++) {
+            if (merged[i].Contains(CustomPaletteSlotKey) && (merged[i].Source is null)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private static bool RemoveCustomPalette(Application application) {
+        CustomPaletteCanvas = null;
+        CustomPaletteText = null;
+        int index = FindCustomPalette(application);
+        if (index < 0) {
+            return false;
+        }
+        application.Resources.MergedDictionaries.RemoveAt(index);
+        return true;
+    }
+
+    /// <summary>Gamma-space brightness, 0 to 255: how light a colour looks, cheaply.</summary>
+    private static double Luma(Color color) {
+        return (0.299 * color.R) + (0.587 * color.G) + (0.114 * color.B);
+    }
+
+    private static byte Shift(byte from, byte to, double amount) {
+        return (byte)Math.Clamp(Math.Round(from + ((to - from) * amount)), 0, 255);
     }
 
     /// <summary>Reads the theme a palette slot currently holds (Light when none is found).</summary>

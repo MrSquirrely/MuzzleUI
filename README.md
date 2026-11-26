@@ -108,6 +108,7 @@ MuzzleThemeManager.ApplyTheme(MuzzleTheme.Dark);                       // instan
 MuzzleThemeManager.ApplyTheme(MuzzleTheme.System, animate: true);      // follow Windows, crossfading
 MuzzleThemeManager.ApplyAccent(MuzzleAccent.Mint, animate: true);
 MuzzleThemeManager.ApplyCustomAccent(Color.FromRgb(0x5F, 0xA8, 0xD3)); // a full ramp is derived
+MuzzleThemeManager.ApplyCustomPalette(sepiaCanvas, sepiaText);         // surfaces, borders and text follow your page colours
 
 MuzzleThemeManager.ThemeChanged += (_, e) => Debug.WriteLine($"{e.Theme} -> {e.EffectiveTheme}");
 MuzzleThemeManager.AccentChanged += (_, e) => Debug.WriteLine(e.Accent);

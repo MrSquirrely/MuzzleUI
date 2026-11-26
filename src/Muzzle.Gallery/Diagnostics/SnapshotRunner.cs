@@ -683,6 +683,20 @@ internal static class SnapshotRunner {
         log.WriteLine($"accent: custom after Light {Theme.MuzzleThemeManager.CurrentAccent} primary {Resolve("Muzzle.Color.Primary")} (expect Custom #FF5FA8D3), soft {Resolve("Muzzle.Color.PrimarySoft")}, text {Resolve("Muzzle.Color.PrimaryText")}");
         Save(window, Path.Combine(directory, "accent-Light-Custom.png"));
 
+        // Custom base palette: a sepia reading profile, then a dim one that flips to the Dark base.
+        Theme.MuzzleThemeManager.ApplyAccent(Theme.MuzzleAccent.Coral);
+        Theme.MuzzleThemeManager.ApplyCustomPalette(Color.FromRgb(0xF4, 0xEC, 0xD8), Color.FromRgb(0x5B, 0x46, 0x36));
+        await Task.Delay(500);
+        log.WriteLine($"palette: sepia canvas {Resolve("Muzzle.Color.Canvas")} (expect #FFF4ECD8), text {Resolve("Muzzle.Color.TextPrimary")} (expect #FF5B4636), surface {Resolve("Muzzle.Color.Surface")}, border {Resolve("Muzzle.Color.ControlBorder")}, theme {Theme.MuzzleThemeManager.EffectiveTheme} (expect Light)");
+        Save(window, Path.Combine(directory, "palette-sepia.png"));
+        Theme.MuzzleThemeManager.ApplyCustomPalette(Color.FromRgb(0x14, 0x1A, 0x1F), Color.FromRgb(0xC9, 0xD3, 0xDC));
+        await Task.Delay(500);
+        log.WriteLine($"palette: dim canvas {Resolve("Muzzle.Color.Canvas")} (expect #FF141A1F), surface {Resolve("Muzzle.Color.Surface")}, theme {Theme.MuzzleThemeManager.EffectiveTheme} (expect Dark)");
+        Save(window, Path.Combine(directory, "palette-dim.png"));
+        Theme.MuzzleThemeManager.ApplyTheme(Theme.MuzzleTheme.Light);
+        await Task.Delay(400);
+        log.WriteLine($"palette: cleared by ApplyTheme -> canvas {Resolve("Muzzle.Color.Canvas")} (expect #FFFAF8F6), custom {Theme.MuzzleThemeManager.CustomPaletteCanvas?.ToString() ?? "none"} (expect none)");
+
         // Back to the defaults for the passes that follow.
         Theme.MuzzleThemeManager.ApplyAccent(Theme.MuzzleAccent.Coral);
         await Task.Delay(400);
