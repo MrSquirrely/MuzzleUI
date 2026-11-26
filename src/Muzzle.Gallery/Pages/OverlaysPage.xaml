@@ -47,6 +47,8 @@
                         <Button Margin="0,0,10,10" Content="Adoption form (typed result)" Click="OnFormDialog" Style="{StaticResource Muzzle.Button.Primary}" />
                         <Button Margin="0,0,10,10" Content="Confirm (IDialogResultable)" Click="OnConfirmDialog" Style="{StaticResource Muzzle.Button.Secondary}" />
                         <Button Margin="0,0,10,10" Content="Click outside to close" Click="OnLightDialog" />
+                        <Button Margin="0,0,10,10" Content="MessageBox (blocking window)" Click="OnMessageBox"
+                                ToolTip="mz MessageBox.Show: a real, owner-modal window that returns a MessageBoxResult" />
                     </WrapPanel>
                     <controls:SnippetView Margin="0,8,0,0" Code="{x:Static local:Snippets.Dialog}" />
                 </StackPanel>

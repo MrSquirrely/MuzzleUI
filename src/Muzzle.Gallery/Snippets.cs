@@ -171,6 +171,10 @@ public static class Snippets {
         """;
 
     public const string Dialog = """
+        // A blocking, owner-modal window with the familiar shape
+        MessageBoxResult result = MessageBox.Show(this, "Save your changes?", "Unsaved changes",
+            MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+
         // Show any content (UserControl or ViewModel + DataTemplate) over the active window
         Dialog dialog = Dialog.Show(new AdoptionFormDialog());
         Dialog.Show<AdoptionFormDialog>();

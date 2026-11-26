@@ -243,7 +243,7 @@ Every standard control is restyled automatically. Explicit styles such as `Muzzl
 | **Buttons and toggles** | Button (`.Primary`, `.Secondary`, `.Mint`, `.Ghost`, `.Pill`, `.Icon`), ToggleButton, RepeatButton, `mz:ToggleSwitch`, CheckBox, RadioButton, `mz:SplitButton`, `mz:DropDownButton`, `mz:ThemeToggleButton`, `mz:AccentSwatch` |
 | **Text and inputs** | TextBox, PasswordBox, ComboBox, Slider, `mz:NumericUpDown`, `mz:TagInput`, `mz:SearchBar`, `mz:RangeSlider`, `mz:PasswordStrengthMeter` |
 | **Pickers** | DatePicker, Calendar, `mz:TimePicker`, `mz:ColorPicker`, `mz:ColorPickerDropDown`, `mz:Rating` |
-| **Overlays and notifications** | `mz:Growl` toasts, `mz:Dialog`, `mz:Drawer`, `mz:CommandPalette`, `mz:Popover`, ToolTip, ContextMenu and Menu |
+| **Overlays and notifications** | `mz:Growl` toasts, `mz:Dialog`, `MessageBox` (a blocking, owner-modal window), `mz:Drawer`, `mz:CommandPalette`, `mz:Popover`, ToolTip, ContextMenu and Menu |
 | **Feedback and status** | ProgressBar, `mz:LoadingSpinner`, `mz:Skeleton`, `mz:Badge`, `mz:InfoBar`, `mz:EmptyState` |
 | **Navigation and layout** | TabControl, Expander, `mz:NavigationView`, `mz:BreadcrumbBar`, `mz:Pagination`, `mz:StepBar`, `mz:TransitioningContentControl`, `mz:Card`, GridSplitter, ScrollViewer |
 | **Data and media** | DataGrid (with Muzzle column editors), ListBox, TreeView, `mz:PropertyGrid`, `mz:Avatar`, `mz:Carousel`, `mz:ImageViewer` |

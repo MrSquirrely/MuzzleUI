@@ -45,7 +45,7 @@ If the workflow file is renamed, the policy must be updated to match.
 ```powershell
 dotnet build Muzzle.slnx                                   # Debug, all projects
 dotnet build src/Muzzle.Theme -c Release                   # must report 0 warnings
-dotnet test tests/Muzzle.Theme.Tests                       # 256 tests, about 25 s
+dotnet test tests/Muzzle.Theme.Tests                       # 262 tests, about 25 s
 dotnet pack src/Muzzle.Theme -c Release -o artifacts       # .nupkg + .snupkg, must report 0 warnings
 dotnet run --project src/Muzzle.Gallery                    # interactive demo
 src/Muzzle.Gallery/bin/Debug/net10.0-windows/Muzzle.Gallery.exe --snapshot <dir>   # renders every page to PNG

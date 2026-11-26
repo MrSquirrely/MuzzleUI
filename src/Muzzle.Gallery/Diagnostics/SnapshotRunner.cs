@@ -248,6 +248,18 @@ internal static class SnapshotRunner {
         Theme.Controls.Growl.ClearGlobal();
         await Task.Delay(700);
         log.WriteLine("growl: desktop window shown and cleared");
+
+        // MessageBox: shown without blocking so it can be captured; a click on Cancel closes it.
+        Theme.Controls.MessageBoxWindow box = new(
+            "Biscuit knocked a glass off the table. Save your changes before cleaning up?", "Unsaved changes",
+            MessageBoxButton.YesNoCancel, MessageBoxImage.Question) { Owner = window, WindowStartupLocation = WindowStartupLocation.CenterOwner };
+        box.Show();
+        await Task.Delay(700);
+        Save(box, Path.Combine(directory, "messagebox.png"));
+        Button? cancelButton = FindFirst<Button>(box, static b => b.IsCancel);
+        cancelButton?.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+        await Task.Delay(300);
+        log.WriteLine($"messagebox: {box.ActualWidth:0}x{box.ActualHeight:0}, cancel -> result {box.Result} (expect Cancel), visible {box.IsVisible} (expect False)");
         await ExerciseNavigationAsync(window, directory, log);
     }
 

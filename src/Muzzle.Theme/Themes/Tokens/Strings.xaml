@@ -25,4 +25,14 @@
     <sys:String x:Key="Muzzle.String.PropertyGrid.PickColor">Pick a pastel</sys:String>
     <sys:String x:Key="Muzzle.String.PropertyGrid.Presets">Pastel presets</sys:String>
 
+    <!-- MessageBox: button captions, and the icon names read out by screen readers -->
+    <sys:String x:Key="Muzzle.String.MessageBox.OK">OK</sys:String>
+    <sys:String x:Key="Muzzle.String.MessageBox.Cancel">Cancel</sys:String>
+    <sys:String x:Key="Muzzle.String.MessageBox.Yes">Yes</sys:String>
+    <sys:String x:Key="Muzzle.String.MessageBox.No">No</sys:String>
+    <sys:String x:Key="Muzzle.String.MessageBox.Information">Information</sys:String>
+    <sys:String x:Key="Muzzle.String.MessageBox.Warning">Warning</sys:String>
+    <sys:String x:Key="Muzzle.String.MessageBox.Error">Error</sys:String>
+    <sys:String x:Key="Muzzle.String.MessageBox.Question">Question</sys:String>
+
 </ResourceDictionary>

@@ -194,6 +194,19 @@ Dialog.Close();                                           // top dialog of the a
 - `CloseOnBackdropClick` (default false: the dialog wobbles instead), `CloseOnEscape` (true), `IsModal` (true).
 - Backdrop fades in while the surface pops from 0.82× through a 1.04× overshoot to 1.0×; closing shrinks to 0.9× and fades.
 
+### MessageBox
+
+```csharp
+MessageBoxResult result = MessageBox.Show(this, "Save your changes?", "Unsaved changes",
+    MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+```
+
+- A themed, **synchronous** stand-in for `System.Windows.MessageBox` (`Muzzle.Theme.Controls.MessageBox`). It is a real `MuzzleWindow`, so it sits above hosted HWND content (WebView2, WindowsFormsHost) and works before the app has a main window, for example from a startup exception handler.
+- `Show(text, …)` uses the active window as owner, or the screen centre when there is none; `Show(owner, text, …)` centres on the owner. Both take `caption`, `MessageBoxButton`, `MessageBoxImage` and a `defaultResult`.
+- Enter presses the default button and Esc the cancelling one. Closing an OK-only message gives `OK`; with a Cancel button it gives `Cancel`; a Yes / No question stays open until answered.
+- Button captions and the icon names read by screen readers are the `Muzzle.String.MessageBox.*` resources (`OK`, `Cancel`, `Yes`, `No`, `Information`, `Warning`, `Error`, `Question`); declare a key in your app's resources to translate it.
+- `MessageBoxWindow` is the window itself, for showing a message without blocking: `Show()` it and read `Result` when it closes.
+
 ### Drawer
 
 ```xml
