@@ -36,6 +36,8 @@ public sealed class PropertyItem : INotifyPropertyChanged {
     private readonly Type valueType;
     private readonly bool isNullable;
     private readonly bool hasRange;
+    private readonly double? step;
+    private readonly string? valueFormat;
     private string editText;
     private string? errorText;
     private bool hasError;
@@ -55,7 +57,8 @@ public sealed class PropertyItem : INotifyPropertyChanged {
         Name = propertyDescriptor.Name;
         DisplayName = string.IsNullOrWhiteSpace(propertyDescriptor.DisplayName) ? propertyDescriptor.Name : propertyDescriptor.DisplayName;
         Category = string.IsNullOrWhiteSpace(propertyDescriptor.Category) ? "Misc" : propertyDescriptor.Category;
-        Description = string.IsNullOrWhiteSpace(propertyDescriptor.Description) ? "No description provided." : propertyDescriptor.Description;
+        Description = string.IsNullOrWhiteSpace(propertyDescriptor.Description) ? string.Empty : propertyDescriptor.Description;
+        Order = (propertyDescriptor.Attributes[typeof(DisplayAttribute)] as DisplayAttribute)?.GetOrder();
         TypeName = isNullable ? valueType.Name + "?" : valueType.Name;
 
         if ((propertyDescriptor.Attributes[typeof(RangeAttribute)] is RangeAttribute range) && IsNumericType(valueType)) {
@@ -69,15 +72,23 @@ public sealed class PropertyItem : INotifyPropertyChanged {
         }
         bool integral = IsIntegerType(valueType);
         IsIntegral = integral;
-        SmallChange = integral ? 1 : (hasRange ? Math.Max(0.01, Math.Round((Maximum - Minimum) / 50, 2)) : 1);
+        if ((propertyDescriptor.Attributes[typeof(PropertyStepAttribute)] is PropertyStepAttribute stepAttribute) && IsNumericType(valueType)) {
+            if (double.IsFinite(stepAttribute.Step) && (stepAttribute.Step > 0)) {
+                step = integral ? Math.Max(1, Math.Round(stepAttribute.Step)) : stepAttribute.Step;
+            }
+            valueFormat = string.IsNullOrEmpty(stepAttribute.Format) ? null : stepAttribute.Format;
+        }
+        SmallChange = step ?? (integral ? 1 : (hasRange ? Math.Max(0.01, Math.Round((Maximum - Minimum) / 50, 2)) : 1));
         LargeChange = hasRange ? Math.Max(SmallChange, (Maximum - Minimum) / 10) : SmallChange * 10;
 
-        EditorKind = ResolveKind();
+        Editor = CreateEditor(propertyDescriptor);
+        EditorKind = Editor is null ? ResolveKind() : PropertyEditorKind.Custom;
         EnumValues = valueType.IsEnum ? Enum.GetValues(valueType).Cast<object>().ToArray() : [];
 
         IncrementCommand = new MuzzleCommand(_ => Step(1));
         DecrementCommand = new MuzzleCommand(_ => Step(-1));
         ApplyColorCommand = new MuzzleCommand(ApplyColor);
+        ResetCommand = new MuzzleCommand(_ => Reset());
 
         editText = Format(Value);
     }
@@ -94,8 +105,20 @@ public sealed class PropertyItem : INotifyPropertyChanged {
     /// <summary>Gets the category (from <c>[Category]</c>, or "Misc").</summary>
     public string Category { get; }
 
-    /// <summary>Gets the description shown in the grid's footer (from <c>[Description]</c>).</summary>
+    /// <summary>Gets the description shown in the grid's footer (from <c>[Description]</c>), or an empty string when none is declared.</summary>
     public string Description { get; }
+
+    /// <summary>Gets the descriptor of the edited property, for reading custom attributes.</summary>
+    public PropertyDescriptor Descriptor => descriptor;
+
+    /// <summary>Gets the object whose property is edited.</summary>
+    public object Component => component;
+
+    /// <summary>Gets the custom editor named by the property's <c>[Editor]</c> attribute, or <see langword="null"/>.</summary>
+    public PropertyEditorBase? Editor { get; }
+
+    /// <summary>Gets the position from <c>[Display(Order = n)]</c>, or <see langword="null"/> when none is declared.</summary>
+    internal int? Order { get; }
 
     /// <summary>Gets the property's CLR type.</summary>
     public Type PropertyType { get; }
@@ -126,6 +149,42 @@ public sealed class PropertyItem : INotifyPropertyChanged {
 
     /// <summary>Gets whether the value is a whole number.</summary>
     public bool IsIntegral { get; }
+
+    /// <summary>Gets whether values snap to <see cref="SmallChange"/> (whole numbers, or a <see cref="PropertyStepAttribute"/>).</summary>
+    public bool SnapsToStep => IsIntegral || (step is not null);
+
+    /// <summary>Gets whether a <see cref="PropertyStepAttribute"/> gives the value a display format.</summary>
+    public bool HasValueFormat => valueFormat is not null;
+
+    /// <summary>Gets the value formatted with the <see cref="PropertyStepAttribute.Format"/>, or as plain text without one.</summary>
+    public string FormattedValue {
+        get {
+            if ((valueFormat is null) || (Value is not IFormattable formattable)) {
+                return Format(Value);
+            }
+            try {
+                return formattable.ToString(valueFormat, CultureInfo.CurrentCulture);
+            }
+            catch (FormatException) {
+                return Format(Value);
+            }
+        }
+    }
+
+    /// <summary>Gets whether the value differs from its default, so <see cref="ResetCommand"/> would change it.</summary>
+    public bool CanReset {
+        get {
+            try {
+                return descriptor.CanResetValue(component);
+            }
+            catch (Exception) {
+                return false;
+            }
+        }
+    }
+
+    /// <summary>Gets the command that restores the property's default value (<c>[DefaultValue]</c> or a <c>ResetXxx</c> method).</summary>
+    public ICommand ResetCommand { get; }
 
     /// <summary>Gets the command that raises a numeric value by <see cref="SmallChange"/>.</summary>
     public ICommand IncrementCommand { get; }
@@ -256,6 +315,40 @@ public sealed class PropertyItem : INotifyPropertyChanged {
         OnPropertyChanged(nameof(Value));
         OnPropertyChanged(nameof(NumericValue));
         OnPropertyChanged(nameof(SwatchBrush));
+        OnPropertyChanged(nameof(FormattedValue));
+        OnPropertyChanged(nameof(CanReset));
+    }
+
+    private void Reset() {
+        if (!CanReset) {
+            return;
+        }
+        try {
+            descriptor.ResetValue(component);
+            ClearError();
+        }
+        catch (Exception exception) {
+            SetError(exception.InnerException?.Message ?? exception.Message);
+        }
+        Refresh(true);
+    }
+
+    private static PropertyEditorBase? CreateEditor(PropertyDescriptor propertyDescriptor) {
+        foreach (Attribute attribute in propertyDescriptor.Attributes) {
+            if ((attribute is not EditorAttribute editor) || (editor.EditorBaseTypeName is not string baseName)
+                || (Type.GetType(baseName) != typeof(PropertyEditorBase))) {
+                continue;
+            }
+            try {
+                if ((Type.GetType(editor.EditorTypeName) is Type type) && (Activator.CreateInstance(type) is PropertyEditorBase instance)) {
+                    return instance;
+                }
+            }
+            catch (Exception) {
+                // An editor that cannot be created falls back to the built-in one for the type.
+            }
+        }
+        return null;
     }
 
     private void Commit(object? newValue, bool refreshText) {
@@ -274,7 +367,7 @@ public sealed class PropertyItem : INotifyPropertyChanged {
     }
 
     private void SetError(string? message) {
-        ErrorText = message ?? "That value doesn't fit here.";
+        ErrorText = message ?? MuzzleStrings.Get("PropertyGrid.InvalidValue", "That value doesn't fit here.");
         HasError = true;
     }
 
@@ -295,8 +388,13 @@ public sealed class PropertyItem : INotifyPropertyChanged {
     }
 
     private object? ToNumeric(double value) {
-        double number = hasRange ? Math.Clamp(value, Minimum, Maximum) : value;
-        number = IsIntegral ? Math.Round(number) : Math.Round(number, 3);
+        double number = value;
+        if (step is double size) {
+            double origin = hasRange ? Minimum : 0;
+            number = origin + (Math.Round((number - origin) / size) * size);
+        }
+        number = hasRange ? Math.Clamp(number, Minimum, Maximum) : number;
+        number = IsIntegral ? Math.Round(number) : Math.Round(number, 6);
         try {
             return System.Convert.ChangeType(number, valueType, CultureInfo.InvariantCulture);
         }
@@ -322,7 +420,7 @@ public sealed class PropertyItem : INotifyPropertyChanged {
                     trimmed = "#" + trimmed;
                 }
                 if (ColorConverter.ConvertFromString(trimmed) is not Color color) {
-                    error = "Enter a hex colour such as #F497A9.";
+                    error = MuzzleStrings.Get("PropertyGrid.InvalidColor", "Enter a hex colour such as #F497A9.");
                     return false;
                 }
                 result = EditorKind == PropertyEditorKind.Color ? color : CreateBrush(color);
@@ -333,7 +431,7 @@ public sealed class PropertyItem : INotifyPropertyChanged {
             if (hasRange && (result is not null)) {
                 double number = System.Convert.ToDouble(result, CultureInfo.InvariantCulture);
                 if ((number < Minimum) || (number > Maximum)) {
-                    error = string.Create(CultureInfo.CurrentCulture, $"Keep it between {Minimum} and {Maximum}.");
+                    error = string.Format(CultureInfo.CurrentCulture, MuzzleStrings.Get("PropertyGrid.OutOfRange", "Keep it between {0} and {1}."), Minimum, Maximum);
                     return false;
                 }
             }

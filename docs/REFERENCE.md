@@ -36,7 +36,7 @@ tools/
 ├─ Generate-Palettes.ps1        base palettes + accent overlays from one token table
 └─ Generate-Icons.ps1           Themes/Icons/MuzzleIcons.xaml + MuzzleIconKind.cs from one icon table
 tests/
-└─ Muzzle.Theme.Tests/         xUnit + Xunit.StaFact suite (net9.0-windows and net10.0-windows)
+└─ Muzzle.Theme.Tests/         xUnit + Xunit.StaFact suite (net10.0-windows)
 ├─ JellyController.cs, Jelly.cs, MuzzleEasings.cs, MuzzleShadows.cs, TabIndicatorController.cs
 ```
 
@@ -57,12 +57,15 @@ tests/
 | Card / Border | `mz:Card`, `Muzzle.Surface`, `Muzzle.Surface.Flat`, `Muzzle.Chip` | Soft elevation |
 | ScrollViewer / ScrollBar | `Muzzle.ScrollViewer`, `Muzzle.ScrollBar` | Slim thumb widens on hover |
 | ListBox, ToolTip | `Muzzle.ListBox`, `Muzzle.ToolTip` | Rounded rows; tooltip pops in |
+| Menu, ContextMenu, MenuItem, Separator | `Muzzle.Menu`, `Muzzle.ContextMenu`, `Muzzle.MenuItem`, `Muzzle.MenuSeparator` (all implicit) | Rounded cards pop in; nested submenus, gesture text, checkable rows. `Muzzle.MenuItem` picks its template from the item's `Role`, so it also works for a loose `MenuItem` in a panel |
 | Growl, Dialog, Drawer | `Muzzle.GrowlCard`, `Muzzle.Dialog`, `Muzzle.Drawer` | Toasts, modal overlays, edge panels (below) |
 | Badge, Skeleton, LoadingSpinner, InfoBar, Popover, ToolTip | `Muzzle.Badge`, `Muzzle.Skeleton`, `Muzzle.LoadingSpinner`, `Muzzle.InfoBar`, `Muzzle.Popover`, `Muzzle.ToolTip` | Feedback & status (below) |
 | NumericUpDown, TagInput, SearchBar, ColorPicker (+DropDown), DatePicker / Calendar, TimePicker, Rating | `Muzzle.NumericUpDown`, `Muzzle.TagInput`, `Muzzle.SearchBar`, `Muzzle.ColorPicker`, `Muzzle.DatePicker`, `Muzzle.Calendar`, `Muzzle.TimePicker`, `Muzzle.Rating` | Inputs & pickers (below) |
 | NavigationView, BreadcrumbBar, Pagination, TransitioningContentControl, StepBar | `Muzzle.NavigationView`, `Muzzle.BreadcrumbBar`, `Muzzle.Pagination`, `Muzzle.TransitioningContentControl`, `Muzzle.StepBar` | Navigation & layout (below) |
 
 All templates keep keyboard navigation and a lavender keyboard `FocusVisualStyle`, and disabled states fade to ~50% opacity instead of turning grey.
+
+ListBox, ComboBox and TreeView leave `ItemContainerStyle` unset, so an implicit `ListBoxItem`, `ComboBoxItem` or `TreeViewItem` style in your app (based on the `Muzzle.*Item` key) applies to every list without extra markup.
 
 ### `MuzzleAssist` attached properties
 
@@ -101,8 +104,11 @@ From code: `Jelly.Wobble(element)`, `MuzzleEasings.Get(element, MuzzleEasings.Je
 - `WindowChrome` with `GlassFrameThickness="0"`, `CornerRadius="16"`, caption height = `NonClientAreaHeight`; Windows 11 DWM rounded corners.
 - Windows 11 **snap layouts**: the maximize button answers `WM_NCHITTEST` with `HTMAXBUTTON` and its jelly hover/press is driven from the non-client messages.
 - Maximized frame compensation from `GetSystemMetricsForDpi` (per-monitor DPI aware).
-- Properties: `NonClientAreaContent`, `NonClientAreaContentTemplate`, `NonClientAreaHeight`, `NonClientAreaBackground`, `ShowTitle`, `ShowIcon`, `ShowMinimizeButton`, `ShowMaximizeButton`. `ResizeMode` hides buttons automatically.
+- Properties: `NonClientAreaContent`, `NonClientAreaContentTemplate`, `NonClientAreaHeight`, `NonClientAreaBackground`, `NonClientAreaForeground`, `IsFullScreen`, `ShowTitle`, `ShowIcon`, `ShowMinimizeButton`, `ShowMaximizeButton`. `ResizeMode` hides buttons automatically.
+- `NonClientAreaForeground` colours the title text and the caption glyphs, for a custom `NonClientAreaBackground`. Left unset, the theme colours apply.
+- `IsFullScreen` covers the whole monitor (taskbar included), hides the title bar and border, and restores the previous bounds and state when turned off. It binds two-way; the window adds no key of its own, so bind Esc or F11 yourself.
 - Elements in `NonClientAreaContent` are hit-test visible in chrome; empty space still drags the window.
+- `SizeToContent` works with the custom chrome: the window re-measures once its handle exists, so it fits the content, title bar and border exactly.
 
 ### PropertyGrid
 
@@ -122,6 +128,35 @@ Reflects public, writable, `[Browsable]` properties via `TypeDescriptor`, honour
 | `Color`, `Brush` | Pastel swatch popup + hex input |
 
 Also: `SearchText`, `SelectedProperty`, `ShowDescription`, read-only `Categories`/`Properties`. Values update live when the object raises `PropertyChanged` (or for DependencyObjects, when a DP changes).
+
+**Order.** `SortMode="Declared"` keeps the order the type declares its properties in, or `[Display(Order = n)]` where present; each category sits where its first property does. The default, `Alphabetical`, sorts by display name with "Misc" last.
+
+**As a settings pane.** `ShowHeader="False"` drops the overline, type name and count; `ShowTypeNames="False"` hides CLR type names in the header and the description panel. `LabelWidth` (a `GridLength`, default `2*`), `MinLabelWidth` (90) and `MaxLabelWidth` size the label column. A property without `[Description]` has an empty description. Every built-in text is a `Muzzle.String.PropertyGrid.*` resource (see [Themes/Tokens/Strings.xaml](../src/Muzzle.Theme/Themes/Tokens/Strings.xaml)); declare the same key in your app's resources to translate it.
+
+**Reset to default.** `ShowResetButtons="True"` ends each row in a button that restores the default (`[DefaultValue]` or a `ResetXxx` method) and is disabled while the value is the default. `PropertyItem.CanReset` and `ResetCommand` do the same from your own template.
+
+**Steps and formats.** `[PropertyStep(0.25, Format = "0.00×")]` sets the step of a numeric editor and snaps values to it. With a `Format`, a range editor shows the formatted value as a label instead of an editable box.
+
+**Custom editors.** Three ways in, from narrowest to widest:
+
+```csharp
+public sealed class FontEditor : PropertyEditorBase {
+    public override FrameworkElement CreateElement(PropertyItem item) {
+        return new ComboBox { ItemsSource = Fonts.SystemFontFamilies.Select(static f => f.Source) };
+    }
+
+    public override DependencyProperty? GetDependencyProperty() {
+        return Selector.SelectedItemProperty;   // bound two-way to the property value
+    }
+}
+
+[Editor(typeof(FontEditor), typeof(PropertyEditorBase))]
+public string Font { get; set; }
+```
+
+- **`[Editor]`** with a `PropertyEditorBase`, as above. The element's `DataContext` is the `PropertyItem`; `item.Descriptor` and `item.Component` give access to custom attributes and the edited object.
+- **`EditorTemplateSelector`** on the grid: a `DataTemplateSelector` asked for every property first. Return `null` to keep the built-in editor.
+- **`RowTemplate`** / **`CategoryTemplate`** replace a whole row or category card. Host the standard editor in your own row with `<ContentControl Content="{Binding}" ContentTemplateSelector="{StaticResource Muzzle.PropertyGrid.EditorSelector}" />`.
 
 ## Overlays & notifications
 
@@ -158,6 +193,19 @@ Dialog.Close();                                           // top dialog of the a
 - Hosted over the active window's client area via its AdornerLayer (the title bar stays usable), or inside `<mz:DialogContainer mz:Dialog.Token="…">`. While a modal dialog is open the content beneath leaves hit testing and the tab order; Tab cycles inside the dialog and focus returns afterwards.
 - `CloseOnBackdropClick` (default false: the dialog wobbles instead), `CloseOnEscape` (true), `IsModal` (true).
 - Backdrop fades in while the surface pops from 0.82× through a 1.04× overshoot to 1.0×; closing shrinks to 0.9× and fades.
+
+### MessageBox
+
+```csharp
+MessageBoxResult result = MessageBox.Show(this, "Save your changes?", "Unsaved changes",
+    MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+```
+
+- A themed, **synchronous** stand-in for `System.Windows.MessageBox` (`Muzzle.Theme.Controls.MessageBox`). It is a real `MuzzleWindow`, so it sits above hosted HWND content (WebView2, WindowsFormsHost) and works before the app has a main window, for example from a startup exception handler.
+- `Show(text, …)` uses the active window as owner, or the screen centre when there is none; `Show(owner, text, …)` centres on the owner. Both take `caption`, `MessageBoxButton`, `MessageBoxImage` and a `defaultResult`.
+- Enter presses the default button and Esc the cancelling one. Closing an OK-only message gives `OK`; with a Cancel button it gives `Cancel`; a Yes / No question stays open until answered.
+- Button captions and the icon names read by screen readers are the `Muzzle.String.MessageBox.*` resources (`OK`, `Cancel`, `Yes`, `No`, `Information`, `Warning`, `Error`, `Question`); declare a key in your app's resources to translate it.
+- `MessageBoxWindow` is the window itself, for showing a message without blocking: `Show()` it and read `Result` when it closes.
 
 ### Drawer
 
@@ -370,7 +418,7 @@ drawer.IsOpen = false;                                                          
   - **Restoring**: it restores them on `SourceInitialized`, so XAML sizes and `CenterScreen` don't win.
   - **Monitor check**: the title strip must land on a connected monitor's work area, otherwise the size is kept and the window is centred.
   - **Static API**: `StorageFolder`, `IsEnabled`, `Save` / `Restore` / `Forget`.
-- **`BackdropHelper.BackdropType`** (`None`, `Mica`, `Acrylic`, `Tabbed`): Windows 11 22H2+ system backdrops via `DwmSetWindowAttribute`.
+- **`BackdropHelper.BackdropType`** (`None`, `Mica`, `Acrylic`, `Tabbed`): Windows 11 22H2+ system backdrops via `DwmSetWindowAttribute`. `BackdropHelper.TintBackground="False"` keeps the window's own `Background` instead of switching to `Muzzle.Brush.BackdropCanvas`. The system menu (Alt+Space, right-click on the title bar) stays available while a backdrop is on.
   - **While active**: it extends the frame, makes the composition background transparent and swaps the window background for the translucent, theme-aware `Muzzle.Brush.BackdropCanvas`.
   - **Caption buttons**: it hides the native caption buttons that DWM would otherwise draw behind Muzzle's (it removes `WS_SYSMENU` while active, so Alt+Space has no system menu then).
   - **Older Windows**: it does nothing (`IsSupported`, `IsBackdropActive`).
@@ -417,6 +465,27 @@ MuzzleThemeManager.ThemeChanged += (_, e) => Debug.WriteLine($"{e.Theme} -> {e.E
 - **Your own resources**: use `{DynamicResource Muzzle.Brush.*}` / `{DynamicResource Muzzle.Color.*}` (including on `GradientStop.Color`) and they follow the theme. Values read once in code (`TryFindResource`) won't; use `SetResourceReference`, or refresh on `ThemeChanged`.
 - **Starting in dark**: call `MuzzleThemeManager.ApplyTheme(MuzzleTheme.System)` in `App.OnStartup`, or merge `Muzzle.Dark.xaml` after `Muzzle.xaml` in App.xaml. That top-level slot is the one the manager swaps.
 
+## Localisation
+
+Every piece of text the theme shows on its own (tooltips, placeholders, screen-reader names, button captions, validation messages) is a `Muzzle.String.*` resource in [Themes/Tokens/Strings.xaml](../src/Muzzle.Theme/Themes/Tokens/Strings.xaml), read with `DynamicResource`. To translate or reword one, declare the same key in your application's resources, after the Muzzle dictionary:
+
+```xml
+<Application.Resources>
+    <ResourceDictionary xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+        <ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary Source="pack://application:,,,/Muzzle.Theme;component/Themes/Muzzle.xaml" />
+            <ResourceDictionary Source="Strings.de.xaml" />   <!-- your translations, any number of keys -->
+        </ResourceDictionary.MergedDictionaries>
+        <sys:String x:Key="Muzzle.String.Window.Close">Schließen</sys:String>
+    </ResourceDictionary>
+</Application.Resources>
+```
+
+- Keys are grouped by control: `Window.*`, `SearchBar.*`, `Pagination.*`, `PropertyGrid.*`, `MessageBox.*`, `Growl.*`, `PasswordStrength.*`, `ColorPicker.*`, `CodeBlock.*`, `Carousel.*`, `ImageViewer.*`, `Calendar.*`, `DatePicker.*`, `TimePicker.*`, `TagInput.*`, `CommandPalette.*` and so on. A key you leave out keeps its English text.
+- Swapping the dictionary at runtime updates templates that are already on screen.
+- `MuzzleStrings.Get("Window.Close")` reads a string from code, overrides included. `GrowlInfo.ConfirmText` / `CancelText`, the `PasswordStrengthMeter` labels and the `PropertyGrid` validation messages come from the same resources. `Muzzle.String.PropertyGrid.OutOfRange` is a format string with `{0}` and `{1}` for the bounds.
+- The package ships English only.
+
 ## Accent colours
 
 Accents sit on top of either base theme and switch independently of it: changing Light ↔ Dark keeps the accent, and changing the accent keeps the theme. **Coral** (toe-bean blush) is the default and reproduces the original palette exactly, so existing apps look the same.
@@ -460,6 +529,11 @@ MuzzleThemeManager.AccentChanged += (_, e) => Debug.WriteLine(e.Accent);
   - `PrimaryText` is a deeper (light theme) or lighter (dark theme) shade for readable text.
   - `OnPrimary` is chosen by luminance: dark text on light accents, white on deep ones.
   - Secondary and tertiary come from the preset whose supporting hues sit furthest from the colour.
+- **Custom base palette**: `MuzzleThemeManager.ApplyCustomPalette(canvas, text, accent)` fits the theme to your own page colours, for example a sepia or dimmed reading profile.
+  - The surface, border, track, hover, scrollbar, tooltip and text tokens are re-derived: each keeps its place between the stock canvas and text colours, moved onto the line between yours. Accent, status and decorative colours stay as they are.
+  - The Light or Dark base (shadows, accent variant) follows from which of the two colours is lighter. The optional third argument is passed to `ApplyCustomAccent`.
+  - It stays in effect across accent changes. `ClearCustomPalette()` or any `ApplyTheme` call ends it. `CustomPaletteCanvas` / `CustomPaletteText` report it, and `ThemeChanged` is raised.
+  - It is one top-level dictionary swap per call, so it can follow a slider. `CreateCustomPaletteDictionary(canvas, text)` returns the dictionary on its own.
 - **Regenerating**: `tools/Generate-Palettes.ps1` writes both base palettes and all eight accent files from one token table. Edit the table there, not the generated XAML.
 
 ## Tests
@@ -468,7 +542,7 @@ MuzzleThemeManager.AccentChanged += (_, e) => Debug.WriteLine(e.Accent);
 dotnet test tests/Muzzle.Theme.Tests
 ```
 
-`Muzzle.Theme.Tests` is an xUnit suite (with `Xunit.StaFact`) that runs on both net9.0-windows and net10.0-windows: 234 tests each, about 25 s.
+`Muzzle.Theme.Tests` is an xUnit suite (with `Xunit.StaFact`) that runs on net10.0-windows: 234 tests, about 25 s.
 
 - **`MuzzleWpfTestFixture`** (a collection fixture shared by every WPF test):
   - It starts one `Application` on a dedicated STA thread, or adopts an existing one, and merges `Themes/Muzzle.xaml` exactly as an app does.

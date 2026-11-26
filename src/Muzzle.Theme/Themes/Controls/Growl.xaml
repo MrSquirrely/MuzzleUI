@@ -91,8 +91,8 @@
                                     VerticalAlignment="Top"
                                     Style="{DynamicResource Muzzle.Button.Icon}"
                                     mz:MuzzleAssist.CornerRadius="14"
-                                    ToolTip="Dismiss"
-                                    AutomationProperties.Name="Dismiss notification">
+                                    ToolTip="{DynamicResource Muzzle.String.Growl.Dismiss}"
+                                    AutomationProperties.Name="{DynamicResource Muzzle.String.Growl.DismissNotification}">
                                 <Path Width="10" Height="10" Data="M 1,1 L 9,9 M 9,1 L 1,9"
                                       Stroke="{DynamicResource Muzzle.Brush.TextSecondary}"
                                       StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />

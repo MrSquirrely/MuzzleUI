@@ -76,6 +76,13 @@ public partial class OverlaysPage : UserControl {
         }
     }
 
+    private void OnMessageBox(object sender, RoutedEventArgs e) {
+        MessageBoxResult result = Theme.Controls.MessageBox.Show(
+            Window.GetWindow(this), "Biscuit knocked a glass off the table. Save your changes before cleaning up?", "Unsaved changes",
+            MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+        Growl.Info($"MessageBox returned {result}.");
+    }
+
     private void OnLightDialog(object sender, RoutedEventArgs e) {
         StackPanel body = new() { Width = 320 };
         body.Children.Add(new TextBlock { Text = "Just a little note", Style = (Style)FindResource("Muzzle.Text.Title") });

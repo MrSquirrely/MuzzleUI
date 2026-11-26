@@ -1,6 +1,6 @@
 <!--
     DropDownButton / SplitButton: Muzzle buttons with a chevron pill and a springy menu card.
-    Muzzle.MenuItem: a flat rounded menu row (icon, header, gesture text) for drop-downs, tray menus and context cards.
+    The menu rows use Muzzle.MenuItem and Muzzle.MenuSeparator from Menu.xaml.
 -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -11,74 +11,8 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Animations/JellyEasings.xaml" />
         <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Controls/Button.xaml" />
+        <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Controls/Menu.xaml" />
     </ResourceDictionary.MergedDictionaries>
-
-    <Style x:Key="Muzzle.MenuItem" TargetType="{x:Type MenuItem}">
-        <!-- A flat menu row with its own template: skip the stock theme style (and its ItemsControl-ancestor bindings). -->
-        <Setter Property="OverridesDefaultStyle" Value="True" />
-        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Padding" Value="10,7" />
-        <Setter Property="MinWidth" Value="180" />
-        <Setter Property="FontSize" Value="13.5" />
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-        <!-- Set here so the stock theme's ItemsControl-ancestor bindings never run (menus may live in a plain panel). -->
-        <Setter Property="HorizontalContentAlignment" Value="Left" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type MenuItem}">
-                    <Border x:Name="Row" Padding="{TemplateBinding Padding}" CornerRadius="8" Background="{TemplateBinding Background}"
-                            mz:JellyBehavior.EnablePressSquish="True" mz:JellyBehavior.PressSquishScale="0.97">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="26" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <ContentPresenter x:Name="IconHost" VerticalAlignment="Center" HorizontalAlignment="Left" ContentSource="Icon"
-                                              TextElement.Foreground="{DynamicResource Muzzle.Brush.TextSecondary}" />
-                            <mzc:MuzzleIcon x:Name="CheckMark" Kind="Check" IconSize="15" HorizontalAlignment="Left" Visibility="Collapsed"
-                                            Foreground="{DynamicResource Muzzle.Brush.PrimaryText}" />
-                            <ContentPresenter Grid.Column="1" VerticalAlignment="Center" ContentSource="Header" RecognizesAccessKey="True" />
-                            <TextBlock Grid.Column="2" Margin="18,0,0,0" VerticalAlignment="Center" FontSize="12"
-                                       Text="{TemplateBinding InputGestureText}" Foreground="{DynamicResource Muzzle.Brush.TextTertiary}" />
-                        </Grid>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Row" Property="Background" Value="{DynamicResource Muzzle.Brush.PrimarySoft}" />
-                            <Setter TargetName="IconHost" Property="TextElement.Foreground" Value="{DynamicResource Muzzle.Brush.PrimaryText}" />
-                        </Trigger>
-                        <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter TargetName="Row" Property="Background" Value="{DynamicResource Muzzle.Brush.PrimarySoft}" />
-                        </Trigger>
-                        <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="CheckMark" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="IconHost" Property="Visibility" Value="Collapsed" />
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Opacity" Value="0.45" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style x:Key="Muzzle.MenuSeparator" TargetType="{x:Type Separator}">
-        <Setter Property="OverridesDefaultStyle" Value="True" />
-        <Setter Property="Margin" Value="6,4" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Separator}">
-                    <Border Height="1" Background="{DynamicResource Muzzle.Brush.SurfaceBorder}" />
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
 
     <Style x:Key="Muzzle.DropDownButton" TargetType="{x:Type mzc:DropDownButton}">
         <Setter Property="SegmentStyle" Value="{StaticResource Muzzle.Button}" />
@@ -167,7 +101,7 @@
                                     Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" />
                             <Button x:Name="PART_ToggleButton" Margin="2,0,0,0" Padding="9,8" Style="{TemplateBinding SegmentStyle}"
                                     mz:MuzzleAssist.CornerRadius="4,10,10,4" mz:MuzzleAssist.Jelly="All"
-                                    ToolTip="More options" AutomationProperties.Name="More options">
+                                    ToolTip="{DynamicResource Muzzle.String.SplitButton.MoreOptions}" AutomationProperties.Name="{DynamicResource Muzzle.String.SplitButton.MoreOptions}">
                                 <mzc:MuzzleIcon x:Name="Chevron" Kind="ChevronDown" IconSize="14" StrokeThickness="2.2" RenderTransformOrigin="0.5,0.5">
                                     <mzc:MuzzleIcon.RenderTransform>
                                         <RotateTransform />

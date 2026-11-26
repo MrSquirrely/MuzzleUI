@@ -4,7 +4,7 @@ This file is for AI coding agents (Claude Code, Codex, Copilot and others) and f
 
 ## What this is
 
-**Muzzle.Theme** is a WPF theme and control library: pastel, rounded, with "jelly" spring animations. It is published to NuGet as `Muzzle.Theme` and targets `net9.0-windows` and `net10.0-windows`. It runs on Windows only. The XAML namespace is `http://schemas.muzzle.dev/wpf` (prefix `mz`), and the C# namespaces are `Muzzle.Theme`, `Muzzle.Theme.Controls` and so on.
+**Muzzle.Theme** is a WPF theme and control library: pastel, rounded, with "jelly" spring animations. It is published to NuGet as `Muzzle.Theme` and targets `net10.0-windows`. It runs on Windows only. The XAML namespace is `http://schemas.muzzle.dev/wpf` (prefix `mz`), and the C# namespaces are `Muzzle.Theme`, `Muzzle.Theme.Controls` and so on.
 
 | Path | Role |
 |---|---|
@@ -37,6 +37,7 @@ This file is for AI coding agents (Claude Code, Codex, Copilot and others) and f
 3. **Activate the policy within 7 days.** A new policy may start out "temporarily active" for 7 days. The first successful publish makes it permanent, and you can restart the window from nuget.org if it lapses.
 
 If the workflow file is renamed, the policy must be updated to match.
+- **`dotnet pack` checks for API breaks.** `PackageValidationBaselineVersion` in the `.csproj` names the last published version, and pack fails if the public API breaks against it. After each release, set it to the version just published. For an intentional break, bump the major version and regenerate the suppression file with `/p:ApiCompatGenerateSuppressionFile=true`.
 - **Never force-push** `main` or `dev`, and never skip hooks.
 
 ## Commands
@@ -44,7 +45,7 @@ If the workflow file is renamed, the policy must be updated to match.
 ```powershell
 dotnet build Muzzle.slnx                                   # Debug, all projects
 dotnet build src/Muzzle.Theme -c Release                   # must report 0 warnings
-dotnet test tests/Muzzle.Theme.Tests                       # 234 tests × 2 frameworks, about 25 s each
+dotnet test tests/Muzzle.Theme.Tests                       # 268 tests, about 25 s
 dotnet pack src/Muzzle.Theme -c Release -o artifacts       # .nupkg + .snupkg, must report 0 warnings
 dotnet run --project src/Muzzle.Gallery                    # interactive demo
 src/Muzzle.Gallery/bin/Debug/net10.0-windows/Muzzle.Gallery.exe --snapshot <dir>   # renders every page to PNG
@@ -58,8 +59,8 @@ src/Muzzle.Gallery/bin/Debug/net10.0-windows/Muzzle.Gallery.exe --snapshot <dir>
 
 ## Definition of done
 
-1. `dotnet build src/Muzzle.Theme -c Release` reports **0 warnings** on both frameworks. The build generates XML docs, so every public or protected member needs a doc comment (CS1591 would fail this).
-2. `dotnet test tests/Muzzle.Theme.Tests` passes on both frameworks, and new behaviour has a test.
+1. `dotnet build src/Muzzle.Theme -c Release` reports **0 warnings**. The build generates XML docs, so every public or protected member needs a doc comment (CS1591 would fail this).
+2. `dotnet test tests/Muzzle.Theme.Tests` passes, and new behaviour has a test.
 3. For any template or visual change, the gallery runs and its snapshot shows no binding errors.
 4. For any new control, every step in [Adding a control](#adding-a-control) is done.
 5. Files are normalised (next section).

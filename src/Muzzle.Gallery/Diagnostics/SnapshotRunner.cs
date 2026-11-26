@@ -248,6 +248,18 @@ internal static class SnapshotRunner {
         Theme.Controls.Growl.ClearGlobal();
         await Task.Delay(700);
         log.WriteLine("growl: desktop window shown and cleared");
+
+        // MessageBox: shown without blocking so it can be captured; a click on Cancel closes it.
+        Theme.Controls.MessageBoxWindow box = new(
+            "Biscuit knocked a glass off the table. Save your changes before cleaning up?", "Unsaved changes",
+            MessageBoxButton.YesNoCancel, MessageBoxImage.Question) { Owner = window, WindowStartupLocation = WindowStartupLocation.CenterOwner };
+        box.Show();
+        await Task.Delay(700);
+        Save(box, Path.Combine(directory, "messagebox.png"));
+        Button? cancelButton = FindFirst<Button>(box, static b => b.IsCancel);
+        cancelButton?.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+        await Task.Delay(300);
+        log.WriteLine($"messagebox: {box.ActualWidth:0}x{box.ActualHeight:0}, cancel -> result {box.Result} (expect Cancel), visible {box.IsVisible} (expect False)");
         await ExerciseNavigationAsync(window, directory, log);
     }
 
@@ -671,6 +683,20 @@ internal static class SnapshotRunner {
         log.WriteLine($"accent: custom after Light {Theme.MuzzleThemeManager.CurrentAccent} primary {Resolve("Muzzle.Color.Primary")} (expect Custom #FF5FA8D3), soft {Resolve("Muzzle.Color.PrimarySoft")}, text {Resolve("Muzzle.Color.PrimaryText")}");
         Save(window, Path.Combine(directory, "accent-Light-Custom.png"));
 
+        // Custom base palette: a sepia reading profile, then a dim one that flips to the Dark base.
+        Theme.MuzzleThemeManager.ApplyAccent(Theme.MuzzleAccent.Coral);
+        Theme.MuzzleThemeManager.ApplyCustomPalette(Color.FromRgb(0xF4, 0xEC, 0xD8), Color.FromRgb(0x5B, 0x46, 0x36));
+        await Task.Delay(500);
+        log.WriteLine($"palette: sepia canvas {Resolve("Muzzle.Color.Canvas")} (expect #FFF4ECD8), text {Resolve("Muzzle.Color.TextPrimary")} (expect #FF5B4636), surface {Resolve("Muzzle.Color.Surface")}, border {Resolve("Muzzle.Color.ControlBorder")}, theme {Theme.MuzzleThemeManager.EffectiveTheme} (expect Light)");
+        Save(window, Path.Combine(directory, "palette-sepia.png"));
+        Theme.MuzzleThemeManager.ApplyCustomPalette(Color.FromRgb(0x14, 0x1A, 0x1F), Color.FromRgb(0xC9, 0xD3, 0xDC));
+        await Task.Delay(500);
+        log.WriteLine($"palette: dim canvas {Resolve("Muzzle.Color.Canvas")} (expect #FF141A1F), surface {Resolve("Muzzle.Color.Surface")}, theme {Theme.MuzzleThemeManager.EffectiveTheme} (expect Dark)");
+        Save(window, Path.Combine(directory, "palette-dim.png"));
+        Theme.MuzzleThemeManager.ApplyTheme(Theme.MuzzleTheme.Light);
+        await Task.Delay(400);
+        log.WriteLine($"palette: cleared by ApplyTheme -> canvas {Resolve("Muzzle.Color.Canvas")} (expect #FFFAF8F6), custom {Theme.MuzzleThemeManager.CustomPaletteCanvas?.ToString() ?? "none"} (expect none)");
+
         // Back to the defaults for the passes that follow.
         Theme.MuzzleThemeManager.ApplyAccent(Theme.MuzzleAccent.Coral);
         await Task.Delay(400);
@@ -799,6 +825,29 @@ internal static class SnapshotRunner {
             log.WriteLine("splitbutton: real-click check skipped");
         }
         split.Close();
+
+        // Menu: a real click drops the File menu; its Export row opens a nested submenu to the side.
+        MenuItem fileMenu = (MenuItem)page.FindName("DemoFileMenu");
+        MenuItem exportMenu = (MenuItem)page.FindName("DemoExportMenu");
+        // Scroll the whole card in, so the menus drop inside the window that the screen capture covers.
+        (((FrameworkElement)page.FindName("DemoMenu")).Parent as FrameworkElement)?.BringIntoView();
+        await Task.Delay(500);
+        if (await RealClickAsync(window, fileMenu)) {
+            await Task.Delay(700);
+            log.WriteLine($"menu: real click on File -> open {fileMenu.IsSubmenuOpen} (expect True), role {fileMenu.Role} (expect TopLevelHeader)");
+            exportMenu.IsSubmenuOpen = true;
+            await Task.Delay(700);
+            log.WriteLine($"menu: Export submenu -> open {exportMenu.IsSubmenuOpen} (expect True), role {exportMenu.Role} (expect SubmenuHeader)");
+            SaveScreen(window, Path.Combine(directory, "menu-open.png"));
+            exportMenu.IsSubmenuOpen = false;
+            bool menuEscaped = await RealKeysAsync(window, 0x1B);
+            await Task.Delay(400);
+            log.WriteLine($"menu: real Esc ({(menuEscaped ? "sent" : "skipped")}) -> open {fileMenu.IsSubmenuOpen} (expect False)");
+        }
+        else {
+            log.WriteLine("menu: real-click check skipped");
+        }
+        fileMenu.IsSubmenuOpen = false;
 
         // Range slider coercion and the password meter.
         Theme.Controls.RangeSlider range = (Theme.Controls.RangeSlider)page.FindName("PriceRange");

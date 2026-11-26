@@ -21,4 +21,10 @@ public partial class PropertyGridPage : UserControl {
         Inspector.SearchText = string.Empty;
         Inspector.SelectedObject = InspectButton.IsChecked == true ? PreviewButton : model;
     }
+
+    private void OnSortChanged(object sender, RoutedEventArgs e) {
+        if (Inspector is not null) {
+            Inspector.SortMode = DeclaredSwitch.IsChecked == true ? Theme.Controls.PropertyGridSortMode.Declared : Theme.Controls.PropertyGridSortMode.Alphabetical;
+        }
+    }
 }

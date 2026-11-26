@@ -15,6 +15,9 @@ namespace Muzzle.Theme.Controls;
 /// A reflection-based inspector. Set <see cref="SelectedObject"/> and every public, writable, [Browsable] property
 /// is grouped by [Category] and given a Muzzle-styled editor; [DisplayName] and [Description] are honoured, and
 /// System.ComponentModel.DataAnnotations.[Range] turns numeric editors into sliders.
+/// <see cref="SortMode"/> keeps a declared order, <see cref="ShowHeader"/> and <see cref="ShowTypeNames"/> trim the
+/// inspector chrome for an end-user settings pane, and <see cref="RowTemplate"/>, <see cref="CategoryTemplate"/>
+/// and <see cref="EditorTemplateSelector"/> replace parts of it.
 /// </summary>
 public class PropertyGrid : Control {
     private const string MiscCategory = "Misc";
@@ -46,6 +49,78 @@ public class PropertyGrid : Control {
         typeof(bool),
         typeof(PropertyGrid),
         new PropertyMetadata(true));
+
+    /// <summary>Identifies the <see cref="ShowHeader"/> dependency property.</summary>
+    public static readonly DependencyProperty ShowHeaderProperty = DependencyProperty.Register(
+        nameof(ShowHeader),
+        typeof(bool),
+        typeof(PropertyGrid),
+        new PropertyMetadata(true));
+
+    /// <summary>Identifies the <see cref="ShowTypeNames"/> dependency property.</summary>
+    public static readonly DependencyProperty ShowTypeNamesProperty = DependencyProperty.Register(
+        nameof(ShowTypeNames),
+        typeof(bool),
+        typeof(PropertyGrid),
+        new PropertyMetadata(true));
+
+    /// <summary>Identifies the <see cref="ShowResetButtons"/> dependency property.</summary>
+    public static readonly DependencyProperty ShowResetButtonsProperty = DependencyProperty.Register(
+        nameof(ShowResetButtons),
+        typeof(bool),
+        typeof(PropertyGrid),
+        new PropertyMetadata(false));
+
+    /// <summary>Identifies the <see cref="SortMode"/> dependency property.</summary>
+    public static readonly DependencyProperty SortModeProperty = DependencyProperty.Register(
+        nameof(SortMode),
+        typeof(PropertyGridSortMode),
+        typeof(PropertyGrid),
+        new PropertyMetadata(PropertyGridSortMode.Alphabetical, OnSelectedObjectChanged));
+
+    /// <summary>Identifies the <see cref="LabelWidth"/> dependency property.</summary>
+    public static readonly DependencyProperty LabelWidthProperty = DependencyProperty.Register(
+        nameof(LabelWidth),
+        typeof(GridLength),
+        typeof(PropertyGrid),
+        new PropertyMetadata(new GridLength(2, GridUnitType.Star)));
+
+    /// <summary>Identifies the <see cref="MinLabelWidth"/> dependency property.</summary>
+    public static readonly DependencyProperty MinLabelWidthProperty = DependencyProperty.Register(
+        nameof(MinLabelWidth),
+        typeof(double),
+        typeof(PropertyGrid),
+        new PropertyMetadata(90.0),
+        static value => value is double width && double.IsFinite(width) && (width >= 0));
+
+    /// <summary>Identifies the <see cref="MaxLabelWidth"/> dependency property.</summary>
+    public static readonly DependencyProperty MaxLabelWidthProperty = DependencyProperty.Register(
+        nameof(MaxLabelWidth),
+        typeof(double),
+        typeof(PropertyGrid),
+        new PropertyMetadata(double.PositiveInfinity),
+        static value => value is double width && !double.IsNaN(width) && (width >= 0));
+
+    /// <summary>Identifies the <see cref="RowTemplate"/> dependency property.</summary>
+    public static readonly DependencyProperty RowTemplateProperty = DependencyProperty.Register(
+        nameof(RowTemplate),
+        typeof(DataTemplate),
+        typeof(PropertyGrid),
+        new PropertyMetadata(null));
+
+    /// <summary>Identifies the <see cref="CategoryTemplate"/> dependency property.</summary>
+    public static readonly DependencyProperty CategoryTemplateProperty = DependencyProperty.Register(
+        nameof(CategoryTemplate),
+        typeof(DataTemplate),
+        typeof(PropertyGrid),
+        new PropertyMetadata(null));
+
+    /// <summary>Identifies the <see cref="EditorTemplateSelector"/> dependency property.</summary>
+    public static readonly DependencyProperty EditorTemplateSelectorProperty = DependencyProperty.Register(
+        nameof(EditorTemplateSelector),
+        typeof(DataTemplateSelector),
+        typeof(PropertyGrid),
+        new PropertyMetadata(null, OnSelectedObjectChanged));
 
     /// <summary>Identifies the <see cref="SearchText"/> dependency property.</summary>
     public static readonly DependencyProperty SearchTextProperty = DependencyProperty.Register(
@@ -135,6 +210,87 @@ public class PropertyGrid : Control {
         set => SetValue(ShowDescriptionProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets whether the header (the overline, the type name and the property count) is shown.
+    /// The default is <see langword="true"/>. This is a dependency property.
+    /// </summary>
+    public bool ShowHeader {
+        get => (bool)GetValue(ShowHeaderProperty);
+        set => SetValue(ShowHeaderProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets whether CLR type names are shown (the selected object's in the header, the selected property's
+    /// in the description panel). The default is <see langword="true"/>. This is a dependency property.
+    /// </summary>
+    public bool ShowTypeNames {
+        get => (bool)GetValue(ShowTypeNamesProperty);
+        set => SetValue(ShowTypeNamesProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets whether each row ends in a reset button that restores the property's default value and is
+    /// disabled while the value is the default. The default is <see langword="false"/>. This is a dependency property.
+    /// </summary>
+    public bool ShowResetButtons {
+        get => (bool)GetValue(ShowResetButtonsProperty);
+        set => SetValue(ShowResetButtonsProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets how properties and categories are ordered. The default is
+    /// <see cref="PropertyGridSortMode.Alphabetical"/>. This is a dependency property.
+    /// </summary>
+    public PropertyGridSortMode SortMode {
+        get => (PropertyGridSortMode)GetValue(SortModeProperty);
+        set => SetValue(SortModeProperty, value);
+    }
+
+    /// <summary>Gets or sets the width of the label column. The default is <c>2*</c> (against <c>3*</c> for the editor). This is a dependency property.</summary>
+    public GridLength LabelWidth {
+        get => (GridLength)GetValue(LabelWidthProperty);
+        set => SetValue(LabelWidthProperty, value);
+    }
+
+    /// <summary>Gets or sets the smallest width of the label column. The default is 90. This is a dependency property.</summary>
+    public double MinLabelWidth {
+        get => (double)GetValue(MinLabelWidthProperty);
+        set => SetValue(MinLabelWidthProperty, value);
+    }
+
+    /// <summary>Gets or sets the largest width of the label column. The default is <see cref="double.PositiveInfinity"/>. This is a dependency property.</summary>
+    public double MaxLabelWidth {
+        get => (double)GetValue(MaxLabelWidthProperty);
+        set => SetValue(MaxLabelWidthProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the template for one property row (its data context is a <see cref="PropertyItem"/>).
+    /// The default is the theme's <c>Muzzle.PropertyGrid.RowTemplate</c>. This is a dependency property.
+    /// </summary>
+    public DataTemplate? RowTemplate {
+        get => (DataTemplate?)GetValue(RowTemplateProperty);
+        set => SetValue(RowTemplateProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the template for one category (its data context is a <see cref="PropertyCategory"/>).
+    /// The default is the theme's <c>Muzzle.PropertyGrid.CategoryTemplate</c>. This is a dependency property.
+    /// </summary>
+    public DataTemplate? CategoryTemplate {
+        get => (DataTemplate?)GetValue(CategoryTemplateProperty);
+        set => SetValue(CategoryTemplateProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a selector asked for each property's editor template before the built-in editors; return
+    /// <see langword="null"/> from it to keep the built-in editor. The default is <see langword="null"/>. This is a dependency property.
+    /// </summary>
+    public DataTemplateSelector? EditorTemplateSelector {
+        get => (DataTemplateSelector?)GetValue(EditorTemplateSelectorProperty);
+        set => SetValue(EditorTemplateSelectorProperty, value);
+    }
+
     /// <summary>Gets or sets the search text. The default is an empty string. This is a dependency property.</summary>
     public string SearchText {
         get => (string)GetValue(SearchTextProperty);
@@ -215,7 +371,12 @@ public class PropertyGrid : Control {
             }
             items.Add(new PropertyItem(target, descriptor));
         }
-        items.Sort(static (left, right) => string.Compare(left.DisplayName, right.DisplayName, StringComparison.CurrentCultureIgnoreCase));
+        bool declared = SortMode == PropertyGridSortMode.Declared;
+        // OrderBy is stable, so properties without an explicit order keep the order the type declares them in.
+        // 10000 is where DataAnnotations places a property that has no [Display(Order)].
+        items = declared
+            ? [.. items.OrderBy(static item => item.Order ?? 10000)]
+            : [.. items.OrderBy(static item => item.DisplayName, StringComparer.CurrentCultureIgnoreCase)];
         foreach (PropertyItem item in items) {
             Properties.Add(item);
             if (IsLoaded) {
@@ -223,10 +384,13 @@ public class PropertyGrid : Control {
             }
         }
 
-        IEnumerable<IGrouping<string, PropertyItem>> groups = items
-            .GroupBy(static item => item.Category)
-            .OrderBy(static group => group.Key == MiscCategory ? 1 : 0)
-            .ThenBy(static group => group.Key, StringComparer.CurrentCultureIgnoreCase);
+        // GroupBy yields groups in order of first appearance, which is the declared order of categories.
+        IEnumerable<IGrouping<string, PropertyItem>> groups = items.GroupBy(static item => item.Category);
+        if (!declared) {
+            groups = groups
+                .OrderBy(static group => group.Key == MiscCategory ? 1 : 0)
+                .ThenBy(static group => group.Key, StringComparer.CurrentCultureIgnoreCase);
+        }
         foreach (IGrouping<string, PropertyItem> group in groups) {
             Categories.Add(new PropertyCategory(group.Key, group));
         }

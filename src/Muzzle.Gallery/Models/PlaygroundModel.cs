@@ -62,6 +62,7 @@ public sealed class PlaygroundModel : INotifyPropertyChanged {
     [Category("Content")]
     [DisplayName("Treats")]
     [Description("A plain integer: edit it with the spin buttons or type a number.")]
+    [DefaultValue(3)]
     public int Treats {
         get => treats;
         set => SetField(ref treats, value);
@@ -96,6 +97,8 @@ public sealed class PlaygroundModel : INotifyPropertyChanged {
     [DisplayName("Jelly intensity")]
     [Description("MuzzleAssist.JellyIntensity multiplies every squish and bounce. 0 turns motion off.")]
     [Range(0, 3)]
+    [DefaultValue(1.0)]
+    [Muzzle.Theme.Controls.PropertyStep(0.25, Format = "0.00×")]
     public double JellyIntensity {
         get => jellyIntensity;
         set => SetField(ref jellyIntensity, value);
@@ -105,6 +108,7 @@ public sealed class PlaygroundModel : INotifyPropertyChanged {
     [DisplayName("Progress")]
     [Description("Drives the preview ProgressBar, which glides to each new value.")]
     [Range(0, 100)]
+    [DefaultValue(64)]
     public int Progress {
         get => progress;
         set => SetField(ref progress, value);

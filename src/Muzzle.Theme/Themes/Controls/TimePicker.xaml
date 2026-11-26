@@ -164,11 +164,11 @@
                                 <mzc:SoftBorder Background="{DynamicResource Muzzle.Brush.Surface}" BorderBrush="{DynamicResource Muzzle.Brush.SurfaceRim}"
                                                 BorderThickness="1" CornerRadius="16" Effect="{DynamicResource Muzzle.Shadow.Floating}" />
                                 <StackPanel Margin="8" Orientation="Horizontal">
-                                    <ListBox x:Name="PART_HourList" Style="{StaticResource Muzzle.TimePicker.Column}" AutomationProperties.Name="Hour" />
+                                    <ListBox x:Name="PART_HourList" Style="{StaticResource Muzzle.TimePicker.Column}" AutomationProperties.Name="{DynamicResource Muzzle.String.TimePicker.Hour}" />
                                     <Border Width="1" Margin="2,8" Background="{DynamicResource Muzzle.Brush.SurfaceBorder}" />
-                                    <ListBox x:Name="PART_MinuteList" Style="{StaticResource Muzzle.TimePicker.Column}" AutomationProperties.Name="Minute" />
+                                    <ListBox x:Name="PART_MinuteList" Style="{StaticResource Muzzle.TimePicker.Column}" AutomationProperties.Name="{DynamicResource Muzzle.String.TimePicker.Minute}" />
                                     <Border x:Name="PeriodDivider" Width="1" Margin="2,8" Background="{DynamicResource Muzzle.Brush.SurfaceBorder}" />
-                                    <ListBox x:Name="PART_PeriodList" Style="{StaticResource Muzzle.TimePicker.Column}" AutomationProperties.Name="AM or PM" />
+                                    <ListBox x:Name="PART_PeriodList" Style="{StaticResource Muzzle.TimePicker.Column}" AutomationProperties.Name="{DynamicResource Muzzle.String.TimePicker.Period}" />
                                 </StackPanel>
                             </Grid>
                         </Popup>

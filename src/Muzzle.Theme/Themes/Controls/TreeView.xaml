@@ -177,7 +177,6 @@
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
         <Setter Property="ScrollViewer.CanContentScroll" Value="False" />
-        <Setter Property="ItemContainerStyle" Value="{StaticResource Muzzle.TreeViewItem}" />
         <Setter Property="mz:MuzzleAssist.CornerRadius" Value="0" />
         <Setter Property="Template">
             <Setter.Value>

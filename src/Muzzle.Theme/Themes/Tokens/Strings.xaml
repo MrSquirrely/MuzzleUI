@@ -1,0 +1,157 @@
+<!--
+    Every piece of text the theme shows on its own. Each key is read with DynamicResource, so an app translates or
+    rewords one by declaring the same key in its own resources, after the Muzzle dictionary:
+
+        <sys:String x:Key="Muzzle.String.PropertyGrid.Header">Einstellungen</sys:String>
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <!-- PropertyGrid -->
+    <sys:String x:Key="Muzzle.String.PropertyGrid.Header">Inspector</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.CountSuffix">props</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.Search">Search properties</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.SearchPlaceholder">Search properties…</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.NoSelection">No selection</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.Empty">Nothing to inspect yet. Set SelectedObject to begin.</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.NoMatches">No properties match your search.</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.SelectPrompt">Select a property</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.DescriptionPrompt">Its description will appear here.</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.Reset">Reset to default</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.Increase">Increase</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.Decrease">Decrease</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.ChooseColor">Choose colour</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.PickColor">Pick a pastel</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.Presets">Pastel presets</sys:String>
+
+    <!-- MessageBox: button captions, and the icon names read out by screen readers -->
+    <sys:String x:Key="Muzzle.String.MessageBox.OK">OK</sys:String>
+    <sys:String x:Key="Muzzle.String.MessageBox.Cancel">Cancel</sys:String>
+    <sys:String x:Key="Muzzle.String.MessageBox.Yes">Yes</sys:String>
+    <sys:String x:Key="Muzzle.String.MessageBox.No">No</sys:String>
+    <sys:String x:Key="Muzzle.String.MessageBox.Information">Information</sys:String>
+    <sys:String x:Key="Muzzle.String.MessageBox.Warning">Warning</sys:String>
+    <sys:String x:Key="Muzzle.String.MessageBox.Error">Error</sys:String>
+    <sys:String x:Key="Muzzle.String.MessageBox.Question">Question</sys:String>
+
+    <!-- Calendar -->
+    <sys:String x:Key="Muzzle.String.Calendar.Next">Next</sys:String>
+    <sys:String x:Key="Muzzle.String.Calendar.Previous">Previous</sys:String>
+
+    <!-- Carousel -->
+    <sys:String x:Key="Muzzle.String.Carousel.Next">Next</sys:String>
+    <sys:String x:Key="Muzzle.String.Carousel.Previous">Previous</sys:String>
+
+    <!-- CodeBlock -->
+    <sys:String x:Key="Muzzle.String.CodeBlock.Copied">Copied!</sys:String>
+    <sys:String x:Key="Muzzle.String.CodeBlock.Copy">Copy</sys:String>
+    <sys:String x:Key="Muzzle.String.CodeBlock.CopyCode">Copy code</sys:String>
+    <sys:String x:Key="Muzzle.String.CodeBlock.CopyToClipboard">Copy to clipboard</sys:String>
+
+    <!-- ColorPicker -->
+    <sys:String x:Key="Muzzle.String.ColorPicker.Blue">Blue</sys:String>
+    <sys:String x:Key="Muzzle.String.ColorPicker.Green">Green</sys:String>
+    <sys:String x:Key="Muzzle.String.ColorPicker.Hex">Hex</sys:String>
+    <sys:String x:Key="Muzzle.String.ColorPicker.HexColor">Hex colour</sys:String>
+    <sys:String x:Key="Muzzle.String.ColorPicker.Hue">Hue</sys:String>
+    <sys:String x:Key="Muzzle.String.ColorPicker.Opacity">Opacity</sys:String>
+    <sys:String x:Key="Muzzle.String.ColorPicker.Presets">Pastels</sys:String>
+    <sys:String x:Key="Muzzle.String.ColorPicker.Red">Red</sys:String>
+    <sys:String x:Key="Muzzle.String.ColorPicker.SaturationBrightness">Saturation and brightness</sys:String>
+
+    <!-- CommandPalette -->
+    <sys:String x:Key="Muzzle.String.CommandPalette.NoMatches">No matches</sys:String>
+    <sys:String x:Key="Muzzle.String.CommandPalette.NoMatchesHint">Try fewer letters, or another word.</sys:String>
+    <sys:String x:Key="Muzzle.String.CommandPalette.Search">Search commands</sys:String>
+    <sys:String x:Key="Muzzle.String.CommandPalette.ToClose">to close</sys:String>
+    <sys:String x:Key="Muzzle.String.CommandPalette.ToNavigate">to navigate</sys:String>
+    <sys:String x:Key="Muzzle.String.CommandPalette.ToRun">to run</sys:String>
+
+    <!-- DatePicker -->
+    <sys:String x:Key="Muzzle.String.DatePicker.OpenCalendar">Open calendar</sys:String>
+
+    <!-- Dialog -->
+    <sys:String x:Key="Muzzle.String.Dialog.Name">Dialog</sys:String>
+
+    <!-- Drawer -->
+    <sys:String x:Key="Muzzle.String.Drawer.Close">Close</sys:String>
+    <sys:String x:Key="Muzzle.String.Drawer.CloseDrawer">Close drawer</sys:String>
+
+    <!-- Growl -->
+    <sys:String x:Key="Muzzle.String.Growl.Dismiss">Dismiss</sys:String>
+    <sys:String x:Key="Muzzle.String.Growl.DismissNotification">Dismiss notification</sys:String>
+    <sys:String x:Key="Muzzle.String.Growl.No">No</sys:String>
+    <sys:String x:Key="Muzzle.String.Growl.Yes">Yes</sys:String>
+
+    <!-- ImageViewer -->
+    <sys:String x:Key="Muzzle.String.ImageViewer.ResetZoom">Reset zoom</sys:String>
+    <sys:String x:Key="Muzzle.String.ImageViewer.ResetZoomTip">Reset to 100% (double-click)</sys:String>
+    <sys:String x:Key="Muzzle.String.ImageViewer.ZoomIn">Zoom in</sys:String>
+    <sys:String x:Key="Muzzle.String.ImageViewer.ZoomOut">Zoom out</sys:String>
+
+    <!-- InfoBar -->
+    <sys:String x:Key="Muzzle.String.InfoBar.Dismiss">Dismiss</sys:String>
+
+    <!-- NavigationView -->
+    <sys:String x:Key="Muzzle.String.NavigationView.TogglePane">Toggle navigation pane</sys:String>
+
+    <!-- NumericUpDown -->
+    <sys:String x:Key="Muzzle.String.NumericUpDown.Decrease">Decrease</sys:String>
+    <sys:String x:Key="Muzzle.String.NumericUpDown.Increase">Increase</sys:String>
+
+    <!-- Pagination -->
+    <sys:String x:Key="Muzzle.String.Pagination.First">First page</sys:String>
+    <sys:String x:Key="Muzzle.String.Pagination.Go">Go</sys:String>
+    <sys:String x:Key="Muzzle.String.Pagination.GoTo">Go to</sys:String>
+    <sys:String x:Key="Muzzle.String.Pagination.Last">Last page</sys:String>
+    <sys:String x:Key="Muzzle.String.Pagination.Next">Next page</sys:String>
+    <sys:String x:Key="Muzzle.String.Pagination.PageNumber">Page number to jump to</sys:String>
+    <sys:String x:Key="Muzzle.String.Pagination.Previous">Previous page</sys:String>
+
+    <!-- PasswordStrength -->
+    <sys:String x:Key="Muzzle.String.PasswordStrength.Empty">Enter a password</sys:String>
+    <sys:String x:Key="Muzzle.String.PasswordStrength.Fair">Fair</sys:String>
+    <sys:String x:Key="Muzzle.String.PasswordStrength.Good">Good</sys:String>
+    <sys:String x:Key="Muzzle.String.PasswordStrength.Strong">Strong</sys:String>
+    <sys:String x:Key="Muzzle.String.PasswordStrength.TooWeak">Too weak</sys:String>
+    <sys:String x:Key="Muzzle.String.PasswordStrength.Weak">Weak</sys:String>
+
+    <!-- PropertyGrid -->
+    <sys:String x:Key="Muzzle.String.PropertyGrid.InvalidColor">Enter a hex colour such as #F497A9.</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.InvalidValue">That value doesn&apos;t fit here.</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.OutOfRange">Keep it between {0} and {1}.</sys:String>
+
+    <!-- RangeSlider -->
+    <sys:String x:Key="Muzzle.String.RangeSlider.Lower">Lower value</sys:String>
+    <sys:String x:Key="Muzzle.String.RangeSlider.Upper">Upper value</sys:String>
+
+    <!-- Rating -->
+    <sys:String x:Key="Muzzle.String.Rating.Name">Rating</sys:String>
+
+    <!-- SearchBar -->
+    <sys:String x:Key="Muzzle.String.SearchBar.Clear">Clear</sys:String>
+    <sys:String x:Key="Muzzle.String.SearchBar.ClearSearch">Clear search</sys:String>
+    <sys:String x:Key="Muzzle.String.SearchBar.Placeholder">Search…</sys:String>
+    <sys:String x:Key="Muzzle.String.SearchBar.Suggestions">Suggestions</sys:String>
+
+    <!-- SplitButton -->
+    <sys:String x:Key="Muzzle.String.SplitButton.MoreOptions">More options</sys:String>
+
+    <!-- TagInput -->
+    <sys:String x:Key="Muzzle.String.TagInput.NewTag">New tag</sys:String>
+    <sys:String x:Key="Muzzle.String.TagInput.Remove">Remove</sys:String>
+    <sys:String x:Key="Muzzle.String.TagInput.RemoveTag">Remove tag</sys:String>
+
+    <!-- TimePicker -->
+    <sys:String x:Key="Muzzle.String.TimePicker.Hour">Hour</sys:String>
+    <sys:String x:Key="Muzzle.String.TimePicker.Minute">Minute</sys:String>
+    <sys:String x:Key="Muzzle.String.TimePicker.Period">AM or PM</sys:String>
+
+    <!-- Window -->
+    <sys:String x:Key="Muzzle.String.Window.Close">Close</sys:String>
+    <sys:String x:Key="Muzzle.String.Window.Maximize">Maximize</sys:String>
+    <sys:String x:Key="Muzzle.String.Window.Minimize">Minimize</sys:String>
+    <sys:String x:Key="Muzzle.String.Window.Restore">Restore</sys:String>
+
+</ResourceDictionary>

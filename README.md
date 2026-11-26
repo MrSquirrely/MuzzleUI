@@ -12,12 +12,12 @@
   <a href="https://www.nuget.org/packages/Muzzle.Theme"><img src="https://img.shields.io/nuget/v/Muzzle.Theme?color=F497A9&label=NuGet" alt="NuGet version" /></a>
   <a href="https://github.com/MrSquirrely/MuzzleUI/actions/workflows/ci.yml"><img src="https://github.com/MrSquirrely/MuzzleUI/actions/workflows/ci.yml/badge.svg?branch=dev" alt="CI" /></a>
   <a href="https://github.com/MrSquirrely/MuzzleUI/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-A896E6" alt="MIT licence" /></a>
-  <img src="https://img.shields.io/badge/.NET-9%20%7C%2010-7CCBB9" alt=".NET 9 and 10" />
+  <img src="https://img.shields.io/badge/.NET-10-7CCBB9" alt=".NET 10" />
 </p>
 
 ## Overview
 
-**Muzzle.Theme** restyles every standard WPF control and adds 50+ custom ones (toasts, dialogs, drawers, a command palette, pickers, a property grid, a carousel and more). Its look is soft, rounded and pastel. Buttons squish when pressed and spring back with an elastic overshoot, and selection pills slide and stretch. Popups bounce open, and toasts glide in.
+**Muzzle.Theme** restyles every standard WPF control and adds 40+ custom ones (toasts, dialogs, drawers, a command palette, pickers, a property grid, a carousel and more). Its look is soft, rounded and pastel. Buttons squish when pressed and spring back with an elastic overshoot, and selection pills slide and stretch. Popups bounce open, and toasts glide in.
 
 - **Light and Dark** palettes ("Pastel Twilight") with identical keys, plus a **System** mode that follows Windows.
 - **Four accents**: Coral, Lavender, Mint and Peach. You can also use any custom colour, and Muzzle derives a full ramp from it. Theme and accent switch at runtime, with an optional crossfade.
@@ -33,7 +33,7 @@
   - window-placement saving;
   - a XAML tray icon.
 
-It targets `net9.0-windows` and `net10.0-windows` and has no third-party dependencies.
+It targets `net10.0-windows` and has no third-party dependencies.
 
 ## Quick start
 
@@ -108,12 +108,15 @@ MuzzleThemeManager.ApplyTheme(MuzzleTheme.Dark);                       // instan
 MuzzleThemeManager.ApplyTheme(MuzzleTheme.System, animate: true);      // follow Windows, crossfading
 MuzzleThemeManager.ApplyAccent(MuzzleAccent.Mint, animate: true);
 MuzzleThemeManager.ApplyCustomAccent(Color.FromRgb(0x5F, 0xA8, 0xD3)); // a full ramp is derived
+MuzzleThemeManager.ApplyCustomPalette(sepiaCanvas, sepiaText);         // surfaces, borders and text follow your page colours
 
 MuzzleThemeManager.ThemeChanged += (_, e) => Debug.WriteLine($"{e.Theme} -> {e.EffectiveTheme}");
 MuzzleThemeManager.AccentChanged += (_, e) => Debug.WriteLine(e.Accent);
 ```
 
 Theme and accent are independent: changing one keeps the other. To let users choose, drop `<mz:ThemeToggleButton />` (it cycles Light → Dark → System) or `<mz:AccentSwatch Accent="Peach" />` anywhere. Your own resources follow the theme when you use `{DynamicResource Muzzle.Brush.*}`.
+
+Built-in text (tooltips, placeholders, button captions, screen-reader names) comes from `Muzzle.String.*` resources. Declare a key in your own resources to translate it; see [Localisation](docs/REFERENCE.md#localisation).
 
 ## Guides
 
@@ -133,7 +136,7 @@ A borderless window with rounded corners and jelly caption buttons. It supports 
 </mz:MuzzleWindow>
 ```
 
-Properties include `NonClientAreaContent`, `NonClientAreaHeight`, `NonClientAreaBackground`, `ShowTitle`, `ShowIcon`, `ShowMinimizeButton` and `ShowMaximizeButton`. The caption buttons follow `ResizeMode`.
+Properties include `NonClientAreaContent`, `NonClientAreaHeight`, `NonClientAreaBackground`, `NonClientAreaForeground`, `IsFullScreen`, `ShowTitle`, `ShowIcon`, `ShowMinimizeButton` and `ShowMaximizeButton`. The caption buttons follow `ResizeMode`.
 
 ### Growl (toasts)
 
@@ -229,7 +232,7 @@ All of these are attached properties in the `mz` namespace, so they work on any 
 | **`ClipHelper`** | `mz:ClipHelper.CornerRadius="20"` | Keeps a rounded clip in step with the element's size. On a `Border`, it clips the child inside the border and padding, so images never bleed past the corners. |
 | **`ScrollViewerAssist`** | `mz:ScrollViewerAssist.EnableSmoothScroll="True"`, `EnableShiftHorizontalScroll="True"` | Glides to the wheel target (`WheelStep`, 96 DIP) and makes Shift + wheel scroll sideways. At the ends it hands the wheel to the outer scroller. |
 | **`WindowStateSaver`** | `mz:WindowStateSaver.Key="MainWindow"` | Saves a window's bounds and maximised state to `%LOCALAPPDATA%\<app>\window-state.json` and restores them on the next run. If the saved spot is on a disconnected monitor, the window is centred instead. |
-| **`BackdropHelper`** | `mz:BackdropHelper.BackdropType="Mica"` | Windows 11 system backdrops (`Mica`, `Acrylic`, `Tabbed`) with a translucent, theme-aware canvas. On older Windows it does nothing; check `BackdropHelper.IsSupported`. |
+| **`BackdropHelper`** | `mz:BackdropHelper.BackdropType="Mica"` | Windows 11 system backdrops (`Mica`, `Acrylic`, `Tabbed`) with a translucent, theme-aware canvas. Set `mz:BackdropHelper.TintBackground="False"` to keep your own window background. On older Windows it does nothing; check `BackdropHelper.IsSupported`. |
 | `FocusTrap`, `EscapeKeyBehavior` | `mz:FocusTrap.IsEnabled="True"`, `mz:EscapeKeyBehavior.IsOpen="{Binding IsOpen}"` | Keep Tab cycling inside a panel, and close it on Esc. |
 
 From code, `Jelly.Wobble(element)` plays a "no" wobble, and `MuzzleEasings.Get(element, MuzzleEasings.JellyKey)` returns the signature spring.
@@ -243,7 +246,7 @@ Every standard control is restyled automatically. Explicit styles such as `Muzzl
 | **Buttons and toggles** | Button (`.Primary`, `.Secondary`, `.Mint`, `.Ghost`, `.Pill`, `.Icon`), ToggleButton, RepeatButton, `mz:ToggleSwitch`, CheckBox, RadioButton, `mz:SplitButton`, `mz:DropDownButton`, `mz:ThemeToggleButton`, `mz:AccentSwatch` |
 | **Text and inputs** | TextBox, PasswordBox, ComboBox, Slider, `mz:NumericUpDown`, `mz:TagInput`, `mz:SearchBar`, `mz:RangeSlider`, `mz:PasswordStrengthMeter` |
 | **Pickers** | DatePicker, Calendar, `mz:TimePicker`, `mz:ColorPicker`, `mz:ColorPickerDropDown`, `mz:Rating` |
-| **Overlays and notifications** | `mz:Growl` toasts, `mz:Dialog`, `mz:Drawer`, `mz:CommandPalette`, `mz:Popover`, ToolTip, ContextMenu and Menu |
+| **Overlays and notifications** | `mz:Growl` toasts, `mz:Dialog`, `MessageBox` (a blocking, owner-modal window), `mz:Drawer`, `mz:CommandPalette`, `mz:Popover`, ToolTip, ContextMenu and Menu |
 | **Feedback and status** | ProgressBar, `mz:LoadingSpinner`, `mz:Skeleton`, `mz:Badge`, `mz:InfoBar`, `mz:EmptyState` |
 | **Navigation and layout** | TabControl, Expander, `mz:NavigationView`, `mz:BreadcrumbBar`, `mz:Pagination`, `mz:StepBar`, `mz:TransitioningContentControl`, `mz:Card`, GridSplitter, ScrollViewer |
 | **Data and media** | DataGrid (with Muzzle column editors), ListBox, TreeView, `mz:PropertyGrid`, `mz:Avatar`, `mz:Carousel`, `mz:ImageViewer` |
@@ -254,7 +257,7 @@ Every control's properties, events, keys and motion details are in **[docs/REFER
 
 ## Building from source
 
-You need the .NET 10 SDK (it also builds the .NET 9 target) on Windows.
+You need the .NET 10 SDK on Windows.
 
 ```powershell
 git clone https://github.com/MrSquirrely/MuzzleUI.git
@@ -282,7 +285,7 @@ The pack command writes `Muzzle.Theme.<version>.nupkg` and a `.snupkg` symbols p
 |---|---|
 | `src/Muzzle.Theme` | The library: `Themes/` (palettes, accents, tokens, one dictionary per control), `Controls/`, `Behaviors/`, `Windowing/`, `Converters/` |
 | `src/Muzzle.Gallery` | The showcase app. `Muzzle.Gallery.exe --snapshot <dir>` renders every page to PNG for visual checks |
-| `tests/Muzzle.Theme.Tests` | The xUnit suite: 234 tests on each target framework |
+| `tests/Muzzle.Theme.Tests` | The xUnit suite: 234 tests |
 | `tools/` | Generators for the palettes, icons and package icon. Edit their tables, not the generated files |
 | `docs/` | The full reference |
 

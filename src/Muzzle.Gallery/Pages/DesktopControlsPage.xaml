@@ -113,6 +113,62 @@
                 </StackPanel>
             </mz:Card>
 
+            <!-- Menu + ContextMenu -->
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="Menu &amp; ContextMenu" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Stock menus pick the theme up on their own: rounded cards that pop in, nested submenus, gesture text, checkable rows and a disabled state. Right-click the dashed area for the context menu." Style="{StaticResource Gallery.SectionLead}" />
+                    <Menu x:Name="DemoMenu" HorizontalAlignment="Left">
+                        <MenuItem x:Name="DemoFileMenu" Header="_File">
+                            <MenuItem Header="_New cat" InputGestureText="Ctrl+N" Click="OnMenuClick">
+                                <MenuItem.Icon>
+                                    <mz:MuzzleIcon Kind="Cat" IconSize="15" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="_Save" InputGestureText="Ctrl+S" Click="OnMenuClick">
+                                <MenuItem.Icon>
+                                    <mz:MuzzleIcon Kind="Save" IconSize="15" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem x:Name="DemoExportMenu" Header="_Export">
+                                <MenuItem Header="PDF" Click="OnMenuClick" />
+                                <MenuItem Header="PNG" Click="OnMenuClick" />
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="Autosave" IsCheckable="True" IsChecked="True" Click="OnMenuClick" />
+                            <MenuItem Header="Print" InputGestureText="Ctrl+P" IsEnabled="False" />
+                        </MenuItem>
+                        <MenuItem Header="_Edit">
+                            <MenuItem Header="Copy" InputGestureText="Ctrl+C" Click="OnMenuClick" />
+                            <MenuItem Header="Paste" InputGestureText="Ctrl+V" Click="OnMenuClick" />
+                        </MenuItem>
+                        <MenuItem Header="_Help" Click="OnMenuClick" />
+                    </Menu>
+                    <Border Margin="0,12,0,0" Padding="16,22" CornerRadius="12" Background="Transparent">
+                        <Border.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Pet" Click="OnMenuClick">
+                                    <MenuItem.Icon>
+                                        <mz:MuzzleIcon Kind="Paw" IconSize="15" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Feed">
+                                    <MenuItem Header="Salmon bites" Click="OnMenuClick" />
+                                    <MenuItem Header="Chicken pâté" Click="OnMenuClick" />
+                                </MenuItem>
+                                <Separator />
+                                <MenuItem Header="Indoor cat" IsCheckable="True" IsChecked="True" Click="OnMenuClick" />
+                            </ContextMenu>
+                        </Border.ContextMenu>
+                        <Grid>
+                            <Rectangle RadiusX="12" RadiusY="12" Margin="-16,-22" StrokeDashArray="4 3" StrokeThickness="1" Stroke="{DynamicResource Muzzle.Brush.ControlBorder}" />
+                            <TextBlock HorizontalAlignment="Center" Text="Right-click here" Style="{StaticResource Muzzle.Text.Secondary}" />
+                        </Grid>
+                    </Border>
+                    <mz:CodeBlock Margin="0,14,0,0" Language="xaml" Code="{x:Static local:Snippets.Menus}" />
+                </StackPanel>
+            </mz:Card>
+
             <!-- Empty state + keycaps -->
             <Grid Margin="0,18,0,0">
                 <Grid.ColumnDefinitions>

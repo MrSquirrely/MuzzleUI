@@ -31,7 +31,12 @@ public class MuzzleWindow : Window {
     private const int DwmaUseImmersiveDarkMode = 20;
     private const int DwmaWindowCornerPreference = 33;
     private const int DwmaBorderColor = 34;
+    private const int DwmcpDoNotRound = 1;
     private const int DwmcpRound = 2;
+    private const uint MonitorDefaultToNearest = 2;
+
+    // SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED
+    private const uint SwpMoveAndRefresh = 0x0004 | 0x0010 | 0x0020;
 
     /// <summary>Identifies the <see cref="NonClientAreaContent"/> dependency property.</summary>
     public static readonly DependencyProperty NonClientAreaContentProperty = DependencyProperty.Register(
@@ -61,6 +66,20 @@ public class MuzzleWindow : Window {
         typeof(Brush),
         typeof(MuzzleWindow),
         new FrameworkPropertyMetadata(Brushes.Transparent, FrameworkPropertyMetadataOptions.AffectsRender));
+
+    /// <summary>Identifies the <see cref="NonClientAreaForeground"/> dependency property.</summary>
+    public static readonly DependencyProperty NonClientAreaForegroundProperty = DependencyProperty.Register(
+        nameof(NonClientAreaForeground),
+        typeof(Brush),
+        typeof(MuzzleWindow),
+        new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
+
+    /// <summary>Identifies the <see cref="IsFullScreen"/> dependency property.</summary>
+    public static readonly DependencyProperty IsFullScreenProperty = DependencyProperty.Register(
+        nameof(IsFullScreen),
+        typeof(bool),
+        typeof(MuzzleWindow),
+        new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnIsFullScreenChanged));
 
     /// <summary>Identifies the <see cref="ShowTitle"/> dependency property.</summary>
     public static readonly DependencyProperty ShowTitleProperty = DependencyProperty.Register(
@@ -108,6 +127,7 @@ public class MuzzleWindow : Window {
     private FrameworkElement? root;
     private Button? maximizeButton;
     private HwndSource? source;
+    private FullScreenRestore? fullScreenRestore;
 
     static MuzzleWindow() {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(MuzzleWindow), new FrameworkPropertyMetadata(typeof(MuzzleWindow)));
@@ -157,6 +177,27 @@ public class MuzzleWindow : Window {
     public Brush? NonClientAreaBackground {
         get => (Brush?)GetValue(NonClientAreaBackgroundProperty);
         set => SetValue(NonClientAreaBackgroundProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the brush for the title text and the caption button glyphs, for use with a custom
+    /// <see cref="NonClientAreaBackground"/>. The default is <see langword="null"/>, which keeps the theme's own
+    /// colours (the window <c>Foreground</c> for the title and the secondary text colour for the glyphs).
+    /// This is a dependency property.
+    /// </summary>
+    public Brush? NonClientAreaForeground {
+        get => (Brush?)GetValue(NonClientAreaForegroundProperty);
+        set => SetValue(NonClientAreaForegroundProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets whether the window covers its whole monitor, taskbar included, with the title bar and border
+    /// hidden. Turning it off restores the previous bounds and window state. The window offers no way out on its
+    /// own, so bind a key such as Esc or F11 to it. The default is <see langword="false"/>. This is a dependency property.
+    /// </summary>
+    public bool IsFullScreen {
+        get => (bool)GetValue(IsFullScreenProperty);
+        set => SetValue(IsFullScreenProperty, value);
     }
 
     /// <summary>Gets or sets whether to show the title. The default is <see langword="true"/>. This is a dependency property.</summary>
@@ -227,6 +268,14 @@ public class MuzzleWindow : Window {
         source?.AddHook(WndProc);
         ApplyDwmAttributes(handle);
         MuzzleThemeManager.ThemeChanged += OnThemeChanged;
+        if (SizeToContent != SizeToContent.Manual) {
+            // The first size-to-content pass ran before WindowChrome removed the stock frame, so it added that
+            // frame's size to the window. Measure again now that the client area covers the whole window.
+            InvalidateMeasure();
+        }
+        if (IsFullScreen) {
+            EnterFullScreen();
+        }
     }
 
     /// <inheritdoc />
@@ -273,8 +322,80 @@ public class MuzzleWindow : Window {
 
     private void OnShowSystemMenu(object sender, ExecutedRoutedEventArgs e) {
         Point screen = PointToScreen(new Point(0, NonClientAreaHeight));
+        // A backdrop takes the system-menu style off the window; BackdropHelper can still show the menu.
+        if (BackdropHelper.TryShowSystemMenu(this, (int)screen.X, (int)screen.Y)) {
+            return;
+        }
         DpiScale dpi = VisualTreeHelper.GetDpi(this);
         SystemCommands.ShowSystemMenu(this, new Point(screen.X / dpi.DpiScaleX, screen.Y / dpi.DpiScaleY));
+    }
+
+    private static void OnIsFullScreenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+        if ((d is not MuzzleWindow window) || (window.source is null)) {
+            return; // not shown yet: OnSourceInitialized applies it
+        }
+        if ((bool)e.NewValue) {
+            window.EnterFullScreen();
+        }
+        else {
+            window.ExitFullScreen();
+        }
+    }
+
+    private void EnterFullScreen() {
+        IntPtr handle = new WindowInteropHelper(this).Handle;
+        if ((handle == IntPtr.Zero) || (fullScreenRestore is not null)) {
+            return;
+        }
+        WindowState previousState = WindowState;
+        if (previousState != WindowState.Normal) {
+            // A maximized window keeps its maximized placement however it is sized; go through Normal.
+            WindowState = WindowState.Normal;
+        }
+        _ = GetWindowRect(handle, out NativeRect bounds);
+        fullScreenRestore = new FullScreenRestore(previousState, bounds, SizeToContent, chrome.ResizeBorderThickness, chrome.CornerRadius);
+        SizeToContent = SizeToContent.Manual;
+        chrome.ResizeBorderThickness = new Thickness(0);
+        chrome.CaptionHeight = 0;
+        chrome.CornerRadius = new CornerRadius(0);
+        ApplyCornerPreference(handle);
+        UpdateMaximizedFrame();
+        MonitorInfo info = new() { Size = Marshal.SizeOf<MonitorInfo>() };
+        if (GetMonitorInfo(MonitorFromWindow(handle, MonitorDefaultToNearest), ref info)) {
+            NativeRect monitor = info.Monitor;
+            _ = SetWindowPos(handle, IntPtr.Zero, monitor.Left, monitor.Top, monitor.Right - monitor.Left, monitor.Bottom - monitor.Top, SwpMoveAndRefresh);
+        }
+    }
+
+    private void ExitFullScreen() {
+        if (fullScreenRestore is not FullScreenRestore restore) {
+            return;
+        }
+        fullScreenRestore = null;
+        chrome.ResizeBorderThickness = restore.ResizeBorder;
+        chrome.CaptionHeight = NonClientAreaHeight;
+        chrome.CornerRadius = restore.CornerRadius;
+        IntPtr handle = new WindowInteropHelper(this).Handle;
+        if (handle != IntPtr.Zero) {
+            ApplyCornerPreference(handle);
+            NativeRect bounds = restore.Bounds;
+            _ = SetWindowPos(handle, IntPtr.Zero, bounds.Left, bounds.Top, bounds.Right - bounds.Left, bounds.Bottom - bounds.Top, SwpMoveAndRefresh);
+        }
+        SizeToContent = restore.SizeToContent;
+        if (restore.State != WindowState.Normal) {
+            WindowState = restore.State;
+        }
+        UpdateMaximizedFrame();
+    }
+
+    private void ApplyCornerPreference(IntPtr handle) {
+        try {
+            int corner = IsFullScreen ? DwmcpDoNotRound : DwmcpRound;
+            _ = DwmSetWindowAttribute(handle, DwmaWindowCornerPreference, ref corner, sizeof(int));
+        }
+        catch (DllNotFoundException) {
+            // DWM unavailable; corners stay square.
+        }
     }
 
     private void OnCanMinimizeWindow(object sender, CanExecuteRoutedEventArgs e) {
@@ -299,7 +420,7 @@ public class MuzzleWindow : Window {
         if (root is null) {
             return;
         }
-        root.Margin = WindowState == WindowState.Maximized ? GetMaximizedFrameThickness() : new Thickness(0);
+        root.Margin = ((WindowState == WindowState.Maximized) && !IsFullScreen) ? GetMaximizedFrameThickness() : new Thickness(0);
     }
 
     private Thickness GetMaximizedFrameThickness() {
@@ -333,8 +454,7 @@ public class MuzzleWindow : Window {
             return;
         }
         try {
-            int corner = DwmcpRound;
-            _ = DwmSetWindowAttribute(handle, DwmaWindowCornerPreference, ref corner, sizeof(int));
+            ApplyCornerPreference(handle);
             int dark = MuzzleThemeManager.IsDark ? 1 : 0;
             _ = DwmSetWindowAttribute(handle, DwmaUseImmersiveDarkMode, ref dark, sizeof(int));
             Color borderColor = (TryFindResource("Muzzle.Color.SurfaceBorder") is Color themed) ? themed : Color.FromRgb(0xEF, 0xEC, 0xE8);
@@ -421,4 +541,39 @@ public class MuzzleWindow : Window {
 
     [DllImport("user32.dll")]
     private static extern int GetSystemMetricsForDpi(int index, uint dpi);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool GetWindowRect(IntPtr hwnd, out NativeRect rect);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetWindowPos(IntPtr hwnd, IntPtr insertAfter, int x, int y, int width, int height, uint flags);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint flags);
+
+    [DllImport("user32.dll", EntryPoint = "GetMonitorInfoW")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool GetMonitorInfo(IntPtr monitor, ref MonitorInfo info);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct NativeRect {
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct MonitorInfo {
+        public int Size;
+        public NativeRect Monitor;
+        public NativeRect Work;
+        public uint Flags;
+    }
+
+    /// <summary>What <see cref="ExitFullScreen"/> puts back.</summary>
+    private sealed record FullScreenRestore(
+        WindowState State, NativeRect Bounds, SizeToContent SizeToContent, Thickness ResizeBorder, CornerRadius CornerRadius);
 }

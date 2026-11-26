@@ -26,12 +26,19 @@ public enum BackdropType {
 /// Opt-in Windows 11 Mica / Acrylic backdrops: <c>&lt;mz:MuzzleWindow mz:BackdropHelper.BackdropType="Mica" /&gt;</c>.
 /// Uses DWMWA_SYSTEMBACKDROP_TYPE (Windows 11 22H2, build 22621+); on older systems it does nothing and
 /// <c>IsBackdropActive</c> stays false. While active, the window background switches to the translucent
-/// <c>Muzzle.Brush.BackdropCanvas</c> so the material shows through, still following Light / Dark.
+/// <c>Muzzle.Brush.BackdropCanvas</c> so the material shows through, still following Light / Dark; set
+/// <c>mz:BackdropHelper.TintBackground="False"</c> to keep your own <c>Background</c> instead (for example
+/// <c>Transparent</c>, with panels you paint yourself). The system menu (Alt+Space, right-click on the title bar)
+/// stays available while a backdrop is on.
 /// </summary>
 public static class BackdropHelper {
     /// <summary>Identifies the <see cref="BackdropType"/> dependency property.</summary>
     public static readonly DependencyProperty BackdropTypeProperty = DependencyProperty.RegisterAttached(
         "BackdropType", typeof(BackdropType), typeof(BackdropHelper), new PropertyMetadata(BackdropType.None, OnBackdropTypeChanged));
+
+    /// <summary>Identifies the <c>TintBackground</c> attached property.</summary>
+    public static readonly DependencyProperty TintBackgroundProperty = DependencyProperty.RegisterAttached(
+        "TintBackground", typeof(bool), typeof(BackdropHelper), new PropertyMetadata(true, OnTintBackgroundChanged));
 
     private static readonly DependencyPropertyKey IsBackdropActivePropertyKey = DependencyProperty.RegisterAttachedReadOnly(
         "IsBackdropActive", typeof(bool), typeof(BackdropHelper), new PropertyMetadata(false));
@@ -44,6 +51,19 @@ public static class BackdropHelper {
 
     private static readonly DependencyProperty RemovedSysMenuProperty = DependencyProperty.RegisterAttached(
         "RemovedSysMenu", typeof(bool), typeof(BackdropHelper), new PropertyMetadata(false));
+
+    private static readonly DependencyProperty TintedProperty = DependencyProperty.RegisterAttached(
+        "Tinted", typeof(bool), typeof(BackdropHelper), new PropertyMetadata(false));
+
+    private static readonly DependencyProperty SystemMenuHookProperty = DependencyProperty.RegisterAttached(
+        "SystemMenuHook", typeof(HwndSourceHook), typeof(BackdropHelper), new PropertyMetadata(null));
+
+    private const int WmNcRButtonUp = 0x00A5;
+    private const int WmSysCommand = 0x0112;
+    private const int ScKeyMenu = 0xF100;
+    private const int HtCaption = 2;
+    private const uint TpmReturnCommand = 0x0100;
+    private const uint TpmRightButton = 0x0002;
 
     private const int DwmaUseImmersiveDarkMode = 20;
     private const int DwmaSystemBackdropType = 38;
@@ -75,6 +95,89 @@ public static class BackdropHelper {
     /// <returns>The current <c>IsBackdropActive</c> value.</returns>
     public static bool GetIsBackdropActive(DependencyObject element) {
         return (bool)element.GetValue(IsBackdropActiveProperty);
+    }
+
+    /// <summary>Gets the value of the <c>TintBackground</c> attached property.</summary>
+    /// <param name="element">The window to read from.</param>
+    /// <returns>
+    /// <see langword="true"/> (the default) when an active backdrop replaces the window background with
+    /// <c>Muzzle.Brush.BackdropCanvas</c>; <see langword="false"/> when the window keeps its own background.
+    /// </returns>
+    public static bool GetTintBackground(DependencyObject element) {
+        return (bool)element.GetValue(TintBackgroundProperty);
+    }
+
+    /// <summary>Sets the value of the <c>TintBackground</c> attached property.</summary>
+    /// <param name="element">The window to set it on.</param>
+    /// <param name="value">
+    /// <see langword="false"/> to leave the window's <c>Background</c> alone while a backdrop is active.
+    /// </param>
+    public static void SetTintBackground(DependencyObject element, bool value) {
+        element.SetValue(TintBackgroundProperty, value);
+    }
+
+    private static void OnTintBackgroundChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+        if ((d is Window window) && GetIsBackdropActive(window)) {
+            ApplyTint(window);
+        }
+    }
+
+    /// <summary>Tints the window with the backdrop canvas, or gives the background back, per <c>TintBackground</c>.</summary>
+    private static void ApplyTint(Window window) {
+        bool tint = GetIsBackdropActive(window) && GetTintBackground(window);
+        bool tinted = (bool)window.GetValue(TintedProperty);
+        if (tint && !tinted) {
+            window.SetResourceReference(Window.BackgroundProperty, "Muzzle.Brush.BackdropCanvas");
+            window.SetValue(TintedProperty, true);
+        }
+        else if (!tint && tinted) {
+            window.ClearValue(Window.BackgroundProperty);
+            window.ClearValue(TintedProperty);
+        }
+    }
+
+    /// <summary>
+    /// Shows the system menu of a window whose system-menu style an active backdrop removed.
+    /// Returns <see langword="false"/> (and does nothing) for any other window.
+    /// </summary>
+    internal static bool TryShowSystemMenu(Window window, int screenX, int screenY) {
+        IntPtr handle = new WindowInteropHelper(window).Handle;
+        if ((handle == IntPtr.Zero) || (window.GetValue(RemovedSysMenuProperty) is not true)) {
+            return false;
+        }
+        // GetSystemMenu needs the style; put it back just for the call, without a frame refresh, so DWM never
+        // gets to draw its caption buttons.
+        long style = GetWindowLongPtr(handle, GwlStyle).ToInt64();
+        _ = SetWindowLongPtr(handle, GwlStyle, new IntPtr(style | WsSysMenu));
+        IntPtr menu = GetSystemMenu(handle, false);
+        _ = SetWindowLongPtr(handle, GwlStyle, new IntPtr(style & ~WsSysMenu));
+        if (menu == IntPtr.Zero) {
+            return true;
+        }
+        int command = TrackPopupMenuEx(menu, TpmReturnCommand | TpmRightButton, screenX, screenY, handle, IntPtr.Zero);
+        if (command != 0) {
+            _ = PostMessage(handle, WmSysCommand, new IntPtr(command), IntPtr.Zero);
+        }
+        return true;
+    }
+
+    private static HwndSourceHook SystemMenuHookFor(Window window) {
+        if (window.GetValue(SystemMenuHookProperty) is not HwndSourceHook hook) {
+            hook = (IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled) => {
+                if ((msg == WmNcRButtonUp) && (wParam.ToInt64() == HtCaption)) {
+                    long point = lParam.ToInt64();
+                    handled = TryShowSystemMenu(window, unchecked((short)(point & 0xFFFF)), unchecked((short)((point >> 16) & 0xFFFF)));
+                }
+                else if ((msg == WmSysCommand) && ((wParam.ToInt64() & 0xFFF0) == ScKeyMenu) && (lParam.ToInt64() == ' ')) {
+                    // Alt+Space: drop the menu from the top-left corner of the content, as the stock frame does.
+                    _ = GetWindowRect(hwnd, out NativeRect rect);
+                    handled = TryShowSystemMenu(window, rect.Left + 8, rect.Top + 8);
+                }
+                return IntPtr.Zero;
+            };
+            window.SetValue(SystemMenuHookProperty, hook);
+        }
+        return hook;
     }
 
     private static void OnBackdropTypeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
@@ -141,10 +244,12 @@ public static class BackdropHelper {
                 _ = SetWindowLongPtr(handle, GwlStyle, new IntPtr(style & ~WsSysMenu));
                 _ = SetWindowPos(handle, IntPtr.Zero, 0, 0, 0, 0, SwpRefreshFrame);
             }
+            source.RemoveHook(SystemMenuHookFor(window));
+            source.AddHook(SystemMenuHookFor(window));
             SetDarkFlag(window);
-            window.SetResourceReference(Window.BackgroundProperty, "Muzzle.Brush.BackdropCanvas");
             MuzzleThemeManager.ThemeChanged += ThemeHandlerFor(window);
             window.SetValue(IsBackdropActivePropertyKey, true);
+            ApplyTint(window);
             return;
         }
         if (!GetIsBackdropActive(window)) {
@@ -164,11 +269,12 @@ public static class BackdropHelper {
             }
         }
         window.ClearValue(RemovedSysMenuProperty);
+        source?.RemoveHook(SystemMenuHookFor(window));
         if (source?.CompositionTarget is not null) {
             source.CompositionTarget.BackgroundColor = SystemColors.WindowColor;
         }
-        window.ClearValue(Window.BackgroundProperty);
         window.SetValue(IsBackdropActivePropertyKey, false);
+        ApplyTint(window);
     }
 
     private static void SetDarkFlag(Window window) {
@@ -187,6 +293,28 @@ public static class BackdropHelper {
         public int Top;
         public int Bottom;
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct NativeRect {
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
+    }
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetSystemMenu(IntPtr hwnd, [MarshalAs(UnmanagedType.Bool)] bool revert);
+
+    [DllImport("user32.dll")]
+    private static extern int TrackPopupMenuEx(IntPtr menu, uint flags, int x, int y, IntPtr hwnd, IntPtr parameters);
+
+    [DllImport("user32.dll", EntryPoint = "PostMessageW")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool PostMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool GetWindowRect(IntPtr hwnd, out NativeRect rect);
 
     [DllImport("dwmapi.dll")]
     private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);

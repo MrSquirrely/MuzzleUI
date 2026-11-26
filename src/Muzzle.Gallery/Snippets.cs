@@ -97,6 +97,17 @@ public static class Snippets {
 
         [Browsable(false)]            // hidden from the grid
         public string Secret { get; set; }
+
+        // For an end-user settings pane: your order, no inspector chrome, reset buttons
+        <mz:PropertyGrid SelectedObject="{Binding Settings}" SortMode="Declared"
+                         ShowHeader="False" ShowTypeNames="False" ShowResetButtons="True" />
+
+        [DefaultValue(1.0)]           // what the reset button restores
+        [Range(1.0, 3.0), PropertyStep(0.25, Format = "0.00×")]
+        public double LineHeight { get; set; } = 1.0;
+
+        [Editor(typeof(FontEditor), typeof(PropertyEditorBase))]   // your own editor
+        public string Font { get; set; }
         """;
 
     public const string Jelly = """
@@ -160,6 +171,10 @@ public static class Snippets {
         """;
 
     public const string Dialog = """
+        // A blocking, owner-modal window with the familiar shape
+        MessageBoxResult result = MessageBox.Show(this, "Save your changes?", "Unsaved changes",
+            MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+
         // Show any content (UserControl or ViewModel + DataTemplate) over the active window
         Dialog dialog = Dialog.Show(new AdoptionFormDialog());
         Dialog.Show<AdoptionFormDialog>();
@@ -470,6 +485,26 @@ public static class Snippets {
 
         <!-- Splitters get a pill handle automatically -->
         <GridSplitter Grid.Column="1" Width="10" HorizontalAlignment="Center" />
+        """;
+
+    public const string Menus = """
+        <!-- No keys needed: Menu, ContextMenu, MenuItem and Separator are styled implicitly -->
+        <Menu>
+            <MenuItem Header="_File">
+                <MenuItem Header="_Save" InputGestureText="Ctrl+S" />
+                <MenuItem Header="_Export">
+                    <MenuItem Header="PDF" />
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Autosave" IsCheckable="True" IsChecked="True" />
+            </MenuItem>
+        </Menu>
+
+        <Border.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Pet" />
+            </ContextMenu>
+        </Border.ContextMenu>
         """;
 
     public const string SmallControls = """

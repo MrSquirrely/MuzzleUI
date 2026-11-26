@@ -107,13 +107,13 @@
                                      AutomationProperties.Name="{TemplateBinding AutomationProperties.Name}" />
                             <StackPanel x:Name="SpinButtons" Grid.Column="1" Margin="6,0,0,0" VerticalAlignment="Center" Orientation="Horizontal">
                                 <RepeatButton Style="{StaticResource Muzzle.SquishPillButton}" Command="{x:Static mzc:NumericUpDown.DecreaseCommand}"
-                                              Delay="400" Interval="70" AutomationProperties.Name="Decrease">
+                                              Delay="400" Interval="70" AutomationProperties.Name="{DynamicResource Muzzle.String.NumericUpDown.Decrease}">
                                     <Path Width="10" Height="10" Data="M 1,5 L 9,5"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type RepeatButton}}}"
                                           StrokeThickness="1.7" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
                                 </RepeatButton>
                                 <RepeatButton Margin="4,0,0,0" Style="{StaticResource Muzzle.SquishPillButton}" Command="{x:Static mzc:NumericUpDown.IncreaseCommand}"
-                                              Delay="400" Interval="70" AutomationProperties.Name="Increase">
+                                              Delay="400" Interval="70" AutomationProperties.Name="{DynamicResource Muzzle.String.NumericUpDown.Increase}">
                                     <Path Width="10" Height="10" Data="M 1,5 L 9,5 M 5,1 L 5,9"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type RepeatButton}}}"
                                           StrokeThickness="1.7" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
