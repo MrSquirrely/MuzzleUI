@@ -1,0 +1,37 @@
+<mz:MuzzleWindow x:Class="Muzzle.Gallery.DemoWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:mz="http://schemas.muzzle.dev/wpf"
+                 Title="Demo window"
+                 Icon="{StaticResource Gallery.PawIcon}"
+                 Width="720" Height="460"
+                 MinWidth="520" MinHeight="320"
+                 WindowStartupLocation="CenterOwner"
+                 ShowTitle="False"
+                 NonClientAreaHeight="56">
+
+    <mz:MuzzleWindow.NonClientAreaContent>
+        <DockPanel Margin="12,0,8,0" LastChildFill="False">
+            <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center" Orientation="Horizontal">
+                <RadioButton x:Name="HomeTab" Content="Home" IsChecked="True" Style="{StaticResource Muzzle.ToggleButton}" Margin="0,0,6,0" Padding="14,6" MinHeight="32" mz:MuzzleAssist.ShadowDepth="None" Checked="OnTabChecked" />
+                <RadioButton Content="Toys" Style="{StaticResource Muzzle.ToggleButton}" Margin="0,0,6,0" Padding="14,6" MinHeight="32" mz:MuzzleAssist.ShadowDepth="None" Checked="OnTabChecked" />
+                <RadioButton Content="Naps" Style="{StaticResource Muzzle.ToggleButton}" Padding="14,6" MinHeight="32" mz:MuzzleAssist.ShadowDepth="None" Checked="OnTabChecked" />
+            </StackPanel>
+            <Button DockPanel.Dock="Right" VerticalAlignment="Center" Style="{StaticResource Muzzle.Button.Icon}" ToolTip="Wobble" AutomationProperties.Name="Wobble" Click="OnWobbleClick">
+                <Path Width="14" Height="14" Stretch="Uniform" Fill="{DynamicResource Muzzle.Brush.PrimaryText}"
+                      Data="M 7,12.5 C 7,12.5 1,8.6 1,4.6 C 1,2.6 2.6,1 4.4,1 C 5.6,1 6.5,1.7 7,2.6 C 7.5,1.7 8.4,1 9.6,1 C 11.4,1 13,2.6 13,4.6 C 13,8.6 7,12.5 7,12.5 Z" />
+            </Button>
+        </DockPanel>
+    </mz:MuzzleWindow.NonClientAreaContent>
+
+    <Grid Margin="20,4,20,20">
+        <mz:Card x:Name="Body" RenderTransformOrigin="0.5,0.5">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Image Width="72" Height="72" Source="{StaticResource Gallery.PawIcon}" />
+                <TextBlock x:Name="Headline" Margin="0,14,0,4" HorizontalAlignment="Center" Text="Home" Style="{StaticResource Muzzle.Text.Title}" />
+                <TextBlock HorizontalAlignment="Center" TextAlignment="Center" MaxWidth="380" Style="{StaticResource Muzzle.Text.Secondary}"
+                           Text="The pill buttons above are RadioButtons styled as toggle buttons, living inside NonClientAreaContent. Drag the empty title bar to move the window." />
+            </StackPanel>
+        </mz:Card>
+    </Grid>
+</mz:MuzzleWindow>

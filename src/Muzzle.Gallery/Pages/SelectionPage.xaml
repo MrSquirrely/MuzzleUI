@@ -1,0 +1,68 @@
+<UserControl x:Class="Muzzle.Gallery.Pages.SelectionPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mz="http://schemas.muzzle.dev/wpf"
+             xmlns:local="clr-namespace:Muzzle.Gallery"
+             xmlns:controls="clr-namespace:Muzzle.Gallery.Controls">
+    <ScrollViewer Style="{StaticResource Gallery.PageScroller}">
+        <StackPanel Margin="4,4,20,28">
+            <TextBlock Text="Selection" Style="{StaticResource Gallery.PageHeader}" />
+            <TextBlock Style="{StaticResource Gallery.PageLead}"
+                       Text="Spring-loaded checkmarks, dots and thumbs: they overshoot, then settle. Each control also pops when its state changes." />
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="18" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="18" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <mz:Card>
+                    <StackPanel>
+                        <TextBlock Text="CheckBox" Style="{StaticResource Gallery.SectionTitle}" />
+                        <TextBlock Text="Two- and three-state." Style="{StaticResource Gallery.SectionLead}" />
+                        <CheckBox Content="Fed the cat" IsChecked="True" />
+                        <CheckBox Margin="0,12,0,0" Content="Cleaned the litter" />
+                        <CheckBox Margin="0,12,0,0" Content="Maybe napping" IsThreeState="True" IsChecked="{x:Null}" />
+                        <CheckBox Margin="0,12,0,0" Content="Disabled, checked" IsChecked="True" IsEnabled="False" />
+                        <CheckBox Margin="0,12,0,0" Content="Disabled" IsEnabled="False" />
+                    </StackPanel>
+                </mz:Card>
+
+                <mz:Card Grid.Column="2">
+                    <StackPanel>
+                        <TextBlock Text="RadioButton" Style="{StaticResource Gallery.SectionTitle}" />
+                        <TextBlock Text="Pick one loaf shape." Style="{StaticResource Gallery.SectionLead}" />
+                        <RadioButton GroupName="Loaf" Content="Kitten" />
+                        <RadioButton Margin="0,12,0,0" GroupName="Loaf" Content="Classic loaf" IsChecked="True" />
+                        <RadioButton Margin="0,12,0,0" GroupName="Loaf" Content="Croissant" />
+                        <RadioButton Margin="0,12,0,0" GroupName="Loaf" Content="Liquid" />
+                        <RadioButton Margin="0,12,0,0" GroupName="Other" Content="Disabled" IsEnabled="False" />
+                    </StackPanel>
+                </mz:Card>
+
+                <mz:Card Grid.Column="4">
+                    <StackPanel>
+                        <TextBlock Text="ToggleSwitch" Style="{StaticResource Gallery.SectionTitle}" />
+                        <TextBlock Text="The thumb stretches as it springs across." Style="{StaticResource Gallery.SectionLead}" />
+                        <mz:ToggleSwitch Content="Zoomies mode" IsChecked="True" />
+                        <mz:ToggleSwitch Margin="0,12,0,0" Content="Night patrol" />
+                        <mz:ToggleSwitch Margin="0,12,0,0" Content="Purr volume" IsChecked="True" />
+                        <mz:ToggleSwitch Margin="0,12,0,0" Content="Disabled on" IsChecked="True" IsEnabled="False" />
+                        <mz:ToggleSwitch Margin="0,12,0,0" Content="Disabled off" IsEnabled="False" />
+                    </StackPanel>
+                </mz:Card>
+            </Grid>
+
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="Snippet" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="All of these are the standard WPF controls; ToggleSwitch is a ToggleButton subclass." Style="{StaticResource Gallery.SectionLead}" />
+                    <controls:SnippetView Code="{x:Static local:Snippets.Selection}" />
+                </StackPanel>
+            </mz:Card>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,74 @@
+<!--
+    Muzzle typography: font families, a small type scale, and TextBlock styles.
+
+    The default face is Atkinson Hyperlegible Next (Braille Institute, SIL OFL 1.1): seven static weights
+    from ExtraLight to ExtraBold, each with an italic, embedded in this
+    assembly under Themes/Fonts, so it works without being installed. Segoe UI is the fallback.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <FontFamily x:Key="Muzzle.FontFamily">pack://application:,,,/Muzzle.Theme;component/Themes/Fonts/#Atkinson Hyperlegible Next, Segoe UI</FontFamily>
+    <FontFamily x:Key="Muzzle.FontFamily.Display">pack://application:,,,/Muzzle.Theme;component/Themes/Fonts/#Atkinson Hyperlegible Next, Segoe UI</FontFamily>
+    <FontFamily x:Key="Muzzle.FontFamily.Mono">Cascadia Code, Cascadia Mono, Consolas</FontFamily>
+
+    <sys:Double x:Key="Muzzle.FontSize.Caption">12</sys:Double>
+    <sys:Double x:Key="Muzzle.FontSize.Body">14</sys:Double>
+    <sys:Double x:Key="Muzzle.FontSize.BodyLarge">15</sys:Double>
+    <sys:Double x:Key="Muzzle.FontSize.Subtitle">17</sys:Double>
+    <sys:Double x:Key="Muzzle.FontSize.Title">22</sys:Double>
+    <sys:Double x:Key="Muzzle.FontSize.Display">30</sys:Double>
+
+    <Style x:Key="Muzzle.Text.Body" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontFamily" Value="{StaticResource Muzzle.FontFamily}" />
+        <Setter Property="FontSize" Value="{StaticResource Muzzle.FontSize.Body}" />
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="LineHeight" Value="21" />
+    </Style>
+
+    <Style x:Key="Muzzle.Text.Secondary" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Muzzle.Text.Body}">
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextSecondary}" />
+    </Style>
+
+    <Style x:Key="Muzzle.Text.Caption" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Muzzle.Text.Body}">
+        <Setter Property="FontSize" Value="{StaticResource Muzzle.FontSize.Caption}" />
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextSecondary}" />
+        <Setter Property="LineHeight" Value="17" />
+    </Style>
+
+    <Style x:Key="Muzzle.Text.Overline" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Muzzle.Text.Caption}">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Typography.Capitals" Value="AllSmallCaps" />
+        <Setter Property="TextWrapping" Value="NoWrap" />
+    </Style>
+
+    <Style x:Key="Muzzle.Text.Subtitle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Muzzle.Text.Body}">
+        <Setter Property="FontSize" Value="{StaticResource Muzzle.FontSize.Subtitle}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="LineHeight" Value="24" />
+    </Style>
+
+    <Style x:Key="Muzzle.Text.Title" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Muzzle.Text.Body}">
+        <Setter Property="FontFamily" Value="{StaticResource Muzzle.FontFamily.Display}" />
+        <Setter Property="FontSize" Value="{StaticResource Muzzle.FontSize.Title}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="LineHeight" Value="28" />
+    </Style>
+
+    <Style x:Key="Muzzle.Text.Display" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Muzzle.Text.Body}">
+        <Setter Property="FontFamily" Value="{StaticResource Muzzle.FontFamily.Display}" />
+        <Setter Property="FontSize" Value="{StaticResource Muzzle.FontSize.Display}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="LineHeight" Value="38" />
+    </Style>
+
+    <Style x:Key="Muzzle.Text.Code" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontFamily" Value="{StaticResource Muzzle.FontFamily.Mono}" />
+        <Setter Property="FontSize" Value="12.5" />
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+    </Style>
+
+</ResourceDictionary>

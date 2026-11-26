@@ -1,0 +1,145 @@
+<!--
+    ColorPickerDropDown: a Muzzle field showing a swatch + hex value; it opens a ColorPicker in a dropdown card
+    that springs open from the field.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mz="clr-namespace:Muzzle.Theme"
+                    xmlns:mzc="clr-namespace:Muzzle.Theme.Controls"
+                    xmlns:mzv="clr-namespace:Muzzle.Theme.Converters">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Animations/JellyEasings.xaml" />
+        <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Controls/TimePicker.xaml" />
+        <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Controls/ColorPicker.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style x:Key="Muzzle.ColorPickerDropDown" TargetType="{x:Type mzc:ColorPickerDropDown}">
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="Background" Value="{DynamicResource Muzzle.Brush.ControlBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.ControlBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="6,0,8,0" />
+        <Setter Property="MinHeight" Value="38" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="mz:MuzzleAssist.CornerRadius" Value="10" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type mzc:ColorPickerDropDown}">
+                    <Grid x:Name="Root" mz:MuzzleAssist.Jelly="Focus">
+                        <mzc:SoftBorder x:Name="FocusRing" Opacity="0" BorderThickness="3" IsHitTestVisible="False"
+                                        BorderBrush="{DynamicResource Muzzle.Brush.FocusRing}"
+                                        CornerRadius="{TemplateBinding mz:MuzzleAssist.CornerRadius, Converter={x:Static mzv:CornerRadiusOffsetConverter.Instance}, ConverterParameter=3}" />
+                        <mzc:SoftBorder x:Name="Body"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="{TemplateBinding mz:MuzzleAssist.CornerRadius}" />
+                        <ToggleButton x:Name="Field"
+                                      Style="{StaticResource Muzzle.TimePicker.FieldToggle}"
+                                      IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                      IsHitTestVisible="{Binding IsOpen, ElementName=PART_Popup, Converter={x:Static mzv:InverseBooleanConverter.Instance}}"
+                                      AutomationProperties.Name="{Binding HexText, RelativeSource={RelativeSource TemplatedParent}, StringFormat='Colour {0}'}">
+                            <Grid Margin="{TemplateBinding Padding}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid Width="26" Height="26" VerticalAlignment="Center" mz:MuzzleAssist.Jelly="Hover, Press">
+                                    <Ellipse Fill="{DynamicResource Muzzle.Brush.Checker}" />
+                                    <Ellipse Fill="{TemplateBinding SelectedBrush}" Stroke="{DynamicResource Muzzle.Brush.SwatchOutline}" StrokeThickness="1" />
+                                </Grid>
+                                <TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center"
+                                           Text="{TemplateBinding HexText}" FontFamily="{DynamicResource Muzzle.FontFamily.Mono}" FontSize="13" />
+                                <Path x:Name="Chevron" Grid.Column="2" Margin="8,0,4,0" VerticalAlignment="Center"
+                                      Data="M 0,0 L 4.5,4.5 L 9,0" Stroke="{DynamicResource Muzzle.Brush.TextSecondary}" StrokeThickness="1.8"
+                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" RenderTransformOrigin="0.5,0.5">
+                                    <Path.RenderTransform>
+                                        <RotateTransform />
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Grid>
+                        </ToggleButton>
+                        <Popup x:Name="PART_Popup"
+                               AllowsTransparency="True"
+                               Placement="Bottom"
+                               HorizontalOffset="-10"
+                               VerticalOffset="2"
+                               PopupAnimation="None"
+                               StaysOpen="False"
+                               IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
+                            <Grid x:Name="DropDownHost" Margin="10,4,10,18" RenderTransformOrigin="0.2,0">
+                                <Grid.RenderTransform>
+                                    <ScaleTransform />
+                                </Grid.RenderTransform>
+                                <mzc:SoftBorder Background="{DynamicResource Muzzle.Brush.Surface}" BorderBrush="{DynamicResource Muzzle.Brush.SurfaceRim}"
+                                                BorderThickness="1" CornerRadius="16" Effect="{DynamicResource Muzzle.Shadow.Floating}" />
+                                <mzc:ColorPicker x:Name="Picker"
+                                                 Margin="16"
+                                                 ShowAlpha="{TemplateBinding ShowAlpha}"
+                                                 SelectedColor="{Binding SelectedColor, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" />
+                            </Grid>
+                        </Popup>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsDropDownOpen" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="DropDownHost" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.14" />
+                                        <DoubleAnimation Storyboard.TargetName="DropDownHost" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         From="0.9" To="1" Duration="0:0:0.6" EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+                                        <DoubleAnimation Storyboard.TargetName="DropDownHost" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                         From="0.82" To="1" Duration="0:0:0.6" EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+                                        <DoubleAnimation Storyboard.TargetName="Chevron" Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                                         To="180" Duration="0:0:0.42" EasingFunction="{StaticResource Muzzle.Ease.BackStrong}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Chevron" Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                                         To="0" Duration="0:0:0.42" EasingFunction="{StaticResource Muzzle.Ease.BackStrong}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Body" Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.ControlBorderHover}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="Body" Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.Primary}" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="FocusRing" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.18" />
+                                        <ThicknessAnimation Storyboard.TargetName="FocusRing" Storyboard.TargetProperty="Margin" From="0" To="-3" Duration="0:0:0.5"
+                                                            EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="FocusRing" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
+                                        <ThicknessAnimation Storyboard.TargetName="FocusRing" Storyboard.TargetProperty="Margin" To="0" Duration="0:0:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Root" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type mzc:ColorPickerDropDown}" BasedOn="{StaticResource Muzzle.ColorPickerDropDown}" />
+
+</ResourceDictionary>

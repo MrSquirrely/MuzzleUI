@@ -1,0 +1,188 @@
+<!--
+    Expander: a soft card whose body springs open (LayoutTransform scale with elastic overshoot)
+    and folds shut; the chevron flips with a back-ease. Supports ExpandDirection Down and Up.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mz="clr-namespace:Muzzle.Theme"
+                    xmlns:mzv="clr-namespace:Muzzle.Theme.Converters">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Animations/JellyEasings.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style x:Key="Muzzle.Expander.HeaderToggle" TargetType="{x:Type ToggleButton}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                    <Border x:Name="Root"
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{TemplateBinding mz:MuzzleAssist.CornerRadius}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ContentPresenter VerticalAlignment="Center"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              RecognizesAccessKey="True"
+                                              Focusable="False" />
+                            <Border x:Name="ChevronHost"
+                                    Grid.Column="1"
+                                    Width="28" Height="28"
+                                    Margin="12,0,0,0"
+                                    CornerRadius="14"
+                                    Background="{DynamicResource Muzzle.Brush.CanvasAlt}"
+                                    mz:MuzzleAssist.Jelly="Hover, Press">
+                                <Path x:Name="Chevron"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      Data="M 0,0 L 4.5,4.5 L 9,0"
+                                      Stroke="{DynamicResource Muzzle.Brush.TextSecondary}"
+                                      StrokeThickness="1.8"
+                                      StrokeStartLineCap="Round"
+                                      StrokeEndLineCap="Round"
+                                      StrokeLineJoin="Round"
+                                      RenderTransformOrigin="0.5,0.5">
+                                    <Path.RenderTransform>
+                                        <RotateTransform Angle="0" />
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Border>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Root" Property="Background" Value="{DynamicResource Muzzle.Brush.HoverTint}" />
+                            <Setter TargetName="ChevronHost" Property="Background" Value="{DynamicResource Muzzle.Brush.PrimarySoft}" />
+                            <Setter TargetName="Chevron" Property="Stroke" Value="{DynamicResource Muzzle.Brush.PrimaryText}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Chevron" Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                                         To="180" Duration="0:0:0.45" EasingFunction="{StaticResource Muzzle.Ease.BackStrong}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Chevron" Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                                         To="0" Duration="0:0:0.45" EasingFunction="{StaticResource Muzzle.Ease.BackStrong}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Muzzle.Expander" TargetType="{x:Type Expander}">
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="Background" Value="{DynamicResource Muzzle.Brush.Surface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.SurfaceRim}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="16,12" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="mz:MuzzleAssist.CornerRadius" Value="14" />
+        <Setter Property="mz:MuzzleAssist.ShadowDepth" Value="Subtle" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Expander}">
+                    <Grid x:Name="Root">
+                        <Border x:Name="Body"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding mz:MuzzleAssist.CornerRadius}"
+                                Effect="{TemplateBinding mz:MuzzleAssist.ShadowDepth, Converter={x:Static mzv:ShadowDepthToEffectConverter.Instance}}" />
+                        <DockPanel Margin="{TemplateBinding BorderThickness}">
+                            <ToggleButton x:Name="HeaderSite"
+                                          DockPanel.Dock="Top"
+                                          Style="{StaticResource Muzzle.Expander.HeaderToggle}"
+                                          Padding="{TemplateBinding Padding}"
+                                          Content="{TemplateBinding Header}"
+                                          ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                          ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}"
+                                          Foreground="{TemplateBinding Foreground}"
+                                          FontWeight="SemiBold"
+                                          FontSize="{TemplateBinding FontSize}"
+                                          HorizontalContentAlignment="Stretch"
+                                          FocusVisualStyle="{DynamicResource Muzzle.FocusVisual}"
+                                          mz:MuzzleAssist.CornerRadius="{TemplateBinding mz:MuzzleAssist.CornerRadius}"
+                                          IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Border x:Name="ExpandSite"
+                                    Padding="{TemplateBinding Padding}"
+                                    Visibility="Collapsed"
+                                    Opacity="0"
+                                    Focusable="False">
+                                <Border.LayoutTransform>
+                                    <ScaleTransform ScaleY="0" />
+                                </Border.LayoutTransform>
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  Focusable="False" />
+                            </Border>
+                        </DockPanel>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsExpanded" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ExpandSite" Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <DoubleAnimation Storyboard.TargetName="ExpandSite" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.22" />
+                                        <DoubleAnimation Storyboard.TargetName="ExpandSite" Storyboard.TargetProperty="(FrameworkElement.LayoutTransform).(ScaleTransform.ScaleY)"
+                                                         To="1" Duration="0:0:0.55" EasingFunction="{StaticResource Muzzle.Ease.JellySoft}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ExpandSite" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.16" />
+                                        <DoubleAnimation Storyboard.TargetName="ExpandSite" Storyboard.TargetProperty="(FrameworkElement.LayoutTransform).(ScaleTransform.ScaleY)"
+                                                         To="0" Duration="0:0:0.24" EasingFunction="{StaticResource Muzzle.Ease.BackIn}" />
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ExpandSite" Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0.24" Value="{x:Static Visibility.Collapsed}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="ExpandDirection" Value="Up">
+                            <Setter TargetName="HeaderSite" Property="DockPanel.Dock" Value="Bottom" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Root" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Flat variant for nesting inside other surfaces (no border, no shadow). -->
+    <Style x:Key="Muzzle.Expander.Flat" TargetType="{x:Type Expander}" BasedOn="{StaticResource Muzzle.Expander}">
+        <Setter Property="Background" Value="{DynamicResource Muzzle.Brush.CanvasAlt}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="mz:MuzzleAssist.ShadowDepth" Value="None" />
+        <Setter Property="mz:MuzzleAssist.CornerRadius" Value="12" />
+    </Style>
+
+    <Style TargetType="{x:Type Expander}" BasedOn="{StaticResource Muzzle.Expander}" />
+
+</ResourceDictionary>

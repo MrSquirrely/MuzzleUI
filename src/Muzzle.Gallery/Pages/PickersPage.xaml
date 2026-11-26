@@ -1,0 +1,142 @@
+<UserControl x:Class="Muzzle.Gallery.Pages.PickersPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mz="http://schemas.muzzle.dev/wpf"
+             xmlns:local="clr-namespace:Muzzle.Gallery"
+             xmlns:controls="clr-namespace:Muzzle.Gallery.Controls">
+    <ScrollViewer Style="{StaticResource Gallery.PageScroller}">
+        <StackPanel Margin="4,4,20,28">
+            <TextBlock Text="Inputs &amp; pickers" Style="{StaticResource Gallery.PageHeader}" />
+            <TextBlock Style="{StaticResource Gallery.PageLead}"
+                       Text="Numbers, tags, search, colours, dates, times and ratings, each with Muzzle's focus rings and springy feedback." />
+
+            <!-- NumericUpDown + Rating -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="18" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <mz:Card>
+                    <StackPanel>
+                        <TextBlock Text="NumericUpDown" Style="{StaticResource Gallery.SectionTitle}" />
+                        <TextBlock Text="Buttons, ↑ / ↓, PageUp / PageDown, or the wheel while focused." Style="{StaticResource Gallery.SectionLead}" />
+                        <TextBlock Margin="2,0,0,6" Text="Treats per day (0–20)" Style="{StaticResource Muzzle.Text.Caption}" />
+                        <mz:NumericUpDown x:Name="TreatCount" Minimum="0" Maximum="20" Value="3" AutomationProperties.Name="Treats per day" />
+                        <TextBlock Margin="2,14,0,6" Text="Weight: ValueFormat=&quot;0.00 'kg'&quot;, Increment 0.25" Style="{StaticResource Muzzle.Text.Caption}" />
+                        <mz:NumericUpDown Minimum="0" Maximum="15" Increment="0.25" DecimalPlaces="2" ValueFormat="0.00 'kg'" Value="4.5" AutomationProperties.Name="Weight" />
+                        <TextBlock Margin="2,14,0,6" Text="Budget: ValueFormat=&quot;C2&quot; / read-only" Style="{StaticResource Muzzle.Text.Caption}" />
+                        <UniformGrid Columns="2">
+                            <mz:NumericUpDown Margin="0,0,6,0" Minimum="0" Increment="5" DecimalPlaces="2" ValueFormat="C2" Value="42" AutomationProperties.Name="Budget" />
+                            <mz:NumericUpDown Margin="6,0,0,0" Value="9" IsReadOnly="True" AutomationProperties.Name="Lives (read-only)" />
+                        </UniformGrid>
+                    </StackPanel>
+                </mz:Card>
+                <mz:Card Grid.Column="2">
+                    <StackPanel>
+                        <TextBlock Text="Rating" Style="{StaticResource Gallery.SectionTitle}" />
+                        <TextBlock Text="Icons grow 1.18× and wiggle on hover; picking bounces a wave. Click the same value to clear." Style="{StaticResource Gallery.SectionLead}" />
+                        <StackPanel Orientation="Horizontal">
+                            <mz:Rating x:Name="StarRating" Value="3.5" AllowHalf="True" ItemSize="30" />
+                            <TextBlock Margin="14,0,0,0" VerticalAlignment="Center" FontWeight="SemiBold"
+                                       Text="{Binding Value, ElementName=StarRating, StringFormat={}{0:0.#} / 5}" />
+                        </StackPanel>
+                        <mz:Rating Margin="0,14,0,0" Value="4" IconShape="Heart" ItemSize="28" />
+                        <mz:Rating Margin="0,14,0,0" Value="2" Maximum="6" IconShape="PawPrint" ItemSize="28"
+                                   FillBrush="{DynamicResource Muzzle.Brush.Secondary}" />
+                        <StackPanel Margin="0,14,0,0" Orientation="Horizontal">
+                            <mz:Rating Value="4.5" AllowHalf="True" IsReadOnly="True" ItemSize="18" ItemSpacing="2"
+                                       FillBrush="{DynamicResource Muzzle.Brush.Warning}" />
+                            <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" Text="read-only, 4.5" Style="{StaticResource Muzzle.Text.Caption}" />
+                        </StackPanel>
+                    </StackPanel>
+                </mz:Card>
+            </Grid>
+
+            <!-- TagInput + SearchBar -->
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="TagInput" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Type and press Enter, a comma or a semicolon. Backspace on an empty entry arms the last chip, press again to remove it. Duplicates wobble." Style="{StaticResource Gallery.SectionLead}" />
+                    <mz:TagInput x:Name="Tags" Delimiter=",;" Placeholder="Describe your cat…" AutomationProperties.Name="Cat traits" />
+                    <TextBlock x:Name="TagSummary" Margin="2,10,0,0" Style="{StaticResource Muzzle.Text.Caption}" />
+                    <TextBlock Margin="2,16,0,6" Text="MaxTags=&quot;3&quot;, AllowDuplicates" Style="{StaticResource Muzzle.Text.Caption}" />
+                    <mz:TagInput MaxTags="3" AllowDuplicates="True" Placeholder="Up to three favourite toys" AutomationProperties.Name="Favourite toys" />
+                </StackPanel>
+            </mz:Card>
+
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="SearchBar" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Debounced as you type (300 ms), instant on Enter. Suggestions filter live; use ↑ / ↓ and Enter, or click." Style="{StaticResource Gallery.SectionLead}" />
+                    <mz:SearchBar x:Name="CatSearch" Width="420" HorizontalAlignment="Left"
+                                  mz:MuzzleAssist.Placeholder="Search the cat directory…"
+                                  SearchRequested="OnSearchRequested"
+                                  AutomationProperties.Name="Search cats" />
+                    <TextBlock x:Name="SearchStatus" Margin="2,10,0,0" Style="{StaticResource Muzzle.Text.Caption}" Text="Nothing searched yet." />
+                </StackPanel>
+            </mz:Card>
+
+            <!-- ColorPicker -->
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="ColorPicker" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Drag the canvas (its thumb swells while you drag), use the hue and alpha sliders, pick a pastel, or type hex / RGB. Everything stays in sync." Style="{StaticResource Gallery.SectionLead}" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <mz:ColorPicker x:Name="Picker" SelectedColor="#B8A9E6" />
+                        <Border Grid.Column="1" Margin="28,0,0,0" CornerRadius="18" VerticalAlignment="Top" Padding="24"
+                                Background="{Binding SelectedBrush, ElementName=Picker}" mz:MuzzleAssist.ShadowDepth="Soft">
+                            <StackPanel>
+                                <Image Width="56" Height="56" HorizontalAlignment="Left" Source="{StaticResource Gallery.PawIcon}" />
+                                <TextBlock Margin="0,14,0,4" Text="Collar colour" Style="{StaticResource Muzzle.Text.Title}" />
+                                <TextBlock Text="{Binding HexText, ElementName=Picker}" FontFamily="{StaticResource Muzzle.FontFamily.Mono}" />
+                            </StackPanel>
+                        </Border>
+                        <StackPanel Grid.Column="1" Margin="28,0,0,0" VerticalAlignment="Bottom">
+                            <TextBlock Margin="2,0,0,6" Text="As a dropdown: ColorPickerDropDown, bound two-way to the picker" Style="{StaticResource Muzzle.Text.Caption}" />
+                            <mz:ColorPickerDropDown x:Name="PickerDropDown" Width="220" HorizontalAlignment="Left"
+                                                    SelectedColor="{Binding SelectedColor, ElementName=Picker, Mode=TwoWay}"
+                                                    AutomationProperties.Name="Collar colour" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </mz:Card>
+
+            <!-- Date & time -->
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="DatePicker, Calendar &amp; TimePicker" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Picking a day or a time slot bounces a blush pill into place. Today wears a lavender ring." Style="{StaticResource Gallery.SectionLead}" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,24,0">
+                            <TextBlock Margin="2,0,0,6" Text="Vet appointment" Style="{StaticResource Muzzle.Text.Caption}" />
+                            <DatePicker x:Name="VetDate" AutomationProperties.Name="Vet appointment date" />
+                            <TextBlock Margin="2,14,0,6" Text="Time (12-hour, 15-minute steps)" Style="{StaticResource Muzzle.Text.Caption}" />
+                            <mz:TimePicker x:Name="VetTime" MinuteIncrement="15" AutomationProperties.Name="Vet appointment time" />
+                            <TextBlock Margin="2,14,0,6" Text="Dinner (24-hour)" Style="{StaticResource Muzzle.Text.Caption}" />
+                            <mz:TimePicker Is24HourClock="True" SelectedTime="18:30" AutomationProperties.Name="Dinner time" />
+                            <TextBlock x:Name="AppointmentSummary" Margin="2,14,0,0" Style="{StaticResource Muzzle.Text.Caption}" />
+                        </StackPanel>
+                        <Calendar Grid.Column="1" x:Name="InlineCalendar" />
+                    </Grid>
+                </StackPanel>
+            </mz:Card>
+
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="Snippet" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="DatePicker and Calendar are the standard WPF controls, restyled; the rest live in the mz namespace." Style="{StaticResource Gallery.SectionLead}" />
+                    <controls:SnippetView Code="{x:Static local:Snippets.Pickers}" />
+                </StackPanel>
+            </mz:Card>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

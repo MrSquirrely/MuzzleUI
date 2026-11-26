@@ -1,0 +1,90 @@
+<Application x:Class="Muzzle.Gallery.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mz="http://schemas.muzzle.dev/wpf"
+             ShutdownMode="OnMainWindowClose">
+    <Application.Resources>
+        <!-- The whole Muzzle theme, its base theme and its accent, in one line. -->
+        <mz:MuzzleThemeResourceDictionary Theme="Light" Accent="Coral">
+
+            <!-- A toe-bean paw print, used as the window icon. -->
+            <DrawingImage x:Key="Gallery.PawIcon">
+                <DrawingImage.Drawing>
+                    <DrawingGroup>
+                        <GeometryDrawing Brush="Transparent">
+                            <GeometryDrawing.Geometry>
+                                <RectangleGeometry Rect="0,0,32,32" />
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                        <GeometryDrawing Brush="#F497A9">
+                            <GeometryDrawing.Geometry>
+                                <GeometryGroup>
+                                    <EllipseGeometry Center="16,21.5" RadiusX="8" RadiusY="6.8" />
+                                    <EllipseGeometry Center="6.6,13.6" RadiusX="3.1" RadiusY="3.6" />
+                                    <EllipseGeometry Center="12.4,8.2" RadiusX="3.2" RadiusY="3.8" />
+                                    <EllipseGeometry Center="19.6,8.2" RadiusX="3.2" RadiusY="3.8" />
+                                    <EllipseGeometry Center="25.4,13.6" RadiusX="3.1" RadiusY="3.6" />
+                                </GeometryGroup>
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                    </DrawingGroup>
+                </DrawingImage.Drawing>
+            </DrawingImage>
+
+            <!-- A vector "photo" (garden, hills and a loaf of cat): crisp at any zoom. -->
+            <DrawingImage x:Key="Gallery.GardenScene">
+                <DrawingImage.Drawing>
+                    <DrawingGroup>
+                        <GeometryDrawing>
+                            <GeometryDrawing.Brush>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Offset="0" Color="#BFE0FA" />
+                                    <GradientStop Offset="0.65" Color="#FDE7EC" />
+                                </LinearGradientBrush>
+                            </GeometryDrawing.Brush>
+                            <GeometryDrawing.Geometry>
+                                <RectangleGeometry Rect="0,0,480,300" />
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                        <GeometryDrawing Brush="#F8DE9B" Geometry="M 392,70 A 34,34 0 1 1 391.9,70 Z" />
+                        <GeometryDrawing Brush="#FFFFFF" Geometry="M 60,80 C 60,64 84,60 92,72 C 100,58 128,62 126,80 C 140,80 140,98 124,98 H 66 C 50,98 48,82 60,80 Z" />
+                        <GeometryDrawing Brush="#FFFFFF" Geometry="M 250,50 C 252,38 270,36 276,46 C 284,36 302,40 300,52 C 310,52 310,64 298,64 H 256 C 244,64 242,52 250,50 Z" />
+                        <GeometryDrawing Brush="#B9E3D9" Geometry="M 0,220 C 90,170 190,170 290,210 C 360,238 420,190 480,200 V 300 H 0 Z" />
+                        <GeometryDrawing Brush="#9FD8CB" Geometry="M 0,250 C 120,220 220,236 320,256 C 400,272 440,244 480,246 V 300 H 0 Z" />
+                        <GeometryDrawing Brush="#2E2B36" Geometry="M 182,214 C 182,190 200,178 226,178 C 252,178 268,190 268,214 Z M 186,190 L 190,170 L 202,182 Z M 214,180 L 222,162 L 230,180 Z M 262,206 C 280,206 288,196 284,186" />
+                        <GeometryDrawing Brush="#F8DE9B" Geometry="M 199,196 A 3,3 0 1 1 198.9,196 Z M 213,196 A 3,3 0 1 1 212.9,196 Z" />
+                        <ImageDrawing ImageSource="{StaticResource Gallery.PawIcon}" Rect="90,236,26,26" />
+                        <ImageDrawing ImageSource="{StaticResource Gallery.PawIcon}" Rect="128,250,22,22" />
+                        <ImageDrawing ImageSource="{StaticResource Gallery.PawIcon}" Rect="360,232,24,24" />
+                    </DrawingGroup>
+                </DrawingImage.Drawing>
+            </DrawingImage>
+
+            <Style x:Key="Gallery.PageHeader" TargetType="TextBlock" BasedOn="{StaticResource Muzzle.Text.Display}">
+                <Setter Property="Margin" Value="0,0,0,4" />
+            </Style>
+
+            <Style x:Key="Gallery.PageLead" TargetType="TextBlock" BasedOn="{StaticResource Muzzle.Text.Secondary}">
+                <Setter Property="Margin" Value="0,0,0,22" />
+                <Setter Property="MaxWidth" Value="720" />
+                <Setter Property="HorizontalAlignment" Value="Left" />
+            </Style>
+
+            <Style x:Key="Gallery.SectionTitle" TargetType="TextBlock" BasedOn="{StaticResource Muzzle.Text.Subtitle}">
+                <Setter Property="Margin" Value="0,0,0,2" />
+            </Style>
+
+            <Style x:Key="Gallery.SectionLead" TargetType="TextBlock" BasedOn="{StaticResource Muzzle.Text.Caption}">
+                <Setter Property="Margin" Value="0,0,0,16" />
+                <Setter Property="TextWrapping" Value="Wrap" />
+            </Style>
+
+            <Style x:Key="Gallery.PageScroller" TargetType="ScrollViewer" BasedOn="{StaticResource Muzzle.ScrollViewer}">
+                <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+                <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
+                <Setter Property="Focusable" Value="False" />
+                <Setter Property="mz:ScrollViewerAssist.EnableSmoothScroll" Value="True" />
+            </Style>
+        </mz:MuzzleThemeResourceDictionary>
+    </Application.Resources>
+</Application>

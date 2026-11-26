@@ -1,0 +1,110 @@
+name: Release
+
+# Every update to main is a production release: build, test, pack, tag v<Version>, publish a GitHub Release,
+# and push to NuGet.org when the NUGET_API_KEY repository secret is set. Bump <Version> in
+# src/Muzzle.Theme/Muzzle.Theme.csproj before merging; an existing tag is never overwritten.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+jobs:
+  release:
+    name: Build, test and publish
+    runs-on: windows-latest
+    timeout-minutes: 30
+    env:
+      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            9.0.x
+            10.0.x
+
+      - name: Read version
+        id: version
+        shell: pwsh
+        run: |
+          $version = (dotnet msbuild src/Muzzle.Theme/Muzzle.Theme.csproj -getProperty:Version).Trim()
+          if ([string]::IsNullOrWhiteSpace($version)) { throw 'Could not read <Version> from Muzzle.Theme.csproj.' }
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "tag=v$version" >> $env:GITHUB_OUTPUT
+          Write-Host "Releasing Muzzle.Theme $version"
+
+      - name: Check for an existing release
+        id: existing
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view '${{ steps.version.outputs.tag }}' --repo '${{ github.repository }}' *> $null
+          if ($LASTEXITCODE -eq 0) {
+            "exists=true" >> $env:GITHUB_OUTPUT
+            Write-Host "::warning::Release ${{ steps.version.outputs.tag }} already exists. Bump <Version> in Muzzle.Theme.csproj to publish a new one."
+          }
+          else {
+            "exists=false" >> $env:GITHUB_OUTPUT
+          }
+          exit 0
+
+      - name: Restore
+        run: dotnet restore Muzzle.slnx
+
+      - name: Build (Release, warnings are errors)
+        run: dotnet build Muzzle.slnx -c Release --no-restore -warnaserror
+
+      - name: Test
+        run: dotnet test tests/Muzzle.Theme.Tests -c Release --no-build
+
+      - name: Pack
+        run: dotnet pack src/Muzzle.Theme -c Release --no-build -o artifacts -warnaserror
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-package-${{ steps.version.outputs.version }}
+          path: artifacts/*
+
+      - name: Create GitHub Release
+        if: steps.existing.outputs.exists == 'false'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $assets = Get-ChildItem artifacts -File | ForEach-Object FullName
+          gh release create '${{ steps.version.outputs.tag }}' @assets `
+            --repo '${{ github.repository }}' `
+            --target '${{ github.sha }}' `
+            --title 'Muzzle.Theme ${{ steps.version.outputs.version }}' `
+            --generate-notes
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Publish to NuGet.org
+        if: steps.existing.outputs.exists == 'false' && env.NUGET_API_KEY != ''
+        shell: pwsh
+        run: |
+          dotnet nuget push 'artifacts/*.nupkg' --api-key $env:NUGET_API_KEY --source https://api.nuget.org/v3/index.json --skip-duplicate
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Note skipped NuGet publish
+        if: steps.existing.outputs.exists == 'false' && env.NUGET_API_KEY == ''
+        run: echo "::notice::NUGET_API_KEY is not set, so the package was attached to the GitHub Release but not pushed to NuGet.org."

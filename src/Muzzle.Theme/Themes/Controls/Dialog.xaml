@@ -1,0 +1,85 @@
+<!--
+    Dialog: dimmed backdrop (#402E2B36) + a rounded, floating surface. Animations live in Dialog.cs
+    (pop in from 0.82x with a 1.04x overshoot, shrink to 0.9x and fade on close).
+    DialogContainer: hosts dialogs above its content and blocks that content while a modal dialog is open.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mz="clr-namespace:Muzzle.Theme"
+                    xmlns:mzc="clr-namespace:Muzzle.Theme.Controls"
+                    xmlns:mzv="clr-namespace:Muzzle.Theme.Converters">
+
+    <Style x:Key="Muzzle.Dialog" TargetType="{x:Type mzc:Dialog}">
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="Background" Value="{DynamicResource Muzzle.Brush.Surface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.SurfaceRim}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="24" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="mz:MuzzleAssist.CornerRadius" Value="16" />
+        <Setter Property="mz:MuzzleAssist.ShadowDepth" Value="Floating" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type mzc:Dialog}">
+                    <Grid x:Name="Root">
+                        <Border x:Name="PART_Backdrop" Background="{DynamicResource Muzzle.Brush.Backdrop}" />
+                        <Grid x:Name="PART_Surface"
+                              Margin="32"
+                              MinWidth="300"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              RenderTransformOrigin="0.5,0.5"
+                              KeyboardNavigation.TabNavigation="Cycle"
+                              mz:FocusTrap.IsEnabled="True"
+                              KeyboardNavigation.ControlTabNavigation="Cycle"
+                              KeyboardNavigation.DirectionalNavigation="Contained"
+                              AutomationProperties.Name="Dialog">
+                            <mzc:SoftBorder Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="{TemplateBinding mz:MuzzleAssist.CornerRadius}"
+                                            Effect="{TemplateBinding mz:MuzzleAssist.ShadowDepth, Converter={x:Static mzv:ShadowDepthToEffectConverter.Instance}}" />
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Grid>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsModal" Value="False">
+                            <Setter TargetName="PART_Backdrop" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type mzc:Dialog}" BasedOn="{StaticResource Muzzle.Dialog}" />
+
+    <Style TargetType="{x:Type mzc:DialogContainer}">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type mzc:DialogContainer}">
+                    <Grid>
+                        <ContentPresenter x:Name="PART_Content"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        <Grid x:Name="PART_DialogHost" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="HasModalDialog" Value="True">
+                            <Setter TargetName="PART_Content" Property="IsHitTestVisible" Value="False" />
+                            <Setter TargetName="PART_Content" Property="KeyboardNavigation.TabNavigation" Value="None" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

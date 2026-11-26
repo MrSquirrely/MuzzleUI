@@ -1,0 +1,248 @@
+<!--
+    NavigationView: a rounded side pane with a hamburger toggle, header/footer slots and icon + label items.
+    A blush pill (PART_SelectionPill) slides behind the selected item; the pane width springs open/closed.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mz="clr-namespace:Muzzle.Theme"
+                    xmlns:mzc="clr-namespace:Muzzle.Theme.Controls"
+                    xmlns:mzv="clr-namespace:Muzzle.Theme.Converters">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Animations/JellyEasings.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <BooleanToVisibilityConverter x:Key="Muzzle.NavigationView.BoolToVisibility" />
+
+    <Style x:Key="Muzzle.NavigationView.PaneToggle" TargetType="{x:Type ToggleButton}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Width" Value="40" />
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextSecondary}" />
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource Muzzle.FocusVisual}" />
+        <Setter Property="ToolTip" Value="Toggle navigation pane" />
+        <Setter Property="AutomationProperties.Name" Value="Toggle navigation pane" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                    <Grid x:Name="Root" Background="Transparent" mz:MuzzleAssist.Jelly="Hover, Press">
+                        <Border x:Name="Hover" CornerRadius="12" Background="{DynamicResource Muzzle.Brush.HoverTint}" Opacity="0" />
+                        <Path x:Name="Glyph"
+                              Width="16" Height="16"
+                              HorizontalAlignment="Center" VerticalAlignment="Center"
+                              Data="M 2,4 H 14 M 2,8 H 11 M 2,12 H 14"
+                              Stroke="{TemplateBinding Foreground}"
+                              StrokeThickness="1.7" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                              RenderTransformOrigin="0.5,0.5">
+                            <Path.RenderTransform>
+                                <ScaleTransform />
+                            </Path.RenderTransform>
+                        </Path>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Hover" Property="Opacity" Value="1" />
+                            <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="False">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Glyph" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         To="-1" Duration="0:0:0.45" EasingFunction="{StaticResource Muzzle.Ease.BackStrong}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Glyph" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         To="1" Duration="0:0:0.45" EasingFunction="{StaticResource Muzzle.Ease.BackStrong}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Muzzle.NavigationViewItem" TargetType="{x:Type mzc:NavigationViewItem}">
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Margin" Value="0,2" />
+        <Setter Property="MinHeight" Value="42" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource Muzzle.FocusVisual}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type mzc:NavigationViewItem}">
+                    <Grid x:Name="Root" MinHeight="{TemplateBinding MinHeight}" Background="Transparent" mz:MuzzleAssist.Jelly="Press">
+                        <Border x:Name="Hover" CornerRadius="12" Background="{DynamicResource Muzzle.Brush.HoverTint}" Opacity="0" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="{Binding CompactPaneLength, RelativeSource={RelativeSource AncestorType={x:Type mzc:NavigationView}}, Converter={x:Static mzv:DoubleOffsetConverter.Instance}, ConverterParameter=-12, FallbackValue=44}" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Path x:Name="IconPath"
+                                      Data="{TemplateBinding IconGeometry}"
+                                      Stroke="{TemplateBinding Foreground}"
+                                      StrokeThickness="1.7"
+                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                      Stretch="Uniform" />
+                                <ContentPresenter Content="{TemplateBinding Icon}" />
+                            </Grid>
+                            <ContentPresenter x:Name="Label"
+                                              Grid.Column="1"
+                                              Margin="2,0,12,0"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              RecognizesAccessKey="True"
+                                              TextElement.FontSize="14" />
+                        </Grid>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Hover" Property="Opacity" Value="1" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Hover" Property="Opacity" Value="0" />
+                            <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.PrimaryText}" />
+                            <Setter TargetName="Label" Property="TextElement.FontWeight" Value="SemiBold" />
+                        </Trigger>
+                        <DataTrigger Binding="{Binding IsPaneOpen, RelativeSource={RelativeSource AncestorType={x:Type mzc:NavigationView}}}" Value="False">
+                            <Setter Property="ToolTip" Value="{Binding Content, RelativeSource={RelativeSource Self}}" />
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Label" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Label" Storyboard.TargetProperty="Opacity" To="1" BeginTime="0:0:0.12" Duration="0:0:0.25" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Root" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Muzzle.NavigationView" TargetType="{x:Type mzc:NavigationView}">
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="Background" Value="{DynamicResource Muzzle.Brush.Surface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.SurfaceRim}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+        <Setter Property="ScrollViewer.CanContentScroll" Value="False" />
+        <Setter Property="KeyboardNavigation.DirectionalNavigation" Value="Contained" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="mz:MuzzleAssist.CornerRadius" Value="16" />
+        <Setter Property="mz:MuzzleAssist.ShadowDepth" Value="Soft" />
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <StackPanel />
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type mzc:NavigationView}">
+                    <Grid x:Name="PART_PaneRoot" HorizontalAlignment="Left">
+                        <mzc:SoftBorder Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="{TemplateBinding mz:MuzzleAssist.CornerRadius}"
+                                        Effect="{TemplateBinding mz:MuzzleAssist.ShadowDepth, Converter={x:Static mzv:ShadowDepthToEffectConverter.Instance}}" />
+                        <DockPanel Margin="6,10" ClipToBounds="True">
+                            <Grid DockPanel.Dock="Top" Margin="0,0,0,10" MinHeight="44">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="{Binding CompactPaneLength, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static mzv:DoubleOffsetConverter.Instance}, ConverterParameter=-12}" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <ToggleButton x:Name="PART_ToggleButton"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Style="{StaticResource Muzzle.NavigationView.PaneToggle}"
+                                              Visibility="{Binding IsPaneToggleButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Muzzle.NavigationView.BoolToVisibility}}"
+                                              IsChecked="{Binding IsPaneOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" />
+                                <ContentPresenter x:Name="HeaderPresenter"
+                                                  Grid.Column="1"
+                                                  VerticalAlignment="Center"
+                                                  Content="{TemplateBinding PaneHeader}"
+                                                  ContentTemplate="{TemplateBinding PaneHeaderTemplate}" />
+                            </Grid>
+                            <ContentPresenter x:Name="FooterPresenter"
+                                              DockPanel.Dock="Bottom"
+                                              Margin="0,10,0,0"
+                                              Content="{TemplateBinding PaneFooter}"
+                                              ContentTemplate="{TemplateBinding PaneFooterTemplate}" />
+                            <ScrollViewer Focusable="False"
+                                          HorizontalScrollBarVisibility="Disabled"
+                                          VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
+                                          CanContentScroll="False">
+                                <Grid x:Name="PART_ItemsHost">
+                                    <Grid x:Name="PART_SelectionPill"
+                                          HorizontalAlignment="Stretch"
+                                          VerticalAlignment="Top"
+                                          Margin="0,0,0,0"
+                                          Opacity="0"
+                                          IsHitTestVisible="False">
+                                        <Border CornerRadius="12" Background="{DynamicResource Muzzle.Brush.PrimarySoft}" />
+                                        <Border Width="3.5" Height="18" Margin="4,0,0,0" HorizontalAlignment="Left" CornerRadius="2"
+                                                Background="{DynamicResource Muzzle.Brush.Primary}" />
+                                    </Grid>
+                                    <ItemsPresenter />
+                                </Grid>
+                            </ScrollViewer>
+                        </DockPanel>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsPaneOpen" Value="False">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="HeaderPresenter" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15" />
+                                        <DoubleAnimation Storyboard.TargetName="FooterPresenter" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="HeaderPresenter" Storyboard.TargetProperty="Opacity" To="1" BeginTime="0:0:0.12" Duration="0:0:0.25" />
+                                        <DoubleAnimation Storyboard.TargetName="FooterPresenter" Storyboard.TargetProperty="Opacity" To="1" BeginTime="0:0:0.12" Duration="0:0:0.25" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="PART_PaneRoot" Property="Opacity" Value="0.55" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type mzc:NavigationView}" BasedOn="{StaticResource Muzzle.NavigationView}" />
+    <Style TargetType="{x:Type mzc:NavigationViewItem}" BasedOn="{StaticResource Muzzle.NavigationViewItem}" />
+
+</ResourceDictionary>

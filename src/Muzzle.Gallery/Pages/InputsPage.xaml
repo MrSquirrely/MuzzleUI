@@ -1,0 +1,97 @@
+<UserControl x:Class="Muzzle.Gallery.Pages.InputsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mz="http://schemas.muzzle.dev/wpf"
+             xmlns:local="clr-namespace:Muzzle.Gallery"
+             xmlns:controls="clr-namespace:Muzzle.Gallery.Controls">
+    <ScrollViewer Style="{StaticResource Gallery.PageScroller}">
+        <StackPanel Margin="4,4,20,28">
+            <TextBlock Text="Text input" Style="{StaticResource Gallery.PageHeader}" />
+            <TextBlock Style="{StaticResource Gallery.PageLead}"
+                       Text="Fields get a blush focus ring that springs outward and a subtle scale pulse when focused. Placeholders come from mz:MuzzleAssist.Placeholder." />
+
+            <mz:Card>
+                <StackPanel>
+                    <TextBlock Text="TextBox &amp; PasswordBox" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Click into a field, or Tab between them." Style="{StaticResource Gallery.SectionLead}" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Margin="2,0,0,6" Text="Name" Style="{StaticResource Muzzle.Text.Caption}" />
+                            <TextBox mz:MuzzleAssist.Placeholder="Your cat's name" />
+                            <TextBlock Margin="2,14,0,6" Text="With text" Style="{StaticResource Muzzle.Text.Caption}" />
+                            <TextBox Text="Mochi" />
+                            <TextBlock Margin="2,14,0,6" Text="Read-only" Style="{StaticResource Muzzle.Text.Caption}" />
+                            <TextBox Text="Certified good kitty" IsReadOnly="True" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Margin="2,0,0,6" Text="Password" Style="{StaticResource Muzzle.Text.Caption}" />
+                            <PasswordBox mz:MuzzleAssist.Placeholder="Secret treat stash" />
+                            <TextBlock Margin="2,14,0,6" Text="Pill field" Style="{StaticResource Muzzle.Text.Caption}" />
+                            <TextBox mz:MuzzleAssist.Placeholder="Search the snack drawer" mz:MuzzleAssist.CornerRadius="999" Padding="16,8" />
+                            <TextBlock Margin="2,14,0,6" Text="Disabled" Style="{StaticResource Muzzle.Text.Caption}" />
+                            <TextBox Text="Sleeping, do not disturb" IsEnabled="False" />
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock Margin="2,14,0,6" Text="Multi-line" Style="{StaticResource Muzzle.Text.Caption}" />
+                    <TextBox Height="104"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             VerticalContentAlignment="Top"
+                             VerticalScrollBarVisibility="Auto"
+                             mz:MuzzleAssist.Placeholder="Dear diary, today I knocked a glass off the table…" />
+                </StackPanel>
+            </mz:Card>
+
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="ComboBox" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="The dropdown card springs open from the top edge; the chevron flips with a back-ease." Style="{StaticResource Gallery.SectionLead}" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Margin="2,0,0,6" Text="Favourite snack" Style="{StaticResource Muzzle.Text.Caption}" />
+                            <ComboBox SelectedIndex="1">
+                                <ComboBoxItem Content="Tuna flakes" />
+                                <ComboBoxItem Content="Salmon bites" />
+                                <ComboBoxItem Content="Chicken crunchies" />
+                                <ComboBoxItem Content="Catnip cookies" />
+                                <ComboBoxItem Content="Mystery floor crumb" />
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Margin="2,0,0,6" Text="Editable" Style="{StaticResource Muzzle.Text.Caption}" />
+                            <ComboBox IsEditable="True" Text="Sunbeam">
+                                <ComboBoxItem Content="Sunbeam" />
+                                <ComboBoxItem Content="Laundry basket" />
+                                <ComboBoxItem Content="Keyboard" />
+                                <ComboBoxItem Content="Cardboard box" />
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Column="4">
+                            <TextBlock Margin="2,0,0,6" Text="Placeholder / disabled" Style="{StaticResource Muzzle.Text.Caption}" />
+                            <ComboBox mz:MuzzleAssist.Placeholder="Pick a nap spot">
+                                <ComboBoxItem Content="Sofa" />
+                                <ComboBoxItem Content="Bed" />
+                            </ComboBox>
+                            <ComboBox Margin="0,10,0,0" SelectedIndex="0" IsEnabled="False">
+                                <ComboBoxItem Content="Unavailable" />
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+                    <controls:SnippetView Margin="0,18,0,0" Code="{x:Static local:Snippets.Inputs}" />
+                </StackPanel>
+            </mz:Card>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

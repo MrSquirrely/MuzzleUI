@@ -1,0 +1,445 @@
+<!--
+    DatePicker & Calendar: a Muzzle field with a calendar pill; the dropdown is a rounded card that springs open.
+    Selecting a day bounces a blush circle into place; today wears a lavender ring.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mz="clr-namespace:Muzzle.Theme"
+                    xmlns:mzc="clr-namespace:Muzzle.Theme.Controls"
+                    xmlns:mzv="clr-namespace:Muzzle.Theme.Converters">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Animations/JellyEasings.xaml" />
+        <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Controls/NumericUpDown.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <!-- Day cell -->
+    <Style x:Key="Muzzle.CalendarDayButton" TargetType="{x:Type CalendarDayButton}">
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CalendarDayButton}">
+                    <Grid x:Name="Root" Width="34" Height="34" Margin="1" Background="Transparent">
+                        <Ellipse x:Name="Hover" Fill="{DynamicResource Muzzle.Brush.HoverTint}" Opacity="0" />
+                        <Ellipse x:Name="TodayRing" Stroke="{DynamicResource Muzzle.Brush.Secondary}" StrokeThickness="1.6" Opacity="0" />
+                        <Ellipse x:Name="Selected" Fill="{DynamicResource Muzzle.Brush.Primary}" Opacity="0" RenderTransformOrigin="0.5,0.5">
+                            <Ellipse.RenderTransform>
+                                <ScaleTransform ScaleX="0.4" ScaleY="0.4" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="FocusRing" Margin="-2" Stroke="{DynamicResource Muzzle.Brush.Secondary}" StrokeThickness="2" Opacity="0" />
+                        <ContentPresenter x:Name="Content" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Path x:Name="Blackout" Data="M 9,25 L 25,9" Stroke="{DynamicResource Muzzle.Brush.TextTertiary}" StrokeThickness="1.4"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" Visibility="Collapsed" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Hover" Property="Opacity" Value="1" />
+                        </Trigger>
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Setter TargetName="Hover" Property="Opacity" Value="1" />
+                        </Trigger>
+                        <Trigger Property="IsToday" Value="True">
+                            <Setter TargetName="TodayRing" Property="Opacity" Value="1" />
+                            <Setter Property="FontWeight" Value="SemiBold" />
+                        </Trigger>
+                        <Trigger Property="IsInactive" Value="True">
+                            <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextTertiary}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="FocusRing" Property="Opacity" Value="1" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.OnPrimary}" />
+                            <Setter Property="FontWeight" Value="SemiBold" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Selected" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.1" />
+                                        <DoubleAnimation Storyboard.TargetName="Selected" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         From="0.4" To="1" Duration="0:0:0.6" EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+                                        <DoubleAnimation Storyboard.TargetName="Selected" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                         From="0.4" To="1" Duration="0:0:0.6" EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Selected" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15" />
+                                        <DoubleAnimation Storyboard.TargetName="Selected" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         To="0.4" Duration="0:0:0.15" />
+                                        <DoubleAnimation Storyboard.TargetName="Selected" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                         To="0.4" Duration="0:0:0.15" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsBlackedOut" Value="True">
+                            <Setter TargetName="Blackout" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="Content" Property="Opacity" Value="0.4" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Root" Property="Opacity" Value="0.4" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Month / year cell (year and decade views) -->
+    <Style x:Key="Muzzle.CalendarButton" TargetType="{x:Type CalendarButton}">
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CalendarButton}">
+                    <Grid Width="58" Height="44" Margin="2" Background="Transparent">
+                        <Border x:Name="Hover" CornerRadius="12" Background="{DynamicResource Muzzle.Brush.HoverTint}" Opacity="0" />
+                        <Border x:Name="Selected" CornerRadius="12" Background="{DynamicResource Muzzle.Brush.PrimarySoft}" Opacity="0" RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="0.6" ScaleY="0.6" />
+                            </Border.RenderTransform>
+                        </Border>
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Hover" Property="Opacity" Value="1" />
+                        </Trigger>
+                        <Trigger Property="IsInactive" Value="True">
+                            <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextTertiary}" />
+                        </Trigger>
+                        <Trigger Property="HasSelectedDays" Value="True">
+                            <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.PrimaryText}" />
+                            <Setter Property="FontWeight" Value="SemiBold" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Selected" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.1" />
+                                        <DoubleAnimation Storyboard.TargetName="Selected" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         To="1" Duration="0:0:0.55" EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+                                        <DoubleAnimation Storyboard.TargetName="Selected" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                         To="1" Duration="0:0:0.55" EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Selected" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Muzzle.Calendar.NavButton" TargetType="{x:Type Button}" BasedOn="{StaticResource Muzzle.SquishPillButton}">
+        <Setter Property="Width" Value="30" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <Style x:Key="Muzzle.Calendar.HeaderButton" TargetType="{x:Type Button}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border x:Name="Body" Padding="10,5" HorizontalAlignment="Center" CornerRadius="10" Background="Transparent" mz:MuzzleAssist.Jelly="Hover, Press">
+                        <ContentPresenter />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Body" Property="Background" Value="{DynamicResource Muzzle.Brush.HoverTint}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Cursor" Value="Arrow" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Muzzle.CalendarItem" TargetType="{x:Type CalendarItem}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CalendarItem}">
+                    <ControlTemplate.Resources>
+                        <DataTemplate x:Key="{x:Static CalendarItem.DayTitleTemplateResourceKey}">
+                            <TextBlock Margin="0,4,0,6" HorizontalAlignment="Center" Text="{Binding}" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Muzzle.Brush.TextTertiary}" />
+                        </DataTemplate>
+                    </ControlTemplate.Resources>
+                    <Grid x:Name="PART_Root">
+                        <mzc:SoftBorder Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="16"
+                                        Effect="{DynamicResource Muzzle.Shadow.Floating}" />
+                        <Grid Margin="12">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="PART_PreviousButton" Style="{StaticResource Muzzle.Calendar.NavButton}" Focusable="False" AutomationProperties.Name="Previous">
+                                <Path Width="8" Height="10" Data="M 6,1 L 2,5 L 6,9" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                      StrokeThickness="1.7" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
+                            </Button>
+                            <Button x:Name="PART_HeaderButton" Grid.Column="1" Style="{StaticResource Muzzle.Calendar.HeaderButton}" />
+                            <Button x:Name="PART_NextButton" Grid.Column="2" Style="{StaticResource Muzzle.Calendar.NavButton}" Focusable="False" AutomationProperties.Name="Next">
+                                <Path Width="8" Height="10" Data="M 2,1 L 6,5 L 2,9" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                      StrokeThickness="1.7" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
+                            </Button>
+                            <Grid x:Name="PART_MonthView" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,8,0,0" HorizontalAlignment="Center" Visibility="Visible">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                            </Grid>
+                            <Grid x:Name="PART_YearView" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,8,0,0" HorizontalAlignment="Center" Visibility="Hidden">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                            </Grid>
+                        </Grid>
+                        <Rectangle x:Name="PART_DisabledVisual" RadiusX="16" RadiusY="16" Fill="{DynamicResource Muzzle.Brush.Canvas}" Opacity="0" Visibility="Collapsed" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="PART_DisabledVisual" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="PART_DisabledVisual" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                        <DataTrigger Binding="{Binding DisplayMode, RelativeSource={RelativeSource AncestorType={x:Type Calendar}}}" Value="Year">
+                            <Setter TargetName="PART_MonthView" Property="Visibility" Value="Hidden" />
+                            <Setter TargetName="PART_YearView" Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding DisplayMode, RelativeSource={RelativeSource AncestorType={x:Type Calendar}}}" Value="Decade">
+                            <Setter TargetName="PART_MonthView" Property="Visibility" Value="Hidden" />
+                            <Setter TargetName="PART_YearView" Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Muzzle.Calendar" TargetType="{x:Type Calendar}">
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="Background" Value="{DynamicResource Muzzle.Brush.Surface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.SurfaceRim}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="IsTodayHighlighted" Value="True" />
+        <Setter Property="CalendarItemStyle" Value="{StaticResource Muzzle.CalendarItem}" />
+        <Setter Property="CalendarDayButtonStyle" Value="{StaticResource Muzzle.CalendarDayButton}" />
+        <Setter Property="CalendarButtonStyle" Value="{StaticResource Muzzle.CalendarButton}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Calendar}">
+                    <!-- Margin leaves room for the floating shadow when hosted in a popup. -->
+                    <Grid x:Name="PART_Root" Margin="10,4,10,18" HorizontalAlignment="Center" RenderTransformOrigin="0.5,0">
+                        <Grid.RenderTransform>
+                            <ScaleTransform />
+                        </Grid.RenderTransform>
+                        <Grid.Triggers>
+                            <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.15" />
+                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         From="0.94" To="1" Duration="0:0:0.55" EasingFunction="{StaticResource Muzzle.Ease.JellySoft}" />
+                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                         From="0.84" To="1" Duration="0:0:0.55" EasingFunction="{StaticResource Muzzle.Ease.JellySoft}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Grid.Triggers>
+                        <CalendarItem x:Name="PART_CalendarItem"
+                                      Style="{TemplateBinding CalendarItemStyle}"
+                                      Background="{TemplateBinding Background}"
+                                      BorderBrush="{TemplateBinding BorderBrush}"
+                                      BorderThickness="{TemplateBinding BorderThickness}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Muzzle.DatePickerTextBox" TargetType="{x:Type DatePickerTextBox}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Muzzle.Brush.PrimaryText}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource Muzzle.Brush.Primary}" />
+        <Setter Property="SelectionOpacity" Value="0.4" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type DatePickerTextBox}">
+                    <Grid>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="WatermarkStates">
+                                <VisualState x:Name="Unwatermarked" />
+                                <VisualState x:Name="Watermarked">
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="PART_Watermark" Storyboard.TargetProperty="Opacity" To="1" Duration="0" />
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="FocusStates">
+                                <VisualState x:Name="Unfocused" />
+                                <VisualState x:Name="Focused">
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="PART_Watermark" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.1" />
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <ContentControl x:Name="PART_Watermark"
+                                        Margin="2,0,0,0"
+                                        VerticalAlignment="Center"
+                                        Focusable="False"
+                                        IsHitTestVisible="False"
+                                        Opacity="0"
+                                        Foreground="{DynamicResource Muzzle.Brush.TextTertiary}" />
+                        <ScrollViewer x:Name="PART_ContentHost"
+                                      VerticalAlignment="Center"
+                                      Focusable="False"
+                                      HorizontalScrollBarVisibility="Hidden"
+                                      VerticalScrollBarVisibility="Hidden" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Muzzle.DatePicker" TargetType="{x:Type DatePicker}">
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="Background" Value="{DynamicResource Muzzle.Brush.ControlBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.ControlBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="12,0,6,0" />
+        <Setter Property="MinHeight" Value="38" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="IsTodayHighlighted" Value="True" />
+        <Setter Property="SelectedDateFormat" Value="Short" />
+        <Setter Property="CalendarStyle" Value="{StaticResource Muzzle.Calendar}" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="mz:MuzzleAssist.CornerRadius" Value="10" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type DatePicker}">
+                    <Grid x:Name="PART_Root" mz:MuzzleAssist.Jelly="Focus">
+                        <mzc:SoftBorder x:Name="FocusRing" Opacity="0" BorderThickness="3" IsHitTestVisible="False"
+                                        BorderBrush="{DynamicResource Muzzle.Brush.FocusRing}"
+                                        CornerRadius="{TemplateBinding mz:MuzzleAssist.CornerRadius, Converter={x:Static mzv:CornerRadiusOffsetConverter.Instance}, ConverterParameter=3}" />
+                        <mzc:SoftBorder x:Name="Body"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="{TemplateBinding mz:MuzzleAssist.CornerRadius}" />
+                        <Grid Margin="{TemplateBinding Padding}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <DatePickerTextBox x:Name="PART_TextBox"
+                                               VerticalAlignment="Center"
+                                               Style="{StaticResource Muzzle.DatePickerTextBox}"
+                                               Foreground="{TemplateBinding Foreground}" />
+                            <Button x:Name="PART_Button"
+                                    Grid.Column="1"
+                                    Margin="6,0,0,0"
+                                    Style="{StaticResource Muzzle.SquishPillButton}"
+                                    ToolTip="Open calendar"
+                                    AutomationProperties.Name="Open calendar">
+                                <Path Width="14" Height="14" Data="M 2,3.5 H 12 A 1,1 0 0 1 13,4.5 V 12 A 1,1 0 0 1 12,13 H 2 A 1,1 0 0 1 1,12 V 4.5 A 1,1 0 0 1 2,3.5 Z M 1,6.5 H 13 M 4.5,1.5 V 4.5 M 9.5,1.5 V 4.5"
+                                      Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                      StrokeThickness="1.4" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
+                            </Button>
+                        </Grid>
+                        <Popup x:Name="PART_Popup"
+                               AllowsTransparency="True"
+                               Placement="Bottom"
+                               HorizontalOffset="-10"
+                               VerticalOffset="2"
+                               PopupAnimation="None"
+                               StaysOpen="False"
+                               PlacementTarget="{Binding ElementName=PART_Root}" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Body" Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.ControlBorderHover}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="Body" Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.Primary}" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="FocusRing" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.18" />
+                                        <ThicknessAnimation Storyboard.TargetName="FocusRing" Storyboard.TargetProperty="Margin" From="0" To="-3" Duration="0:0:0.5"
+                                                            EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="FocusRing" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
+                                        <ThicknessAnimation Storyboard.TargetName="FocusRing" Storyboard.TargetProperty="Margin" To="0" Duration="0:0:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="PART_Root" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Calendar}" BasedOn="{StaticResource Muzzle.Calendar}" />
+    <Style TargetType="{x:Type DatePicker}" BasedOn="{StaticResource Muzzle.DatePicker}" />
+
+</ResourceDictionary>

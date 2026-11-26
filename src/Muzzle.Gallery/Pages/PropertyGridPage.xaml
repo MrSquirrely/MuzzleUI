@@ -1,0 +1,81 @@
+<UserControl x:Class="Muzzle.Gallery.Pages.PropertyGridPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mz="http://schemas.muzzle.dev/wpf"
+             xmlns:local="clr-namespace:Muzzle.Gallery"
+             xmlns:controls="clr-namespace:Muzzle.Gallery.Controls">
+    <Grid Margin="4,4,8,4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="360" />
+            <ColumnDefinition Width="20" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.ColumnSpan="3">
+            <TextBlock Text="Property grid" Style="{StaticResource Gallery.PageHeader}" />
+            <TextBlock Style="{StaticResource Gallery.PageLead}" Margin="0,0,0,16"
+                       Text="A reflection-based inspector: [Category], [DisplayName], [Description] and [Browsable] are honoured, and each type gets its own Muzzle editor. Edit the sample model and the preview updates live." />
+        </StackPanel>
+
+        <DockPanel Grid.Row="1">
+            <StackPanel DockPanel.Dock="Top" Margin="2,0,0,12" Orientation="Horizontal">
+                <RadioButton x:Name="InspectModel" GroupName="Target" Content="Sample model" IsChecked="True" Checked="OnTargetChanged" />
+                <RadioButton x:Name="InspectButton" Margin="18,0,0,0" GroupName="Target" Content="The live preview Button" Checked="OnTargetChanged" />
+                <mz:ToggleSwitch x:Name="CategorySwitch" Margin="24,0,0,0" Content="Categories" IsChecked="True" />
+            </StackPanel>
+            <mz:PropertyGrid x:Name="Inspector"
+                             ShowCategories="{Binding IsChecked, ElementName=CategorySwitch}"
+                             ShowSearchBox="True" />
+        </DockPanel>
+
+        <ScrollViewer Grid.Row="1" Grid.Column="2" Style="{StaticResource Gallery.PageScroller}">
+            <StackPanel Margin="0,0,12,12">
+                <TextBlock Margin="2,4,0,10" Text="Live preview" Style="{StaticResource Muzzle.Text.Overline}" />
+                <mz:Card x:Name="PreviewCard"
+                         Background="{Binding CardBackground}"
+                         Padding="{Binding Padding}"
+                         IsEnabled="{Binding IsEnabled}"
+                         mz:MuzzleAssist.CornerRadius="{Binding CornerRadius, Converter={x:Static mz:DoubleToCornerRadiusConverter.Instance}}"
+                         mz:MuzzleAssist.ShadowDepth="{Binding Shadow}"
+                         mz:MuzzleAssist.JellyIntensity="{Binding JellyIntensity}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Border Width="44" Height="44" CornerRadius="22"
+                                    Background="{Binding Accent, Converter={x:Static mz:ColorToBrushConverter.Instance}}"
+                                    mz:MuzzleAssist.Jelly="All">
+                                <Image Width="26" Height="26" Source="{StaticResource Gallery.PawIcon}" Opacity="0.85" />
+                            </Border>
+                            <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding CardTitle}" Style="{StaticResource Muzzle.Text.Subtitle}" />
+                                <TextBlock Style="{StaticResource Muzzle.Text.Caption}">
+                                    <Run Text="Mood:" />
+                                    <Run Text="{Binding Mood, Mode=OneWay}" FontWeight="SemiBold" />
+                                    <Run Text=" · Treats:" />
+                                    <Run Text="{Binding Treats, Mode=OneWay}" FontWeight="SemiBold" />
+                                    <Run Text=" · Belly rubs:" />
+                                    <Run Text="{Binding LikesBelly, Mode=OneWay, TargetNullValue='unknown'}" FontWeight="SemiBold" />
+                                </TextBlock>
+                            </StackPanel>
+                        </StackPanel>
+                        <ProgressBar Margin="0,18,0,0" Value="{Binding Progress}"
+                                     Foreground="{Binding Accent, Converter={x:Static mz:ColorToBrushConverter.Instance}}" />
+                        <StackPanel Margin="0,18,0,0" Orientation="Horizontal">
+                            <Button x:Name="PreviewButton"
+                                    Content="{Binding Caption}"
+                                    Style="{StaticResource Muzzle.Button.Primary}"
+                                    Background="{Binding Accent, Converter={x:Static mz:ColorToBrushConverter.Instance}}"
+                                    mz:MuzzleAssist.CornerRadius="{Binding CornerRadius, Converter={x:Static mz:DoubleToCornerRadiusConverter.Instance}}" />
+                            <mz:ToggleSwitch Margin="16,0,0,0" Content="Purring" IsChecked="True" />
+                        </StackPanel>
+                    </StackPanel>
+                </mz:Card>
+                <TextBlock Margin="2,18,0,10" Text="How it's wired" Style="{StaticResource Muzzle.Text.Overline}" />
+                <controls:SnippetView Code="{x:Static local:Snippets.PropertyGrid}" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

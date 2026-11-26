@@ -1,0 +1,73 @@
+<!--
+    Muzzle palette ramp: raw light-mode pastel swatches (Muzzle.Palette.*), always available whichever theme is active.
+    Controls never use these directly; they use the semantic Muzzle.Color.* / Muzzle.Brush.* keys from the palette dictionaries.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Cream & neutrals -->
+    <Color x:Key="Muzzle.Palette.White">#FFFFFF</Color>
+    <Color x:Key="Muzzle.Palette.Cream50">#FFFDFB</Color>
+    <Color x:Key="Muzzle.Palette.Cream100">#FAF8F6</Color>
+    <Color x:Key="Muzzle.Palette.Cream200">#F4F0EC</Color>
+    <Color x:Key="Muzzle.Palette.Cream300">#EFECE8</Color>
+    <Color x:Key="Muzzle.Palette.Cream400">#E6E0DA</Color>
+    <Color x:Key="Muzzle.Palette.Cream500">#D8D0C9</Color>
+    <Color x:Key="Muzzle.Palette.Cream600">#C4BAB1</Color>
+
+    <!-- Ink -->
+    <Color x:Key="Muzzle.Palette.Ink900">#2E2B36</Color>
+    <Color x:Key="Muzzle.Palette.Ink600">#787385</Color>
+    <Color x:Key="Muzzle.Palette.Ink400">#A8A3B3</Color>
+    <Color x:Key="Muzzle.Palette.Ink200">#D9D5DF</Color>
+
+    <!-- Blush (toe-bean pink) -->
+    <Color x:Key="Muzzle.Palette.Blush50">#FFF5F7</Color>
+    <Color x:Key="Muzzle.Palette.Blush100">#FDE7EC</Color>
+    <Color x:Key="Muzzle.Palette.Blush200">#FBD5DD</Color>
+    <Color x:Key="Muzzle.Palette.Blush300">#F7ABB9</Color>
+    <Color x:Key="Muzzle.Palette.Blush400">#F497A9</Color>
+    <Color x:Key="Muzzle.Palette.Blush500">#E58296</Color>
+    <Color x:Key="Muzzle.Palette.Blush700">#B4405C</Color>
+    <Color x:Key="Muzzle.Palette.Blush900">#4A2333</Color>
+
+    <!-- Lavender -->
+    <Color x:Key="Muzzle.Palette.Lavender50">#F7F5FD</Color>
+    <Color x:Key="Muzzle.Palette.Lavender100">#EEEAFA</Color>
+    <Color x:Key="Muzzle.Palette.Lavender200">#E2DBF7</Color>
+    <Color x:Key="Muzzle.Palette.Lavender300">#D2C8F1</Color>
+    <Color x:Key="Muzzle.Palette.Lavender400">#B8A9E6</Color>
+    <Color x:Key="Muzzle.Palette.Lavender500">#A493DC</Color>
+    <Color x:Key="Muzzle.Palette.Lavender800">#4B3F7A</Color>
+
+    <!-- Mint sage -->
+    <Color x:Key="Muzzle.Palette.Mint50">#F2FAF8</Color>
+    <Color x:Key="Muzzle.Palette.Mint100">#E3F4F0</Color>
+    <Color x:Key="Muzzle.Palette.Mint200">#CFECE5</Color>
+    <Color x:Key="Muzzle.Palette.Mint300">#B9E3D9</Color>
+    <Color x:Key="Muzzle.Palette.Mint400">#9FD8CB</Color>
+    <Color x:Key="Muzzle.Palette.Mint500">#86C9BA</Color>
+    <Color x:Key="Muzzle.Palette.Mint800">#2F6458</Color>
+
+    <!-- Extra pastels -->
+    <Color x:Key="Muzzle.Palette.Butter100">#FFF4D6</Color>
+    <Color x:Key="Muzzle.Palette.Butter400">#F8DE9B</Color>
+    <Color x:Key="Muzzle.Palette.Sky100">#E5F2FB</Color>
+    <Color x:Key="Muzzle.Palette.Sky400">#A9D3F0</Color>
+    <Color x:Key="Muzzle.Palette.Peach100">#FFEBDF</Color>
+    <Color x:Key="Muzzle.Palette.Peach400">#F9C3A5</Color>
+    <Color x:Key="Muzzle.Palette.Coral100">#FDE4E2</Color>
+    <Color x:Key="Muzzle.Palette.Coral300">#F7B3AE</Color>
+    <Color x:Key="Muzzle.Palette.Coral400">#F28B82</Color>
+    <Color x:Key="Muzzle.Palette.Coral700">#9E3B35</Color>
+
+    <!-- Status pastels -->
+    <Color x:Key="Muzzle.Palette.Info">#98C9F2</Color>
+    <Color x:Key="Muzzle.Palette.Success">#9FD8CB</Color>
+    <Color x:Key="Muzzle.Palette.Warning">#F7CF8B</Color>
+    <Color x:Key="Muzzle.Palette.Error">#F2949C</Color>
+
+    <!-- Warm plum shadow -->
+    <Color x:Key="Muzzle.Palette.Shadow">#4B2E3B</Color>
+
+</ResourceDictionary>

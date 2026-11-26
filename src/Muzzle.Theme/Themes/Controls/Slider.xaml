@@ -1,0 +1,233 @@
+<!--
+    Slider: rounded pastel track, blush fill, and a squishy thumb that swells on hover and grows on drag.
+    Horizontal and vertical orientations, optional tick bars.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mz="clr-namespace:Muzzle.Theme">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Animations/JellyEasings.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style x:Key="Muzzle.Slider.RepeatButton.Horizontal" TargetType="{x:Type RepeatButton}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RepeatButton}">
+                    <Grid Background="Transparent">
+                        <Border Height="6" VerticalAlignment="Center" CornerRadius="3" Background="{TemplateBinding Background}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Muzzle.Slider.RepeatButton.Vertical" TargetType="{x:Type RepeatButton}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RepeatButton}">
+                    <Grid Background="Transparent">
+                        <Border Width="6" HorizontalAlignment="Center" CornerRadius="3" Background="{TemplateBinding Background}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Muzzle.Slider.Thumb" TargetType="{x:Type Thumb}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Width" Value="20" />
+        <Setter Property="Height" Value="20" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Grid x:Name="ThumbRoot" Background="Transparent" RenderTransformOrigin="0.5,0.5">
+                        <Grid.RenderTransform>
+                            <ScaleTransform />
+                        </Grid.RenderTransform>
+                        <Ellipse x:Name="Halo" Margin="-6" Fill="{DynamicResource Muzzle.Brush.FocusRing}" Opacity="0" />
+                        <Ellipse x:Name="Knob"
+                                 Fill="{DynamicResource Muzzle.Brush.Surface}"
+                                 Stroke="{DynamicResource Muzzle.Brush.Primary}"
+                                 StrokeThickness="3"
+                                 Effect="{DynamicResource Muzzle.Shadow.Subtle}" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ThumbRoot" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         To="1.15" Duration="0:0:0.35" EasingFunction="{StaticResource Muzzle.Ease.Back}" />
+                                        <DoubleAnimation Storyboard.TargetName="ThumbRoot" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                         To="1.15" Duration="0:0:0.35" EasingFunction="{StaticResource Muzzle.Ease.Back}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ThumbRoot" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         To="1" Duration="0:0:0.5" EasingFunction="{StaticResource Muzzle.Ease.JellySoft}" />
+                                        <DoubleAnimation Storyboard.TargetName="ThumbRoot" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                         To="1" Duration="0:0:0.5" EasingFunction="{StaticResource Muzzle.Ease.JellySoft}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsDragging" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Halo" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.15" />
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ThumbRoot" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                                            <EasingDoubleKeyFrame KeyTime="0:0:0.08" Value="1.42" EasingFunction="{StaticResource Muzzle.Ease.Squish}" />
+                                            <EasingDoubleKeyFrame KeyTime="0:0:0.6" Value="1.3" EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ThumbRoot" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                                            <EasingDoubleKeyFrame KeyTime="0:0:0.08" Value="1.18" EasingFunction="{StaticResource Muzzle.Ease.Squish}" />
+                                            <EasingDoubleKeyFrame KeyTime="0:0:0.6" Value="1.3" EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Halo" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.25" />
+                                        <DoubleAnimation Storyboard.TargetName="ThumbRoot" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         To="1" Duration="0:0:0.7" EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+                                        <DoubleAnimation Storyboard.TargetName="ThumbRoot" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                         To="1" Duration="0:0:0.7" EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <ControlTemplate x:Key="Muzzle.Slider.HorizontalTemplate" TargetType="{x:Type Slider}">
+        <Grid x:Name="Root" Background="Transparent">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <TickBar x:Name="TopTick" Grid.Row="0" Height="4" Margin="10,0,10,4" Placement="Top"
+                     Fill="{DynamicResource Muzzle.Brush.ControlBorderStrong}" Visibility="Collapsed" />
+            <Border x:Name="TrackBackground" Grid.Row="1" Height="6" CornerRadius="3"
+                    Background="{TemplateBinding Background}" VerticalAlignment="Center" />
+            <Track x:Name="PART_Track" Grid.Row="1">
+                <Track.DecreaseRepeatButton>
+                    <RepeatButton Command="{x:Static Slider.DecreaseLarge}"
+                                  Style="{StaticResource Muzzle.Slider.RepeatButton.Horizontal}"
+                                  Background="{TemplateBinding Foreground}" />
+                </Track.DecreaseRepeatButton>
+                <Track.IncreaseRepeatButton>
+                    <RepeatButton Command="{x:Static Slider.IncreaseLarge}"
+                                  Style="{StaticResource Muzzle.Slider.RepeatButton.Horizontal}" />
+                </Track.IncreaseRepeatButton>
+                <Track.Thumb>
+                    <Thumb x:Name="Thumb" Style="{StaticResource Muzzle.Slider.Thumb}" />
+                </Track.Thumb>
+            </Track>
+            <TickBar x:Name="BottomTick" Grid.Row="2" Height="4" Margin="10,4,10,0" Placement="Bottom"
+                     Fill="{DynamicResource Muzzle.Brush.ControlBorderStrong}" Visibility="Collapsed" />
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="TickPlacement" Value="TopLeft">
+                <Setter TargetName="TopTick" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="TickPlacement" Value="BottomRight">
+                <Setter TargetName="BottomTick" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="TickPlacement" Value="Both">
+                <Setter TargetName="TopTick" Property="Visibility" Value="Visible" />
+                <Setter TargetName="BottomTick" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="Root" Property="Opacity" Value="0.5" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="Muzzle.Slider.VerticalTemplate" TargetType="{x:Type Slider}">
+        <Grid x:Name="Root" Background="Transparent">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" MinWidth="{TemplateBinding MinWidth}" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TickBar x:Name="TopTick" Grid.Column="0" Width="4" Margin="0,10,4,10" Placement="Left"
+                     Fill="{DynamicResource Muzzle.Brush.ControlBorderStrong}" Visibility="Collapsed" />
+            <Border x:Name="TrackBackground" Grid.Column="1" Width="6" CornerRadius="3"
+                    Background="{TemplateBinding Background}" HorizontalAlignment="Center" />
+            <Track x:Name="PART_Track" Grid.Column="1" IsDirectionReversed="True">
+                <Track.DecreaseRepeatButton>
+                    <RepeatButton Command="{x:Static Slider.DecreaseLarge}"
+                                  Style="{StaticResource Muzzle.Slider.RepeatButton.Vertical}"
+                                  Background="{TemplateBinding Foreground}" />
+                </Track.DecreaseRepeatButton>
+                <Track.IncreaseRepeatButton>
+                    <RepeatButton Command="{x:Static Slider.IncreaseLarge}"
+                                  Style="{StaticResource Muzzle.Slider.RepeatButton.Vertical}" />
+                </Track.IncreaseRepeatButton>
+                <Track.Thumb>
+                    <Thumb x:Name="Thumb" Style="{StaticResource Muzzle.Slider.Thumb}" />
+                </Track.Thumb>
+            </Track>
+            <TickBar x:Name="BottomTick" Grid.Column="2" Width="4" Margin="4,10,0,10" Placement="Right"
+                     Fill="{DynamicResource Muzzle.Brush.ControlBorderStrong}" Visibility="Collapsed" />
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="TickPlacement" Value="TopLeft">
+                <Setter TargetName="TopTick" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="TickPlacement" Value="BottomRight">
+                <Setter TargetName="BottomTick" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="TickPlacement" Value="Both">
+                <Setter TargetName="TopTick" Property="Visibility" Value="Visible" />
+                <Setter TargetName="BottomTick" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="Root" Property="Opacity" Value="0.5" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="Muzzle.Slider" TargetType="{x:Type Slider}">
+        <Setter Property="Background" Value="{DynamicResource Muzzle.Brush.Track}" />
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.Primary}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="IsMoveToPointEnabled" Value="True" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource Muzzle.FocusVisual}" />
+        <Setter Property="Template" Value="{StaticResource Muzzle.Slider.HorizontalTemplate}" />
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Vertical">
+                <Setter Property="MinHeight" Value="0" />
+                <Setter Property="MinWidth" Value="28" />
+                <Setter Property="Template" Value="{StaticResource Muzzle.Slider.VerticalTemplate}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="{x:Type Slider}" BasedOn="{StaticResource Muzzle.Slider}" />
+
+</ResourceDictionary>

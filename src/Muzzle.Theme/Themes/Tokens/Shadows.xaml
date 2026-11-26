@@ -1,0 +1,13 @@
+<!--
+    Back-compat shim. Elevation shadows (Muzzle.Shadow.*) now live in the palette dictionaries, Muzzle.Light.xaml and
+    Muzzle.Dark.xaml, tuned per theme, so they can be swapped at runtime. Muzzle.xaml no longer merges this
+    file; it is kept so existing references keep working (they get the Light palette).
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Muzzle.Light.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+</ResourceDictionary>

@@ -1,0 +1,286 @@
+<UserControl x:Class="Muzzle.Gallery.Pages.DesktopControlsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mz="http://schemas.muzzle.dev/wpf"
+             xmlns:local="clr-namespace:Muzzle.Gallery">
+    <ScrollViewer Style="{StaticResource Gallery.PageScroller}">
+        <StackPanel Margin="4,4,20,28">
+            <TextBlock Text="Desktop controls" Style="{StaticResource Gallery.PageHeader}" />
+            <TextBlock Style="{StaticResource Gallery.PageLead}"
+                       Text="A Ctrl+K command palette, split and drop-down buttons, pill splitters, empty states, keycaps, a range slider, a password meter, copyable code and Windows helpers for window placement, Mica / Acrylic backdrops and the system tray." />
+
+            <!-- Command palette -->
+            <mz:Card>
+                <StackPanel>
+                    <TextBlock Text="CommandPalette" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Fuzzy search over pages, themes, accents and actions. ↑ / ↓ move, Enter runs, Esc or a click outside closes. It works anywhere in this window." Style="{StaticResource Gallery.SectionLead}" />
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Open the palette" Click="OnOpenPalette" Style="{StaticResource Muzzle.Button.Primary}" />
+                        <TextBlock Margin="14,0,8,0" VerticalAlignment="Center" Text="or press" Style="{StaticResource Muzzle.Text.Secondary}" />
+                        <mz:ShortcutBadge x:Name="PaletteShortcut" Shortcut="Ctrl+K" />
+                    </StackPanel>
+                    <UniformGrid Margin="0,14,0,0" Columns="2">
+                        <mz:CodeBlock Margin="0,0,7,0" Language="xaml" Code="{x:Static local:Snippets.CommandPalette}" />
+                        <mz:CodeBlock Margin="7,0,0,0" Language="csharp" Code="{x:Static local:Snippets.CommandPaletteCode}" />
+                    </UniformGrid>
+                </StackPanel>
+            </mz:Card>
+
+            <!-- Split / drop-down buttons + splitter -->
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="SplitButton, DropDownButton &amp; GridSplitter" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Each segment squishes on its own; the menu card springs open from its button. Splitters get a pill handle that grows on hover and turns accent while dragging." Style="{StaticResource Gallery.SectionLead}" />
+                    <WrapPanel>
+                        <mz:SplitButton x:Name="SaveSplit" Margin="0,0,12,8" Content="Save" Click="OnSaveClick" SegmentStyle="{StaticResource Muzzle.Button.Primary}">
+                            <mz:SplitButton.MenuItems>
+                                <MenuItem Header="Save as…" InputGestureText="Ctrl+Shift+S" Click="OnMenuClick">
+                                    <MenuItem.Icon>
+                                        <mz:MuzzleIcon Kind="Save" IconSize="15" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Save a copy" Click="OnMenuClick">
+                                    <MenuItem.Icon>
+                                        <mz:MuzzleIcon Kind="Copy" IconSize="15" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Export as PDF" Click="OnMenuClick">
+                                    <MenuItem.Icon>
+                                        <mz:MuzzleIcon Kind="Download" IconSize="15" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <Separator />
+                                <MenuItem Header="Autosave" IsCheckable="True" IsChecked="True" Click="OnMenuClick" />
+                            </mz:SplitButton.MenuItems>
+                        </mz:SplitButton>
+                        <mz:SplitButton Margin="0,0,12,8" Content="Feed the cat" Click="OnSaveClick">
+                            <mz:SplitButton.MenuItems>
+                                <MenuItem Header="Salmon bites" Click="OnMenuClick" />
+                                <MenuItem Header="Chicken pâté" Click="OnMenuClick" />
+                                <MenuItem Header="Just a treat" Click="OnMenuClick" />
+                            </mz:SplitButton.MenuItems>
+                        </mz:SplitButton>
+                        <mz:DropDownButton x:Name="SortDropDown" Margin="0,0,12,8" Content="Sort by">
+                            <mz:DropDownButton.DropDownContent>
+                                <StackPanel Margin="8,6" MinWidth="190">
+                                    <TextBlock Text="Sort cats by" Style="{StaticResource Muzzle.Text.Overline}" />
+                                    <RadioButton Margin="0,8,0,0" Content="Name" GroupName="Sort" IsChecked="True" Checked="OnSortChecked" />
+                                    <RadioButton Margin="0,6,0,0" Content="Nap length" GroupName="Sort" Checked="OnSortChecked" />
+                                    <RadioButton Margin="0,6,0,0" Content="Fluffiness" GroupName="Sort" Checked="OnSortChecked" />
+                                </StackPanel>
+                            </mz:DropDownButton.DropDownContent>
+                        </mz:DropDownButton>
+                        <mz:DropDownButton Margin="0,0,12,8" SegmentStyle="{StaticResource Muzzle.Button.Ghost}">
+                            <StackPanel Orientation="Horizontal">
+                                <mz:MuzzleIcon Kind="Share" IconSize="15" />
+                                <TextBlock Margin="6,0,0,0" Text="Share" />
+                            </StackPanel>
+                            <mz:DropDownButton.MenuItems>
+                                <MenuItem Header="Copy link" Click="OnMenuClick" />
+                                <MenuItem Header="Email" Click="OnMenuClick" />
+                            </mz:DropDownButton.MenuItems>
+                        </mz:DropDownButton>
+                    </WrapPanel>
+                    <TextBlock x:Name="ActionLog" Margin="0,2,0,12" Text="Last action: none yet" Style="{StaticResource Muzzle.Text.Secondary}" />
+                    <Border Height="190" CornerRadius="14" BorderThickness="1" BorderBrush="{DynamicResource Muzzle.Brush.SurfaceBorder}" mz:ClipHelper.CornerRadius="14">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200" MinWidth="120" />
+                                <ColumnDefinition Width="12" />
+                                <ColumnDefinition Width="*" MinWidth="160" />
+                            </Grid.ColumnDefinitions>
+                            <Border Background="{DynamicResource Muzzle.Brush.CanvasAlt}" Padding="14">
+                                <TextBlock Text="Sidebar (drag the pill →)" TextWrapping="Wrap" Style="{StaticResource Muzzle.Text.Secondary}" />
+                            </Border>
+                            <GridSplitter x:Name="ColumnSplitter" Grid.Column="1" HorizontalAlignment="Stretch" ResizeDirection="Columns" />
+                            <Grid Grid.Column="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" MinHeight="50" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="*" MinHeight="50" />
+                                </Grid.RowDefinitions>
+                                <Border Padding="14">
+                                    <TextBlock Text="Editor" Style="{StaticResource Muzzle.Text.Secondary}" />
+                                </Border>
+                                <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" ResizeDirection="Rows" />
+                                <Border Grid.Row="2" Padding="14" Background="{DynamicResource Muzzle.Brush.CanvasAlt}">
+                                    <TextBlock Text="Terminal" Style="{StaticResource Muzzle.Text.Secondary}" />
+                                </Border>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                    <mz:CodeBlock Margin="0,14,0,0" Language="xaml" Code="{x:Static local:Snippets.Buttons2}" />
+                </StackPanel>
+            </mz:Card>
+
+            <!-- Empty state + keycaps -->
+            <Grid Margin="0,18,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="18" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <mz:Card>
+                    <StackPanel>
+                        <TextBlock Text="EmptyState" Style="{StaticResource Gallery.SectionTitle}" />
+                        <TextBlock Text="For empty lists, zero-result searches and first runs. The icon pops in." Style="{StaticResource Gallery.SectionLead}" />
+                        <mz:EmptyState x:Name="TreatsEmpty" IconKind="Gift" Title="No treats saved yet" Background="{DynamicResource Muzzle.Brush.CanvasAlt}"
+                                       Description="Treats you bookmark show up here, ready for snack o'clock.">
+                            <mz:EmptyState.ActionContent>
+                                <Button Content="Find treats" Style="{StaticResource Muzzle.Button.Primary}" Click="OnFindTreats" />
+                            </mz:EmptyState.ActionContent>
+                        </mz:EmptyState>
+                    </StackPanel>
+                </mz:Card>
+                <mz:Card Grid.Column="2">
+                    <StackPanel>
+                        <TextBlock Text="Keycap &amp; ShortcutBadge" Style="{StaticResource Gallery.SectionTitle}" />
+                        <TextBlock Text="Mechanical keycaps with a bottom lip that dips when clicked (or when the shortcut fires)." Style="{StaticResource Gallery.SectionLead}" />
+                        <WrapPanel>
+                            <mz:Keycap Margin="0,0,6,8" KeyText="Esc" />
+                            <mz:Keycap Margin="0,0,6,8" KeyText="Tab" />
+                            <mz:Keycap Margin="0,0,6,8" KeyText="Shift" />
+                            <mz:Keycap Margin="0,0,6,8" KeyText="Ctrl" />
+                            <mz:Keycap Margin="0,0,6,8" KeyText="Alt" />
+                            <mz:Keycap Margin="0,0,6,8" KeyText="Space" MinWidth="80" />
+                            <mz:Keycap Margin="0,0,6,8" KeyText="Enter" />
+                            <mz:Keycap Margin="0,0,6,8" KeyText="↑" />
+                        </WrapPanel>
+                        <StackPanel Margin="0,10,0,0">
+                            <DockPanel Margin="0,0,0,8">
+                                <mz:ShortcutBadge DockPanel.Dock="Right" Shortcut="Ctrl+K" />
+                                <TextBlock VerticalAlignment="Center" Text="Command palette" />
+                            </DockPanel>
+                            <DockPanel Margin="0,0,0,8">
+                                <mz:ShortcutBadge DockPanel.Dock="Right" Shortcut="Ctrl+Shift+P" />
+                                <TextBlock VerticalAlignment="Center" Text="Paw mode" />
+                            </DockPanel>
+                            <DockPanel>
+                                <mz:ShortcutBadge x:Name="ChordBadge" DockPanel.Dock="Right" Shortcut="Ctrl+K, Ctrl+S" />
+                                <TextBlock VerticalAlignment="Center" Text="Save all (chord)" />
+                            </DockPanel>
+                        </StackPanel>
+                        <Button Margin="0,12,0,0" HorizontalAlignment="Left" Content="Press the chord" Click="OnPressChord" />
+                    </StackPanel>
+                </mz:Card>
+            </Grid>
+
+            <!-- Range slider + password meter -->
+            <Grid Margin="0,18,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="18" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <mz:Card>
+                    <StackPanel>
+                        <TextBlock Text="RangeSlider" Style="{StaticResource Gallery.SectionTitle}" />
+                        <TextBlock Text="Two squishy thumbs that grow on hover and drag; StepFrequency snaps, MinimumRange keeps them apart. Arrow keys work on a focused thumb." Style="{StaticResource Gallery.SectionLead}" />
+                        <mz:RangeSlider x:Name="PriceRange" Minimum="0" Maximum="100" LowerValue="15" UpperValue="70" StepFrequency="5" MinimumRange="10" />
+                        <TextBlock Margin="0,8,0,0" Style="{StaticResource Muzzle.Text.Secondary}">
+                            <Run Text="Treat budget: $" /><Run Text="{Binding LowerValue, ElementName=PriceRange, Mode=OneWay}" />
+                            <Run Text="– $" /><Run Text="{Binding UpperValue, ElementName=PriceRange, Mode=OneWay}" />
+                        </TextBlock>
+                        <mz:RangeSlider Margin="0,18,0,0" Minimum="0" Maximum="24" LowerValue="9" UpperValue="17" />
+                        <TextBlock Margin="0,4,0,0" Text="Nap hours (continuous)" Style="{StaticResource Muzzle.Text.Caption}" />
+                    </StackPanel>
+                </mz:Card>
+                <mz:Card Grid.Column="2">
+                    <StackPanel>
+                        <TextBlock Text="PasswordStrengthMeter" Style="{StaticResource Gallery.SectionTitle}" />
+                        <TextBlock Text="Follows a PasswordBox directly. Segments spring and glide from coral-red through peach and butter to mint-sage." Style="{StaticResource Gallery.SectionLead}" />
+                        <PasswordBox x:Name="SecretBox" mz:MuzzleAssist.Placeholder="Choose a password" />
+                        <mz:PasswordStrengthMeter x:Name="StrengthMeter" Margin="2,10,2,0" PasswordBox="{Binding ElementName=SecretBox}" />
+                        <WrapPanel Margin="0,12,0,0">
+                            <Button Margin="0,0,6,6" Padding="10,4" MinHeight="28" FontSize="12" Content="password" Tag="password" Click="OnTryPassword" />
+                            <Button Margin="0,0,6,6" Padding="10,4" MinHeight="28" FontSize="12" Content="mochi2024" Tag="mochi2024" Click="OnTryPassword" />
+                            <Button Margin="0,0,6,6" Padding="10,4" MinHeight="28" FontSize="12" Content="Sunny-Window-7" Tag="Sunny-Window-7" Click="OnTryPassword" />
+                            <Button Margin="0,0,6,6" Padding="10,4" MinHeight="28" FontSize="12" Content="purr!Biscuit#Nap42" Tag="purr!Biscuit#Nap42" Click="OnTryPassword" />
+                        </WrapPanel>
+                    </StackPanel>
+                </mz:Card>
+            </Grid>
+
+            <!-- Code + copyable text -->
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="CodeBlock &amp; CopyableText" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Monospace surfaces with light XAML / C# colouring, optional line numbers and a Copy button that morphs into a bouncing mint check." Style="{StaticResource Gallery.SectionLead}" />
+                    <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
+                        <TextBlock Margin="0,0,10,0" VerticalAlignment="Center" Text="Adoption ID" Style="{StaticResource Muzzle.Text.Secondary}" />
+                        <mz:CopyableText x:Name="AdoptionId" Text="MZ-2026-PAWS-0042" />
+                    </StackPanel>
+                    <mz:CodeBlock x:Name="SampleCode" Language="csharp" ShowLineNumbers="True" Code="{x:Static local:Snippets.CommandPaletteCode}" />
+                    <mz:CodeBlock Margin="0,12,0,0" Language="xaml" Code="{x:Static local:Snippets.SmallControls}" />
+                </StackPanel>
+            </mz:Card>
+
+            <!-- Windows & system -->
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="Windows &amp; system helpers" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="WindowStateSaver remembers this window's size and position; BackdropHelper adds Windows 11 Mica / Acrylic; SystemTrayIcon puts a paw in the notification area with a Muzzle menu." Style="{StaticResource Gallery.SectionLead}" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,16,0">
+                            <TextBlock Text="Backdrop" Style="{StaticResource Muzzle.Text.Overline}" />
+                            <RadioButton x:Name="BackdropNone" Margin="0,8,0,0" Content="None" GroupName="Backdrop" Tag="None" IsChecked="True" Checked="OnBackdropChecked" />
+                            <RadioButton Margin="0,6,0,0" Content="Mica" GroupName="Backdrop" Tag="Mica" Checked="OnBackdropChecked" />
+                            <RadioButton Margin="0,6,0,0" Content="Acrylic" GroupName="Backdrop" Tag="Acrylic" Checked="OnBackdropChecked" />
+                            <RadioButton Margin="0,6,0,0" Content="Mica Alt (tabbed)" GroupName="Backdrop" Tag="Tabbed" Checked="OnBackdropChecked" />
+                            <TextBlock x:Name="BackdropStatus" Margin="0,8,0,0" TextWrapping="Wrap" Style="{StaticResource Muzzle.Text.Caption}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Margin="0,0,16,0">
+                            <TextBlock Text="Window placement" Style="{StaticResource Muzzle.Text.Overline}" />
+                            <TextBlock Margin="0,8,0,6" Text="Saved on close to:" Style="{StaticResource Muzzle.Text.Caption}" />
+                            <mz:CopyableText x:Name="StatePath" FontSize="11" />
+                            <Button Margin="0,10,0,0" HorizontalAlignment="Left" Content="Forget saved placement" Click="OnForgetPlacement" Style="{StaticResource Muzzle.Button.Ghost}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="System tray" Style="{StaticResource Muzzle.Text.Overline}" />
+                            <mz:ToggleSwitch x:Name="TraySwitch" Margin="0,8,0,0" Content="Show a tray icon" Checked="OnTrayChanged" Unchecked="OnTrayChanged" />
+                            <TextBlock Margin="0,8,0,0" TextWrapping="Wrap" Style="{StaticResource Muzzle.Text.Caption}"
+                                       Text="Left-click the paw to bring the gallery forward; right-click for a jelly menu." />
+                            <mz:SystemTrayIcon x:Name="Tray"
+                                               IconSource="{StaticResource Gallery.PawIcon}"
+                                               ToolTipText="Muzzle Gallery"
+                                               IsIconVisible="False"
+                                               LeftClick="OnTrayLeftClick">
+                                <mz:SystemTrayIcon.MenuContent>
+                                    <StackPanel>
+                                        <MenuItem Header="Show the gallery" Click="OnTrayShow">
+                                            <MenuItem.Icon>
+                                                <mz:MuzzleIcon Kind="Window" IconSize="15" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Toggle light / dark" Click="OnTrayTheme">
+                                            <MenuItem.Icon>
+                                                <mz:MuzzleIcon Kind="Moon" IconSize="15" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Say hello" Click="OnTrayHello">
+                                            <MenuItem.Icon>
+                                                <mz:MuzzleIcon Kind="Bell" IconSize="15" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <Separator />
+                                        <MenuItem Header="Hide tray icon" Click="OnTrayHide">
+                                            <MenuItem.Icon>
+                                                <mz:MuzzleIcon Kind="EyeOff" IconSize="15" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </StackPanel>
+                                </mz:SystemTrayIcon.MenuContent>
+                            </mz:SystemTrayIcon>
+                        </StackPanel>
+                    </Grid>
+                    <mz:CodeBlock Margin="0,14,0,0" Language="xaml" Code="{x:Static local:Snippets.WindowHelpers}" />
+                </StackPanel>
+            </mz:Card>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

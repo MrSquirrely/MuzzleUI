@@ -1,0 +1,148 @@
+<!--
+    Pagination: icon buttons for first / previous / next / last, numbered page buttons with a blush pill that
+    bounces to the current page, and an optional jump box. All buttons are Muzzle buttons, so they squish on click.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mz="clr-namespace:Muzzle.Theme"
+                    xmlns:mzc="clr-namespace:Muzzle.Theme.Controls">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Controls/Button.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <BooleanToVisibilityConverter x:Key="Muzzle.Pagination.BoolToVisibility" />
+
+    <Style x:Key="Muzzle.Pagination.NavButton" TargetType="{x:Type ButtonBase}" BasedOn="{StaticResource Muzzle.Button.Ghost}">
+        <Setter Property="Width" Value="34" />
+        <Setter Property="Height" Value="34" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextSecondary}" />
+        <Setter Property="mz:MuzzleAssist.CornerRadius" Value="10" />
+    </Style>
+
+    <Style x:Key="Muzzle.Pagination.PageButton" TargetType="{x:Type ButtonBase}" BasedOn="{StaticResource Muzzle.Pagination.NavButton}">
+        <Setter Property="MinWidth" Value="34" />
+        <Setter Property="Width" Value="NaN" />
+        <Setter Property="Padding" Value="8,0" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+    </Style>
+
+    <DataTemplate x:Key="Muzzle.Pagination.SlotTemplate" DataType="{x:Type mzc:PaginationSlot}">
+        <Grid>
+            <Button x:Name="PageButton"
+                    Content="{Binding Label, Mode=OneTime}"
+                    Style="{StaticResource Muzzle.Pagination.PageButton}"
+                    Command="{x:Static mzc:Pagination.GoToPageCommand}"
+                    CommandParameter="{Binding Page, Mode=OneTime}"
+                    AutomationProperties.Name="{Binding Label, StringFormat='Page {0}', Mode=OneTime}" />
+            <TextBlock x:Name="Gap"
+                       MinWidth="26"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       TextAlignment="Center"
+                       Text="…"
+                       Foreground="{DynamicResource Muzzle.Brush.TextTertiary}"
+                       Visibility="Collapsed" />
+        </Grid>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding IsEllipsis, Mode=OneTime}" Value="True">
+                <Setter TargetName="PageButton" Property="Visibility" Value="Collapsed" />
+                <Setter TargetName="Gap" Property="Visibility" Value="Visible" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsCurrent, Mode=OneTime}" Value="True">
+                <Setter TargetName="PageButton" Property="Foreground" Value="{DynamicResource Muzzle.Brush.OnPrimary}" />
+                <Setter TargetName="PageButton" Property="FontWeight" Value="SemiBold" />
+                <Setter TargetName="PageButton" Property="mz:MuzzleAssist.HoverBackground" Value="Transparent" />
+                <Setter TargetName="PageButton" Property="AutomationProperties.HelpText" Value="Current page" />
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <Style x:Key="Muzzle.Pagination" TargetType="{x:Type mzc:Pagination}">
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="KeyboardNavigation.TabNavigation" Value="Local" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type mzc:Pagination}">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button x:Name="FirstButton" Style="{StaticResource Muzzle.Pagination.NavButton}" Command="{x:Static mzc:Pagination.FirstPageCommand}"
+                                ToolTip="First page" AutomationProperties.Name="First page">
+                            <Path Width="12" Height="10" Data="M 1,1 V 9 M 10,1 L 6,5 L 10,9" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                  StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
+                        </Button>
+                        <Button Margin="2,0,6,0" Style="{StaticResource Muzzle.Pagination.NavButton}" Command="{x:Static mzc:Pagination.PreviousPageCommand}"
+                                ToolTip="Previous page" AutomationProperties.Name="Previous page">
+                            <Path Width="8" Height="10" Data="M 6,1 L 2,5 L 6,9" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                  StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
+                        </Button>
+                        <Grid>
+                            <Border x:Name="PART_Pill"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Top"
+                                    CornerRadius="10"
+                                    Opacity="0"
+                                    IsHitTestVisible="False"
+                                    Background="{DynamicResource Muzzle.Brush.Primary}"
+                                    Effect="{DynamicResource Muzzle.Shadow.Subtle}" />
+                            <ItemsControl x:Name="PART_Pages"
+                                          Focusable="False"
+                                          ItemTemplate="{StaticResource Muzzle.Pagination.SlotTemplate}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </Grid>
+                        <Button Margin="6,0,2,0" Style="{StaticResource Muzzle.Pagination.NavButton}" Command="{x:Static mzc:Pagination.NextPageCommand}"
+                                ToolTip="Next page" AutomationProperties.Name="Next page">
+                            <Path Width="8" Height="10" Data="M 2,1 L 6,5 L 2,9" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                  StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
+                        </Button>
+                        <Button x:Name="LastButton" Style="{StaticResource Muzzle.Pagination.NavButton}" Command="{x:Static mzc:Pagination.LastPageCommand}"
+                                ToolTip="Last page" AutomationProperties.Name="Last page">
+                            <Path Width="12" Height="10" Data="M 11,1 V 9 M 2,1 L 6,5 L 2,9" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                  StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
+                        </Button>
+                        <StackPanel x:Name="JumpPanel"
+                                    Margin="14,0,0,0"
+                                    Orientation="Horizontal"
+                                    Visibility="{Binding ShowJumpBox, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Muzzle.Pagination.BoolToVisibility}}">
+                            <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" Text="Go to" Foreground="{DynamicResource Muzzle.Brush.TextSecondary}" FontSize="13" />
+                            <TextBox x:Name="PART_JumpBox"
+                                     Width="58"
+                                     Style="{DynamicResource Muzzle.TextBox.Compact}"
+                                     HorizontalContentAlignment="Center"
+                                     mz:MuzzleAssist.Placeholder="#"
+                                     AutomationProperties.Name="Page number to jump to" />
+                            <Button Margin="6,0,0,0"
+                                    Padding="12,0"
+                                    MinHeight="32"
+                                    FontSize="13"
+                                    Content="Go"
+                                    Style="{StaticResource Muzzle.Button.Secondary}"
+                                    Command="{x:Static mzc:Pagination.JumpCommand}" />
+                        </StackPanel>
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="ShowFirstLastButtons" Value="False">
+                            <Setter TargetName="FirstButton" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="LastButton" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.55" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type mzc:Pagination}" BasedOn="{StaticResource Muzzle.Pagination}" />
+
+</ResourceDictionary>

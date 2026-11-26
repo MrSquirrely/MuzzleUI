@@ -1,0 +1,223 @@
+<UserControl x:Class="Muzzle.Gallery.Pages.FeedbackPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mz="http://schemas.muzzle.dev/wpf"
+             xmlns:local="clr-namespace:Muzzle.Gallery"
+             xmlns:controls="clr-namespace:Muzzle.Gallery.Controls">
+    <ScrollViewer Style="{StaticResource Gallery.PageScroller}">
+        <StackPanel Margin="4,4,20,28">
+            <TextBlock Text="Feedback &amp; status" Style="{StaticResource Gallery.PageHeader}" />
+            <TextBlock Style="{StaticResource Gallery.PageLead}"
+                       Text="Badges that pop, skeletons that shimmer, spinners that bounce, banners that squish away, and popovers that spring out of their anchors." />
+
+            <!-- Badges -->
+            <mz:Card>
+                <StackPanel>
+                    <TextBlock Text="Badge" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Counts cap at MaxValue (99+). Every change pops with an elastic bounce. MuzzleAssist.Badge adds one to any element." Style="{StaticResource Gallery.SectionLead}" />
+                    <WrapPanel>
+                        <mz:Badge x:Name="InboxBadge" Value="3" Margin="0,8,28,8">
+                            <Button Content="Inbox" Style="{StaticResource Muzzle.Button.Secondary}" />
+                        </mz:Badge>
+                        <mz:Badge Value="128" Kind="Error" Margin="0,8,28,8">
+                            <Button Content="Alerts" />
+                        </mz:Badge>
+                        <mz:Badge Text="New" Kind="Success" Margin="0,8,28,8">
+                            <Button Content="Treats" Style="{StaticResource Muzzle.Button.Mint}" />
+                        </mz:Badge>
+                        <mz:Badge IsDot="True" Kind="Success" Margin="0,8,28,8" BadgeMargin="0,-2,-2,0">
+                            <Border Width="40" Height="40" CornerRadius="20" Background="{DynamicResource Muzzle.Brush.PrimarySoft}">
+                                <Image Width="24" Height="24" Source="{StaticResource Gallery.PawIcon}" />
+                            </Border>
+                        </mz:Badge>
+                        <Button x:Name="BellButton" Margin="0,8,28,8" Style="{StaticResource Muzzle.Button.Icon}"
+                                mz:MuzzleAssist.Badge="7" mz:MuzzleAssist.BadgeKind="Info" ToolTip="Attached badge" AutomationProperties.Name="Notifications">
+                            <Path Width="16" Height="16" Stretch="Uniform" Stroke="{DynamicResource Muzzle.Brush.TextSecondary}" StrokeThickness="1.6"
+                                  StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                  Data="M 4,11 V 7 A 4,4 0 0 1 12,7 V 11 L 13.5,12.5 H 2.5 Z M 6.5,14 A 1.5,1.5 0 0 0 9.5,14" />
+                        </Button>
+                    </WrapPanel>
+                    <WrapPanel Margin="0,10,0,0">
+                        <Button Margin="0,0,10,0" Content="+1 message" Click="OnAddMessage" Style="{StaticResource Muzzle.Button.Primary}" />
+                        <Button Margin="0,0,10,0" Content="+50" Click="OnAddMany" />
+                        <Button Margin="0,0,10,0" Content="Mark all read" Click="OnClearMessages" Style="{StaticResource Muzzle.Button.Ghost}" />
+                        <Button Content="Ring the bell" Click="OnRingBell" Style="{StaticResource Muzzle.Button.Ghost}" />
+                    </WrapPanel>
+                    <WrapPanel Margin="0,16,0,0">
+                        <mz:Badge Value="1" Kind="Primary" Margin="0,0,24,0"><TextBlock Text="Primary" Margin="0,4,6,0" /></mz:Badge>
+                        <mz:Badge Value="2" Kind="Secondary" Margin="0,0,24,0"><TextBlock Text="Secondary" Margin="0,4,6,0" /></mz:Badge>
+                        <mz:Badge Value="3" Kind="Info" Margin="0,0,24,0"><TextBlock Text="Info" Margin="0,4,6,0" /></mz:Badge>
+                        <mz:Badge Value="4" Kind="Success" Margin="0,0,24,0"><TextBlock Text="Success" Margin="0,4,6,0" /></mz:Badge>
+                        <mz:Badge Value="5" Kind="Warning" Margin="0,0,24,0"><TextBlock Text="Warning" Margin="0,4,6,0" /></mz:Badge>
+                        <mz:Badge Value="6" Kind="Error"><TextBlock Text="Error" Margin="0,4,6,0" /></mz:Badge>
+                    </WrapPanel>
+                </StackPanel>
+            </mz:Card>
+
+            <!-- Skeleton + spinners -->
+            <Grid Margin="0,18,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="18" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <mz:Card>
+                    <StackPanel>
+                        <DockPanel>
+                            <mz:ToggleSwitch x:Name="LoadingSwitch" DockPanel.Dock="Right" Content="Loading" IsChecked="True" />
+                            <TextBlock Text="Skeleton" Style="{StaticResource Gallery.SectionTitle}" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <TextBlock Text="Shimmering placeholders that take the content's size, then cross-fade into it." Style="{StaticResource Gallery.SectionLead}" />
+                        <StackPanel Orientation="Horizontal">
+                            <mz:Skeleton Width="52" Height="52" SkeletonShape="Circle" IsLoading="{Binding IsChecked, ElementName=LoadingSwitch}">
+                                <Border Width="52" Height="52" CornerRadius="26" Background="{DynamicResource Muzzle.Brush.PrimarySoft}">
+                                    <Image Width="30" Height="30" Source="{StaticResource Gallery.PawIcon}" />
+                                </Border>
+                            </mz:Skeleton>
+                            <mz:Skeleton Width="220" Margin="14,4,0,0" SkeletonShape="TextLines" LineCount="2" LineHeight="12"
+                                         IsLoading="{Binding IsChecked, ElementName=LoadingSwitch}">
+                                <StackPanel>
+                                    <TextBlock Text="Mochi" FontWeight="SemiBold" FontSize="15" />
+                                    <TextBlock Text="Calico · 3 years · very chatty" Style="{StaticResource Muzzle.Text.Caption}" />
+                                </StackPanel>
+                            </mz:Skeleton>
+                        </StackPanel>
+                        <mz:Skeleton Margin="0,14,0,0" Height="110" CornerRadius="14" IsLoading="{Binding IsChecked, ElementName=LoadingSwitch}">
+                            <Border CornerRadius="14" Padding="16">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Offset="0" Color="{DynamicResource Muzzle.Color.PrimarySoft}" />
+                                        <GradientStop Offset="1" Color="{DynamicResource Muzzle.Color.SecondarySoft}" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <TextBlock VerticalAlignment="Bottom" Text="Today's nap map is ready." FontWeight="SemiBold" />
+                            </Border>
+                        </mz:Skeleton>
+                        <mz:Skeleton Margin="0,14,0,0" SkeletonShape="TextLines" LineCount="3" IsLoading="{Binding IsChecked, ElementName=LoadingSwitch}">
+                            <TextBlock TextWrapping="Wrap" Style="{StaticResource Muzzle.Text.Secondary}"
+                                       Text="Sunbeam coverage peaks at 14:00. Laundry basket occupancy is expected to remain high through the weekend." />
+                        </mz:Skeleton>
+                        <Button Margin="0,14,0,0" HorizontalAlignment="Left" Content="Reload (2 s)" Click="OnReload" Style="{StaticResource Muzzle.Button.Secondary}" />
+                    </StackPanel>
+                </mz:Card>
+                <mz:Card Grid.Column="2">
+                    <StackPanel>
+                        <DockPanel>
+                            <mz:ToggleSwitch x:Name="SpinSwitch" DockPanel.Dock="Right" Content="IsActive" IsChecked="True" />
+                            <TextBlock Text="LoadingSpinner" Style="{StaticResource Gallery.SectionTitle}" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <TextBlock Text="ArcRing whips round with an elastic rhythm; BouncingDots squash and stretch." Style="{StaticResource Gallery.SectionLead}" />
+                        <WrapPanel VerticalAlignment="Center">
+                            <mz:LoadingSpinner Margin="0,0,24,16" IsActive="{Binding IsChecked, ElementName=SpinSwitch}" />
+                            <mz:LoadingSpinner Margin="0,0,24,16" Width="52" Height="52" Thickness="5" AccentBrush="{DynamicResource Muzzle.Brush.Secondary}"
+                                               IsActive="{Binding IsChecked, ElementName=SpinSwitch}" />
+                            <mz:LoadingSpinner Margin="0,0,24,16" Width="24" Height="24" Thickness="3" AccentBrush="{DynamicResource Muzzle.Brush.Mint}"
+                                               IsActive="{Binding IsChecked, ElementName=SpinSwitch}" />
+                            <mz:LoadingSpinner Margin="0,0,24,16" SpinnerStyle="BouncingDots" IsActive="{Binding IsChecked, ElementName=SpinSwitch}" />
+                        </WrapPanel>
+                        <Button x:Name="SaveButton" HorizontalAlignment="Left" Style="{StaticResource Muzzle.Button.Primary}" Click="OnSave">
+                            <StackPanel Orientation="Horizontal">
+                                <mz:LoadingSpinner x:Name="SaveSpinner" Width="16" Height="16" Thickness="2.5" Margin="0,0,8,0" IsActive="False"
+                                                   AccentBrush="{DynamicResource Muzzle.Brush.OnPrimary}" />
+                                <TextBlock x:Name="SaveLabel" Text="Save profile" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </mz:Card>
+            </Grid>
+
+            <!-- InfoBars -->
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right" Content="Reset banners" Click="OnResetBanners" Style="{StaticResource Muzzle.Button.Ghost}" />
+                        <TextBlock Text="InfoBar" Style="{StaticResource Gallery.SectionTitle}" VerticalAlignment="Center" />
+                    </DockPanel>
+                    <TextBlock Text="Dismiss one: it squishes and the banners below glide up." Style="{StaticResource Gallery.SectionLead}" />
+                    <StackPanel x:Name="Banners">
+                        <mz:InfoBar Margin="0,0,0,10" Severity="Info" Title="Heads up" Message="Biscuit has claimed your chair. Negotiations are ongoing." />
+                        <mz:InfoBar Margin="0,0,0,10" Severity="Success" Title="All fed" Message="Every bowl is licked clean.">
+                            <mz:InfoBar.ActionContent>
+                                <Button Content="Undo" Padding="12,4" MinHeight="30" FontSize="13" Style="{StaticResource Muzzle.Button.Ghost}" />
+                            </mz:InfoBar.ActionContent>
+                        </mz:InfoBar>
+                        <mz:InfoBar Margin="0,0,0,10" Severity="Warning" Title="Low on treats" Message="Only 4 crunchies left in the jar.">
+                            <mz:InfoBar.ActionContent>
+                                <Button Content="Reorder" Padding="12,4" MinHeight="30" FontSize="13" Style="{StaticResource Muzzle.Button.Secondary}" />
+                            </mz:InfoBar.ActionContent>
+                        </mz:InfoBar>
+                        <mz:InfoBar Margin="0,0,0,10" Severity="Error" Title="Vase down" Message="The blue vase did not survive zoomies hour." />
+                        <mz:InfoBar Severity="Info" IsClosable="False" Message="Not closable. Banners without a title just show the message." />
+                    </StackPanel>
+                </StackPanel>
+            </mz:Card>
+
+            <!-- Popovers + tooltips -->
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="Popover &amp; ToolTip" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Popovers spring out of their anchor with an arrow tail; click ones close on an outside click, hover ones follow the pointer. ToolTips pop with a BackEase." Style="{StaticResource Gallery.SectionLead}" />
+                    <WrapPanel>
+                        <mz:Popover x:Name="ProfilePopover" Margin="0,0,12,12" Placement="Bottom">
+                            <Button Content="Click: profile card" Style="{StaticResource Muzzle.Button.Primary}" />
+                            <mz:Popover.PopoverContent>
+                                <StackPanel Width="230">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Width="40" Height="40" CornerRadius="20" Background="{DynamicResource Muzzle.Brush.PrimarySoft}">
+                                            <Image Width="24" Height="24" Source="{StaticResource Gallery.PawIcon}" />
+                                        </Border>
+                                        <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                                            <TextBlock Text="Mochi" FontWeight="SemiBold" />
+                                            <TextBlock Text="Head of Naps" Style="{StaticResource Muzzle.Text.Caption}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <TextBlock Margin="0,10,0,12" TextWrapping="Wrap" Style="{StaticResource Muzzle.Text.Secondary}"
+                                               Text="Available for chin scratches 9–5. Strictly no baths." />
+                                    <Button Content="Send a treat" HorizontalAlignment="Left" Style="{StaticResource Muzzle.Button.Secondary}" />
+                                </StackPanel>
+                            </mz:Popover.PopoverContent>
+                        </mz:Popover>
+                        <mz:Popover Margin="0,0,12,12" TriggerMode="Hover" Placement="Top">
+                            <Button Content="Hover: top" />
+                            <mz:Popover.PopoverContent>
+                                <TextBlock Text="Hello from above!" />
+                            </mz:Popover.PopoverContent>
+                        </mz:Popover>
+                        <mz:Popover Margin="0,0,12,12" TriggerMode="Hover" Placement="Right">
+                            <Button Content="Hover: right" />
+                            <mz:Popover.PopoverContent>
+                                <StackPanel Orientation="Horizontal">
+                                    <mz:LoadingSpinner SpinnerStyle="BouncingDots" />
+                                    <TextBlock Margin="8,0,0,0" VerticalAlignment="Center" Text="Typing…" />
+                                </StackPanel>
+                            </mz:Popover.PopoverContent>
+                        </mz:Popover>
+                        <mz:Popover Margin="0,0,12,12" TriggerMode="Click" Placement="Left" ShowArrow="False">
+                            <Button Content="Click: left, no arrow" />
+                            <mz:Popover.PopoverContent>
+                                <mz:Rating Value="4" IconShape="Heart" ItemSize="22" />
+                            </mz:Popover.PopoverContent>
+                        </mz:Popover>
+                        <Button Margin="0,0,12,12" Content="Plain ToolTip" ToolTip="Rounded, soft shadow, BackEase pop" />
+                        <Button Margin="0,0,12,12" Content="Rich ToolTip" Style="{StaticResource Muzzle.Button.Ghost}">
+                            <Button.ToolTip>
+                                <StackPanel>
+                                    <TextBlock Text="Keyboard shortcut" FontWeight="SemiBold" />
+                                    <TextBlock Margin="0,2,0,0" Text="Ctrl + K to search" Opacity="0.8" />
+                                </StackPanel>
+                            </Button.ToolTip>
+                        </Button>
+                    </WrapPanel>
+                </StackPanel>
+            </mz:Card>
+
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="Snippet" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="All in the mz namespace; ToolTip is the standard control, restyled." Style="{StaticResource Gallery.SectionLead}" />
+                    <controls:SnippetView Code="{x:Static local:Snippets.Feedback}" />
+                </StackPanel>
+            </mz:Card>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

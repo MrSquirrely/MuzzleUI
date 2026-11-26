@@ -1,0 +1,210 @@
+<UserControl x:Class="Muzzle.Gallery.Pages.DataMediaPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mz="http://schemas.muzzle.dev/wpf"
+             xmlns:local="clr-namespace:Muzzle.Gallery"
+             xmlns:models="clr-namespace:Muzzle.Gallery.Models"
+             xmlns:controls="clr-namespace:Muzzle.Gallery.Controls">
+
+    <UserControl.Resources>
+
+        <DataTemplate x:Key="Gallery.SlideTemplate" DataType="{x:Type models:Slide}">
+            <Grid Background="{Binding Background}">
+                <Image Width="150" Height="150" Margin="0,0,60,0" HorizontalAlignment="Right" VerticalAlignment="Center"
+                       Opacity="0.85" Source="{StaticResource Gallery.PawIcon}" />
+                <StackPanel Margin="72,0,240,0" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Title}" FontSize="26" FontWeight="Bold" Foreground="{Binding Accent}" />
+                    <TextBlock Margin="0,6,0,0" Text="{Binding Caption}" FontSize="15" TextWrapping="Wrap" Foreground="#4A4458" />
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <ScrollViewer Style="{StaticResource Gallery.PageScroller}">
+        <StackPanel Margin="4,4,20,28">
+            <TextBlock Text="Data &amp; media" Style="{StaticResource Gallery.PageHeader}" />
+            <TextBlock Style="{StaticResource Gallery.PageLead}"
+                       Text="A soft DataGrid with card-like rows, avatars with pastel initials, a springy carousel, a pan-and-zoom image viewer and a tree whose chevrons spin open." />
+
+            <!-- DataGrid -->
+            <mz:Card>
+                <StackPanel>
+                    <Grid>
+                        <StackPanel>
+                            <TextBlock Text="DataGrid" Style="{StaticResource Gallery.SectionTitle}" />
+                            <TextBlock Text="Click a header to sort (the chevron springs in and flips). Double-click or F2 to edit: text, check box and combo box columns get Muzzle editors automatically."
+                                       Style="{StaticResource Gallery.SectionLead}" TextWrapping="Wrap" MaxWidth="640" HorizontalAlignment="Left" />
+                        </StackPanel>
+                        <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
+                            <Button Margin="0,0,8,0" Content="Add a cat" Click="OnAddCat" Style="{StaticResource Muzzle.Button.Secondary}" />
+                            <Button Content="Remove" Click="OnRemoveCat" Style="{StaticResource Muzzle.Button.Ghost}" />
+                        </StackPanel>
+                    </Grid>
+                    <DataGrid x:Name="CatGrid" Height="390" AutoGenerateColumns="False" CanUserAddRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="Cat" Width="2*" SortMemberPath="Name" CanUserSort="True">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate DataType="{x:Type models:CatRecord}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <mz:Avatar Size="28" DisplayName="{Binding Name}" Status="{Binding Status}" VerticalAlignment="Center" />
+                                            <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                                <DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataTemplate DataType="{x:Type models:CatRecord}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <mz:Avatar Size="28" DisplayName="{Binding Name}" Status="{Binding Status}" VerticalAlignment="Center" />
+                                            <TextBox Margin="2,0,0,0" MinWidth="140" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource Muzzle.DataGrid.TextBox.Editing}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellEditingTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridComboBoxColumn Header="Breed" Width="1.4*" SelectedItemBinding="{Binding Breed}"
+                                                    ItemsSource="{x:Static models:CatRecord.Breeds}" />
+                            <DataGridTextColumn Header="Age" Width="0.7*" Binding="{Binding Age}" />
+                            <DataGridCheckBoxColumn Header="Indoor" Width="0.8*" Binding="{Binding IsIndoor, UpdateSourceTrigger=PropertyChanged}" />
+                            <DataGridComboBoxColumn Header="Mood" Width="1.1*" SelectedItemBinding="{Binding Mood}"
+                                                    ItemsSource="{x:Static models:CatRecord.Moods}" />
+                            <DataGridTextColumn Header="Treats" Width="0.8*" Binding="{Binding Treats}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <controls:SnippetView Margin="0,14,0,0" Code="{x:Static local:Snippets.DataGrid}" />
+                </StackPanel>
+            </mz:Card>
+
+            <!-- Avatars -->
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="Avatar" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Circle or squircle, any size. No picture (or a broken one)? Two-letter initials on a pastel chosen from the name, so the same person always gets the same colour. Status dots pop in."
+                               Style="{StaticResource Gallery.SectionLead}" TextWrapping="Wrap" />
+                    <WrapPanel x:Name="SizeRow" VerticalAlignment="Center">
+                        <mz:Avatar Margin="0,0,18,12" Size="24" DisplayName="Ada Lovelace" VerticalAlignment="Center" />
+                        <mz:Avatar Margin="0,0,18,12" Size="32" DisplayName="Grace Hopper" Status="Online" VerticalAlignment="Center" />
+                        <mz:Avatar Margin="0,0,18,12" Size="40" DisplayName="Mochi" Status="Away" VerticalAlignment="Center" />
+                        <mz:Avatar Margin="0,0,18,12" Size="56" DisplayName="Pepper Potts" Shape="Squircle" Status="Busy" VerticalAlignment="Center" />
+                        <mz:Avatar Margin="0,0,18,12" Size="72" Source="{StaticResource Gallery.PawIcon}" DisplayName="Paw" Status="Online" VerticalAlignment="Center" />
+                        <mz:Avatar Margin="0,0,18,12" Size="72" Shape="Squircle" Source="{StaticResource Gallery.GardenScene}" DisplayName="Garden" Status="Offline" VerticalAlignment="Center" />
+                        <mz:Avatar x:Name="BrokenAvatar" Margin="0,0,18,12" Size="56" DisplayName="Broken Link" Status="Online" VerticalAlignment="Center"
+                                   ToolTip="Its Source failed to load, so it falls back to initials" />
+                        <mz:Avatar Margin="0,0,18,12" Size="56" Shape="Squircle" VerticalAlignment="Center" ToolTip="No name, no picture" />
+                    </WrapPanel>
+                    <TextBlock Margin="0,6,0,10" Text="Deterministic pastels" Style="{StaticResource Muzzle.Text.Overline}" />
+                    <ItemsControl x:Name="NameGrid" Focusable="False">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Width="96" Margin="0,0,8,12">
+                                    <mz:Avatar HorizontalAlignment="Center" Size="44" DisplayName="{Binding}" mz:MuzzleAssist.Jelly="Hover" />
+                                    <TextBlock Margin="0,6,0,0" HorizontalAlignment="Center" Text="{Binding}" FontSize="12" TextTrimming="CharacterEllipsis"
+                                               Foreground="{DynamicResource Muzzle.Brush.TextSecondary}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                        <mz:Avatar x:Name="StatusAvatar" Size="48" DisplayName="Noodle" Status="Online" />
+                        <Button Margin="14,0,0,0" VerticalAlignment="Center" Content="Cycle status" Click="OnCycleStatus" />
+                        <TextBlock x:Name="StatusText" Margin="12,0,0,0" VerticalAlignment="Center" Text="Online" Style="{StaticResource Muzzle.Text.Secondary}" />
+                    </StackPanel>
+                    <controls:SnippetView Margin="0,14,0,0" Code="{x:Static local:Snippets.Avatar}" />
+                </StackPanel>
+            </mz:Card>
+
+            <!-- Carousel + ImageViewer -->
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="Carousel" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Slides spring in with a BackEase overshoot. Use the pill arrows, the dots, or ← / → when focused. Auto-play pauses while you hover."
+                               Style="{StaticResource Gallery.SectionLead}" TextWrapping="Wrap" />
+                    <mz:Carousel x:Name="SlideShow" Height="240" ItemTemplate="{StaticResource Gallery.SlideTemplate}"
+                                 AutoPlay="{Binding IsChecked, ElementName=AutoPlaySwitch}" Interval="0:0:3.5" />
+                    <StackPanel Margin="0,12,0,0" Orientation="Horizontal">
+                        <mz:ToggleSwitch x:Name="AutoPlaySwitch" Content="AutoPlay" />
+                        <mz:ToggleSwitch x:Name="DotsSwitch" Margin="20,0,0,0" Content="Indicators" IsChecked="{Binding ShowIndicators, ElementName=SlideShow}" />
+                        <mz:ToggleSwitch Margin="20,0,0,0" Content="Arrows" IsChecked="{Binding ShowNavigationButtons, ElementName=SlideShow}" />
+                        <TextBlock Margin="20,0,0,0" VerticalAlignment="Center" Style="{StaticResource Muzzle.Text.Secondary}">
+                            <Run Text="Slide" /> <Run Text="{Binding SelectedIndex, ElementName=SlideShow, Mode=OneWay}" />
+                        </TextBlock>
+                    </StackPanel>
+
+                    <TextBlock Margin="0,26,0,2" Text="ImageViewer" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Scroll to zoom around the pointer, drag to pan, double-click to spring back to 100% (or zoom 2× into a spot). + / − / 0 and arrows work when focused."
+                               Style="{StaticResource Gallery.SectionLead}" TextWrapping="Wrap" />
+                    <mz:ImageViewer x:Name="Viewer" Height="300" Source="{StaticResource Gallery.GardenScene}" />
+                    <controls:SnippetView Margin="0,14,0,0" Code="{x:Static local:Snippets.Carousel}" />
+                </StackPanel>
+            </mz:Card>
+
+            <!-- TreeView -->
+            <Grid Margin="0,18,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="18" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <mz:Card>
+                    <StackPanel>
+                        <TextBlock Text="TreeView (data-bound)" Style="{StaticResource Gallery.SectionTitle}" />
+                        <TextBlock Text="HierarchicalDataTemplate with icons; chevrons rotate 0° → 90° and children spring open." Style="{StaticResource Gallery.SectionLead}" TextWrapping="Wrap" />
+                        <TreeView x:Name="HouseTree" Height="300">
+                            <TreeView.ItemContainerStyle>
+                                <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource Muzzle.TreeViewItem}">
+                                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                                </Style>
+                            </TreeView.ItemContainerStyle>
+                            <TreeView.ItemTemplate>
+                                <HierarchicalDataTemplate DataType="{x:Type models:HouseNode}" ItemsSource="{Binding Children}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Path Width="16" Height="16" Data="{Binding Glyph}" Stroke="{DynamicResource Muzzle.Brush.TextSecondary}" StrokeThickness="1.4"
+                                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" VerticalAlignment="Center" />
+                                        <TextBlock Margin="8,0,0,0" Text="{Binding Name}" VerticalAlignment="Center" />
+                                        <TextBlock Margin="8,0,0,0" Text="{Binding Detail}" VerticalAlignment="Center" FontSize="12"
+                                                   Foreground="{DynamicResource Muzzle.Brush.TextTertiary}" />
+                                    </StackPanel>
+                                </HierarchicalDataTemplate>
+                            </TreeView.ItemTemplate>
+                        </TreeView>
+                    </StackPanel>
+                </mz:Card>
+                <mz:Card Grid.Column="2">
+                    <StackPanel>
+                        <TextBlock Text="TreeView (inline XAML)" Style="{StaticResource Gallery.SectionTitle}" />
+                        <TextBlock Text="Plain TreeViewItems pick up the same pills, hover tints and chevrons." Style="{StaticResource Gallery.SectionLead}" TextWrapping="Wrap" />
+                        <TreeView Height="300">
+                            <TreeViewItem Header="Muzzle.Theme" IsExpanded="True">
+                                <TreeViewItem Header="Themes" IsExpanded="True">
+                                    <TreeViewItem Header="Muzzle.xaml" IsSelected="True" />
+                                    <TreeViewItem Header="Muzzle.Light.xaml" />
+                                    <TreeViewItem Header="Muzzle.Dark.xaml" />
+                                    <TreeViewItem Header="Controls">
+                                        <TreeViewItem Header="DataGrid.xaml" />
+                                        <TreeViewItem Header="TreeView.xaml" />
+                                    </TreeViewItem>
+                                </TreeViewItem>
+                                <TreeViewItem Header="Controls">
+                                    <TreeViewItem Header="Avatar.cs" />
+                                    <TreeViewItem Header="Carousel.cs" />
+                                    <TreeViewItem Header="ImageViewer.cs" />
+                                </TreeViewItem>
+                            </TreeViewItem>
+                            <TreeViewItem Header="Muzzle.Gallery">
+                                <TreeViewItem Header="App.xaml" />
+                                <TreeViewItem Header="MainWindow.xaml" />
+                            </TreeViewItem>
+                        </TreeView>
+                    </StackPanel>
+                </mz:Card>
+            </Grid>
+            <mz:Card Margin="0,18,0,0">
+                <controls:SnippetView Code="{x:Static local:Snippets.TreeView}" />
+            </mz:Card>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

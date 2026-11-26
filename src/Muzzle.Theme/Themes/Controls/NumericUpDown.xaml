@@ -1,0 +1,165 @@
+<!--
+    NumericUpDown: a Muzzle field with − / + pills on the right. The pills squish inward on press and spring back
+    with a BackEase; they disable themselves at Minimum / Maximum.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mz="clr-namespace:Muzzle.Theme"
+                    xmlns:mzc="clr-namespace:Muzzle.Theme.Controls"
+                    xmlns:mzv="clr-namespace:Muzzle.Theme.Converters">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Animations/JellyEasings.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <!-- Shared by NumericUpDown and other pickers: a small pill button that squishes and springs back. -->
+    <Style x:Key="Muzzle.SquishPillButton" TargetType="{x:Type ButtonBase}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Width" Value="28" />
+        <Setter Property="Height" Value="28" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextSecondary}" />
+        <Setter Property="Background" Value="{DynamicResource Muzzle.Brush.CanvasAlt}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ButtonBase}">
+                    <Grid x:Name="Root" RenderTransformOrigin="0.5,0.5">
+                        <Grid.RenderTransform>
+                            <ScaleTransform />
+                        </Grid.RenderTransform>
+                        <Border x:Name="Body" CornerRadius="9" Background="{TemplateBinding Background}" />
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Body" Property="Background" Value="{DynamicResource Muzzle.Brush.PrimarySoft}" />
+                            <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.PrimaryText}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Body" Property="Background" Value="{DynamicResource Muzzle.Brush.PrimarySoftHover}" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         To="0.8" Duration="0:0:0.08" EasingFunction="{StaticResource Muzzle.Ease.Squish}" />
+                                        <DoubleAnimation Storyboard.TargetName="Root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                         To="0.78" Duration="0:0:0.08" EasingFunction="{StaticResource Muzzle.Ease.Squish}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         To="1" Duration="0:0:0.38" EasingFunction="{StaticResource Muzzle.Ease.BackStrong}" />
+                                        <DoubleAnimation Storyboard.TargetName="Root" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                         To="1" Duration="0:0:0.38" EasingFunction="{StaticResource Muzzle.Ease.BackStrong}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Root" Property="Opacity" Value="0.4" />
+                            <Setter Property="Cursor" Value="Arrow" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Muzzle.NumericUpDown" TargetType="{x:Type mzc:NumericUpDown}">
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="Background" Value="{DynamicResource Muzzle.Brush.ControlBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.ControlBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="12,0,5,0" />
+        <Setter Property="MinHeight" Value="38" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="mz:MuzzleAssist.CornerRadius" Value="10" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type mzc:NumericUpDown}">
+                    <Grid x:Name="Root" mz:MuzzleAssist.Jelly="Focus">
+                        <mzc:SoftBorder x:Name="FocusRing" Opacity="0" BorderThickness="3" IsHitTestVisible="False"
+                                        BorderBrush="{DynamicResource Muzzle.Brush.FocusRing}"
+                                        CornerRadius="{TemplateBinding mz:MuzzleAssist.CornerRadius, Converter={x:Static mzv:CornerRadiusOffsetConverter.Instance}, ConverterParameter=3}" />
+                        <mzc:SoftBorder x:Name="Body"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="{TemplateBinding mz:MuzzleAssist.CornerRadius}" />
+                        <Grid Margin="{TemplateBinding Padding}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="PART_TextBox"
+                                     VerticalAlignment="Center"
+                                     Style="{DynamicResource Muzzle.ComboBox.EditableTextBox}"
+                                     Foreground="{TemplateBinding Foreground}"
+                                     IsReadOnly="{TemplateBinding IsReadOnly}"
+                                     TextAlignment="Left"
+                                     InputScope="Number"
+                                     AutomationProperties.Name="{TemplateBinding AutomationProperties.Name}" />
+                            <StackPanel x:Name="SpinButtons" Grid.Column="1" Margin="6,0,0,0" VerticalAlignment="Center" Orientation="Horizontal">
+                                <RepeatButton Style="{StaticResource Muzzle.SquishPillButton}" Command="{x:Static mzc:NumericUpDown.DecreaseCommand}"
+                                              Delay="400" Interval="70" AutomationProperties.Name="Decrease">
+                                    <Path Width="10" Height="10" Data="M 1,5 L 9,5"
+                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type RepeatButton}}}"
+                                          StrokeThickness="1.7" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                                </RepeatButton>
+                                <RepeatButton Margin="4,0,0,0" Style="{StaticResource Muzzle.SquishPillButton}" Command="{x:Static mzc:NumericUpDown.IncreaseCommand}"
+                                              Delay="400" Interval="70" AutomationProperties.Name="Increase">
+                                    <Path Width="10" Height="10" Data="M 1,5 L 9,5 M 5,1 L 5,9"
+                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type RepeatButton}}}"
+                                          StrokeThickness="1.7" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                                </RepeatButton>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Body" Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.ControlBorderHover}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="Body" Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.Primary}" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="FocusRing" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.18" />
+                                        <ThicknessAnimation Storyboard.TargetName="FocusRing" Storyboard.TargetProperty="Margin" From="0" To="-3" Duration="0:0:0.5"
+                                                            EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="FocusRing" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
+                                        <ThicknessAnimation Storyboard.TargetName="FocusRing" Storyboard.TargetProperty="Margin" To="0" Duration="0:0:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsReadOnly" Value="True">
+                            <Setter TargetName="Body" Property="Background" Value="{DynamicResource Muzzle.Brush.CanvasAlt}" />
+                        </Trigger>
+                        <Trigger Property="ShowSpinButtons" Value="False">
+                            <Setter TargetName="SpinButtons" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Root" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type mzc:NumericUpDown}" BasedOn="{StaticResource Muzzle.NumericUpDown}" />
+
+</ResourceDictionary>

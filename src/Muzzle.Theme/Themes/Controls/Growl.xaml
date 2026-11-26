@@ -1,0 +1,166 @@
+<!--
+    Growl toasts: pastel rounded cards with a semantic icon pill, title, message, optional Ask pills,
+    a close button and a countdown line that pauses while hovered.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mz="clr-namespace:Muzzle.Theme"
+                    xmlns:mzc="clr-namespace:Muzzle.Theme.Controls"
+                    xmlns:mzv="clr-namespace:Muzzle.Theme.Converters">
+
+    <Style TargetType="{x:Type mzc:GrowlContainer}">
+        <Setter Property="Width" Value="360" />
+        <Setter Property="Margin" Value="0,8,8,0" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="Orientation" Value="Vertical" />
+    </Style>
+
+    <Style x:Key="Muzzle.GrowlCard" TargetType="{x:Type mzc:GrowlCard}">
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="Background" Value="{DynamicResource Muzzle.Brush.Surface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.SurfaceRim}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Margin" Value="0,0,0,10" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="mz:MuzzleAssist.CornerRadius" Value="12" />
+        <Setter Property="mz:MuzzleAssist.ShadowDepth" Value="Raised" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type mzc:GrowlCard}">
+                    <Grid x:Name="Root">
+                        <mzc:SoftBorder x:Name="Body"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="{TemplateBinding mz:MuzzleAssist.CornerRadius}"
+                                        Effect="{TemplateBinding mz:MuzzleAssist.ShadowDepth, Converter={x:Static mzv:ShadowDepthToEffectConverter.Instance}}" />
+                        <Grid Margin="14,12,8,15">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Border x:Name="IconPill"
+                                    Width="34" Height="34"
+                                    VerticalAlignment="Top"
+                                    CornerRadius="17"
+                                    Background="{DynamicResource Muzzle.Brush.InfoSoft}"
+                                    mz:MuzzleAssist.Jelly="Hover">
+                                <Path x:Name="Icon"
+                                      Width="16" Height="16"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      Data="M 8,7.2 V 12 M 8,4 V 4.1"
+                                      Stroke="{DynamicResource Muzzle.Brush.InfoText}"
+                                      StrokeThickness="2.2"
+                                      StrokeStartLineCap="Round"
+                                      StrokeEndLineCap="Round"
+                                      StrokeLineJoin="Round" />
+                            </Border>
+                            <StackPanel Grid.Column="1" Margin="12,1,6,0">
+                                <TextBlock Text="{TemplateBinding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Margin="0,2,0,0"
+                                           Text="{TemplateBinding Message}"
+                                           FontSize="13"
+                                           LineHeight="19"
+                                           TextWrapping="Wrap"
+                                           Foreground="{DynamicResource Muzzle.Brush.TextSecondary}" />
+                                <StackPanel x:Name="AskButtons" Margin="0,12,0,0" Orientation="Horizontal" Visibility="Collapsed">
+                                    <Button x:Name="PART_ConfirmButton"
+                                            Content="{TemplateBinding ConfirmText}"
+                                            Style="{DynamicResource Muzzle.Button.Pill}"
+                                            Padding="16,4"
+                                            MinHeight="30"
+                                            FontSize="13" />
+                                    <Button x:Name="PART_CancelButton"
+                                            Margin="8,0,0,0"
+                                            Content="{TemplateBinding CancelText}"
+                                            Style="{DynamicResource Muzzle.Button.Ghost}"
+                                            Padding="16,4"
+                                            MinHeight="30"
+                                            FontSize="13"
+                                            mz:MuzzleAssist.CornerRadius="999" />
+                                </StackPanel>
+                            </StackPanel>
+                            <Button x:Name="PART_CloseButton"
+                                    Grid.Column="2"
+                                    Width="28" Height="28"
+                                    VerticalAlignment="Top"
+                                    Style="{DynamicResource Muzzle.Button.Icon}"
+                                    mz:MuzzleAssist.CornerRadius="14"
+                                    ToolTip="Dismiss"
+                                    AutomationProperties.Name="Dismiss notification">
+                                <Path Width="10" Height="10" Data="M 1,1 L 9,9 M 9,1 L 1,9"
+                                      Stroke="{DynamicResource Muzzle.Brush.TextSecondary}"
+                                      StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                            </Button>
+                        </Grid>
+                        <Border x:Name="CountdownTrack"
+                                Height="3"
+                                Margin="16,0,16,6"
+                                VerticalAlignment="Bottom"
+                                Visibility="Collapsed">
+                            <Border x:Name="Countdown"
+                                    HorizontalAlignment="Left"
+                                    CornerRadius="1.5"
+                                    Opacity="0.75"
+                                    Background="{DynamicResource Muzzle.Brush.Info}">
+                                <Border.Width>
+                                    <MultiBinding Converter="{x:Static mzv:ProgressWidthConverter.Instance}">
+                                        <Binding Path="CountdownProgress" RelativeSource="{RelativeSource TemplatedParent}" />
+                                        <Binding Path="ActualWidth" ElementName="CountdownTrack" />
+                                        <Binding Path="ActualHeight" ElementName="CountdownTrack" />
+                                    </MultiBinding>
+                                </Border.Width>
+                            </Border>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsCountingDown" Value="True">
+                            <Setter TargetName="CountdownTrack" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="ShowCloseButton" Value="False">
+                            <Setter TargetName="PART_CloseButton" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="Type" Value="Success">
+                            <Setter TargetName="IconPill" Property="Background" Value="{DynamicResource Muzzle.Brush.SuccessSoft}" />
+                            <Setter TargetName="Icon" Property="Stroke" Value="{DynamicResource Muzzle.Brush.SuccessText}" />
+                            <Setter TargetName="Icon" Property="Data" Value="M 3,8.6 L 6.6,12 L 13,4.6" />
+                            <Setter TargetName="Countdown" Property="Background" Value="{DynamicResource Muzzle.Brush.Success}" />
+                        </Trigger>
+                        <Trigger Property="Type" Value="Warning">
+                            <Setter TargetName="IconPill" Property="Background" Value="{DynamicResource Muzzle.Brush.WarningSoft}" />
+                            <Setter TargetName="Icon" Property="Stroke" Value="{DynamicResource Muzzle.Brush.WarningText}" />
+                            <Setter TargetName="Icon" Property="Data" Value="M 8,3.5 V 9.4 M 8,12.4 V 12.5" />
+                            <Setter TargetName="Countdown" Property="Background" Value="{DynamicResource Muzzle.Brush.Warning}" />
+                        </Trigger>
+                        <Trigger Property="Type" Value="Error">
+                            <Setter TargetName="IconPill" Property="Background" Value="{DynamicResource Muzzle.Brush.ErrorSoft}" />
+                            <Setter TargetName="Icon" Property="Stroke" Value="{DynamicResource Muzzle.Brush.ErrorText}" />
+                            <Setter TargetName="Icon" Property="Data" Value="M 4.5,4.5 L 11.5,11.5 M 11.5,4.5 L 4.5,11.5" />
+                            <Setter TargetName="Countdown" Property="Background" Value="{DynamicResource Muzzle.Brush.Error}" />
+                        </Trigger>
+                        <Trigger Property="Type" Value="Fatal">
+                            <Setter TargetName="IconPill" Property="Background" Value="{DynamicResource Muzzle.Brush.Error}" />
+                            <Setter TargetName="Icon" Property="Stroke" Value="{DynamicResource Muzzle.Brush.OnStatus}" />
+                            <Setter TargetName="Icon" Property="Data" Value="M 4.5,4.5 L 11.5,11.5 M 11.5,4.5 L 4.5,11.5" />
+                            <Setter TargetName="Body" Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.Error}" />
+                        </Trigger>
+                        <Trigger Property="Type" Value="Ask">
+                            <Setter TargetName="IconPill" Property="Background" Value="{DynamicResource Muzzle.Brush.SecondarySoft}" />
+                            <Setter TargetName="Icon" Property="Stroke" Value="{DynamicResource Muzzle.Brush.SecondaryText}" />
+                            <Setter TargetName="Icon" Property="Data" Value="M 5.4,5.6 A 2.6,2.6 0 1 1 8.8,8.1 C 8.2,8.4 8,8.9 8,9.8 M 8,12.4 V 12.5" />
+                            <Setter TargetName="AskButtons" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type mzc:GrowlCard}" BasedOn="{StaticResource Muzzle.GrowlCard}" />
+
+</ResourceDictionary>

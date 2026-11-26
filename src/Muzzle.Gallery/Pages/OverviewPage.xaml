@@ -1,0 +1,109 @@
+<UserControl x:Class="Muzzle.Gallery.Pages.OverviewPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mz="http://schemas.muzzle.dev/wpf"
+             xmlns:local="clr-namespace:Muzzle.Gallery"
+             xmlns:controls="clr-namespace:Muzzle.Gallery.Controls">
+    <ScrollViewer Style="{StaticResource Gallery.PageScroller}">
+        <StackPanel Margin="4,4,20,28">
+
+            <!-- Hero -->
+            <mz:Card Padding="32,28" mz:MuzzleAssist.ShadowDepth="Raised" mz:MuzzleAssist.CornerRadius="20">
+                <mz:Card.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Offset="0" Color="{DynamicResource Muzzle.Color.PrimaryWash}" />
+                        <GradientStop Offset="0.55" Color="{DynamicResource Muzzle.Color.SecondaryWash}" />
+                        <GradientStop Offset="1" Color="{DynamicResource Muzzle.Color.MintWash}" />
+                    </LinearGradientBrush>
+                </mz:Card.Background>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="Welcome to Muzzle" Style="{StaticResource Muzzle.Text.Overline}" Foreground="{DynamicResource Muzzle.Brush.PrimaryText}" />
+                        <TextBlock Margin="0,6,0,8" Text="Soft, squishy, pastel WPF." Style="{StaticResource Muzzle.Text.Display}" FontSize="34" LineHeight="42" />
+                        <TextBlock MaxWidth="560" HorizontalAlignment="Left" Style="{StaticResource Muzzle.Text.Secondary}"
+                                   Text="A reusable theme library with jelly physics on every interactive control, generous radii, diffused shadows, a custom-chrome window and a reflection-based property grid. Merge one dictionary and every standard control gets cozy." />
+                        <WrapPanel Margin="0,22,0,0">
+                            <Button Margin="0,0,12,0" Content="Squish me" Style="{StaticResource Muzzle.Button.Pill}" />
+                            <Button Margin="0,0,12,0" Content="Secondary" Style="{StaticResource Muzzle.Button.Secondary}" mz:MuzzleAssist.CornerRadius="999" Padding="20,9" />
+                            <Button Content="Ghost" Style="{StaticResource Muzzle.Button.Ghost}" mz:MuzzleAssist.CornerRadius="999" Padding="20,9" />
+                        </WrapPanel>
+                    </StackPanel>
+                    <Border x:Name="PawBadge"
+                            Grid.Column="1"
+                            Width="150" Height="150"
+                            Margin="24,0,0,0"
+                            VerticalAlignment="Center"
+                            CornerRadius="75"
+                            Background="{DynamicResource Muzzle.Brush.Surface}"
+                            mz:MuzzleAssist.ShadowDepth="Floating"
+                            mz:MuzzleAssist.Jelly="All"
+                            Cursor="Hand"
+                            ToolTip="Boop the bean">
+                        <Image Width="84" Height="84" Source="{StaticResource Gallery.PawIcon}" />
+                    </Border>
+                </Grid>
+            </mz:Card>
+
+            <!-- Install -->
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="One line to install" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Reference Muzzle.Theme, merge Muzzle.xaml, and use xmlns:mz for custom controls and attached properties."
+                               Style="{StaticResource Gallery.SectionLead}" />
+                    <controls:SnippetView Code="{x:Static local:Snippets.Setup}" />
+                </StackPanel>
+            </mz:Card>
+
+            <!-- Palette -->
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="Pastel palette" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Semantic tokens from the active palette (Muzzle.Light.xaml or Muzzle.Dark.xaml). Every brush is available as Muzzle.Brush.* and every colour as Muzzle.Color.*."
+                               Style="{StaticResource Gallery.SectionLead}" />
+                    <ItemsControl x:Name="SwatchList" Focusable="False">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Width="150" Margin="0,0,12,12" Padding="8" CornerRadius="14"
+                                        Background="{DynamicResource Muzzle.Brush.Canvas}"
+                                        mz:MuzzleAssist.Jelly="Hover, Press">
+                                    <StackPanel>
+                                        <Border Height="54" CornerRadius="10" Background="{Binding Brush}" BorderBrush="{DynamicResource Muzzle.Brush.SwatchOutline}" BorderThickness="1" />
+                                        <TextBlock Margin="2,8,0,0" Text="{Binding Name}" FontSize="12.5" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Margin="2,1,0,0" Text="{Binding Hex}" Style="{StaticResource Muzzle.Text.Code}" FontSize="11.5"
+                                                   Foreground="{DynamicResource Muzzle.Brush.TextSecondary}" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </mz:Card>
+
+            <!-- Typography -->
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="Typography" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Atkinson Hyperlegible Next (by the Braille Institute, embedded in the library) with a small, friendly scale. Distinct letterforms such as Il1 O0 rn/m keep text legible for low-vision readers. Use the Muzzle.Text.* TextBlock styles."
+                               Style="{StaticResource Gallery.SectionLead}" />
+                    <TextBlock Text="Display: Naptime is sacred" Style="{StaticResource Muzzle.Text.Display}" />
+                    <TextBlock Margin="0,8,0,0" Text="Title: The great sunbeam migration" Style="{StaticResource Muzzle.Text.Title}" />
+                    <TextBlock Margin="0,8,0,0" Text="Subtitle: Snacks, ranked by crunch" Style="{StaticResource Muzzle.Text.Subtitle}" />
+                    <TextBlock Margin="0,8,0,0" Text="Body: Soft charcoal text on a warm cream canvas keeps long reading sessions gentle on the eyes." Style="{StaticResource Muzzle.Text.Body}" />
+                    <TextBlock Margin="0,6,0,0" Text="Secondary: muted slate for supporting copy and hints." Style="{StaticResource Muzzle.Text.Secondary}" />
+                    <TextBlock Margin="0,6,0,0" Text="Caption: 12px, for metadata and helper text." Style="{StaticResource Muzzle.Text.Caption}" />
+                    <TextBlock Margin="0,6,0,0" Text="Overline: section labels" Style="{StaticResource Muzzle.Text.Overline}" />
+                    <TextBlock Margin="0,8,0,0" Text="Code: mz:MuzzleAssist.JellyIntensity=&quot;1.5&quot;" Style="{StaticResource Muzzle.Text.Code}" />
+                </StackPanel>
+            </mz:Card>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

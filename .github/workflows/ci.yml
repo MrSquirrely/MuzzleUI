@@ -1,0 +1,65 @@
+name: CI
+
+# Checks every pull request (into main or dev) and every push to dev before anything can merge.
+on:
+  pull_request:
+    branches: [main, dev]
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+jobs:
+  build-test:
+    name: Build and test
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            9.0.x
+            10.0.x
+
+      - name: Restore
+        run: dotnet restore Muzzle.slnx
+
+      - name: Build (Release, warnings are errors)
+        run: dotnet build Muzzle.slnx -c Release --no-restore -warnaserror
+
+      - name: Test
+        run: dotnet test tests/Muzzle.Theme.Tests -c Release --no-build --logger "trx;LogFilePrefix=results" --results-directory TestResults
+
+      - name: Pack
+        run: dotnet pack src/Muzzle.Theme -c Release --no-build -o artifacts -warnaserror
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults
+          if-no-files-found: ignore
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-package
+          path: artifacts/*

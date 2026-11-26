@@ -1,0 +1,293 @@
+<!--
+    MuzzleWindow chrome: icon, title, your NonClientAreaContent, and jelly caption buttons
+    (minimize, maximize/restore with snap-layout support, close with a soft coral-red tint).
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mz="clr-namespace:Muzzle.Theme"
+                    xmlns:mzc="clr-namespace:Muzzle.Theme.Controls">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Animations/JellyEasings.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <Storyboard x:Key="Muzzle.Caption.HoverIn">
+        <DoubleAnimation Storyboard.TargetName="Chip" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.14" />
+        <DoubleAnimation Storyboard.TargetName="Chip" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                         To="1" Duration="0:0:0.5" EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+        <DoubleAnimation Storyboard.TargetName="Chip" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                         To="1" Duration="0:0:0.5" EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+        <DoubleAnimation Storyboard.TargetName="Glyph" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                         To="1.1" Duration="0:0:0.35" EasingFunction="{StaticResource Muzzle.Ease.Back}" />
+        <DoubleAnimation Storyboard.TargetName="Glyph" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                         To="1.1" Duration="0:0:0.35" EasingFunction="{StaticResource Muzzle.Ease.Back}" />
+    </Storyboard>
+
+    <Storyboard x:Key="Muzzle.Caption.HoverOut">
+        <DoubleAnimation Storyboard.TargetName="Chip" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
+        <DoubleAnimation Storyboard.TargetName="Chip" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                         To="0.6" Duration="0:0:0.22" EasingFunction="{StaticResource Muzzle.Ease.Squish}" />
+        <DoubleAnimation Storyboard.TargetName="Chip" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                         To="0.6" Duration="0:0:0.22" EasingFunction="{StaticResource Muzzle.Ease.Squish}" />
+        <DoubleAnimation Storyboard.TargetName="Glyph" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                         To="1" Duration="0:0:0.4" EasingFunction="{StaticResource Muzzle.Ease.BackSoft}" />
+        <DoubleAnimation Storyboard.TargetName="Glyph" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                         To="1" Duration="0:0:0.4" EasingFunction="{StaticResource Muzzle.Ease.BackSoft}" />
+    </Storyboard>
+
+    <Storyboard x:Key="Muzzle.Caption.PressIn">
+        <DoubleAnimation Storyboard.TargetName="Chip" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                         To="0.92" Duration="0:0:0.1" EasingFunction="{StaticResource Muzzle.Ease.Squish}" />
+        <DoubleAnimation Storyboard.TargetName="Chip" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                         To="0.88" Duration="0:0:0.1" EasingFunction="{StaticResource Muzzle.Ease.Squish}" />
+        <DoubleAnimation Storyboard.TargetName="Glyph" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                         To="0.86" Duration="0:0:0.1" EasingFunction="{StaticResource Muzzle.Ease.Squish}" />
+        <DoubleAnimation Storyboard.TargetName="Glyph" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                         To="0.8" Duration="0:0:0.1" EasingFunction="{StaticResource Muzzle.Ease.Squish}" />
+    </Storyboard>
+
+    <Storyboard x:Key="Muzzle.Caption.PressOut">
+        <DoubleAnimation Storyboard.TargetName="Chip" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                         To="1" Duration="0:0:0.6" EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+        <DoubleAnimation Storyboard.TargetName="Chip" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                         To="1" Duration="0:0:0.6" EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+        <DoubleAnimation Storyboard.TargetName="Glyph" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                         To="1.1" Duration="0:0:0.6" EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+        <DoubleAnimation Storyboard.TargetName="Glyph" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                         To="1.1" Duration="0:0:0.6" EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+    </Storyboard>
+
+    <Style x:Key="Muzzle.CaptionButton" TargetType="{x:Type Button}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextSecondary}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Width" Value="44" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+        <Setter Property="mz:MuzzleAssist.HoverBackground" Value="{DynamicResource Muzzle.Brush.HoverTint}" />
+        <Setter Property="mz:MuzzleAssist.PressedBackground" Value="{DynamicResource Muzzle.Brush.PressTint}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid x:Name="Root" Background="Transparent">
+                        <Border x:Name="Chip"
+                                Width="34" Height="30"
+                                CornerRadius="10"
+                                Background="{TemplateBinding mz:MuzzleAssist.HoverBackground}"
+                                Opacity="0"
+                                RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="0.6" ScaleY="0.6" />
+                            </Border.RenderTransform>
+                        </Border>
+                        <ContentPresenter x:Name="Glyph"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          RenderTransformOrigin="0.5,0.5">
+                            <ContentPresenter.RenderTransform>
+                                <ScaleTransform />
+                            </ContentPresenter.RenderTransform>
+                        </ContentPresenter>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource Muzzle.Caption.HoverIn}" />
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard Storyboard="{StaticResource Muzzle.Caption.HoverOut}" />
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="mzc:MuzzleWindow.IsCaptionHovered" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource Muzzle.Caption.HoverIn}" />
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard Storyboard="{StaticResource Muzzle.Caption.HoverOut}" />
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource Muzzle.Caption.PressIn}" />
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard Storyboard="{StaticResource Muzzle.Caption.PressOut}" />
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="mzc:MuzzleWindow.IsCaptionPressed" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource Muzzle.Caption.PressIn}" />
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard Storyboard="{StaticResource Muzzle.Caption.PressOut}" />
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Root" Property="Opacity" Value="0.4" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+            </Trigger>
+            <Trigger Property="mzc:MuzzleWindow.IsCaptionHovered" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="Muzzle.CaptionButton.Close" TargetType="{x:Type Button}" BasedOn="{StaticResource Muzzle.CaptionButton}">
+        <Setter Property="mz:MuzzleAssist.HoverBackground" Value="{DynamicResource Muzzle.Brush.CaptionCloseHover}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.CaptionCloseGlyph}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="{x:Type mzc:MuzzleWindow}">
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="Background" Value="{DynamicResource Muzzle.Brush.Canvas}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.SurfaceBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="FontFamily" Value="{DynamicResource Muzzle.FontFamily}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
+        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type mzc:MuzzleWindow}">
+                    <Border x:Name="PART_Root"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Grid x:Name="PART_TitleBar"
+                                  Height="{TemplateBinding NonClientAreaHeight}"
+                                  Background="{TemplateBinding NonClientAreaBackground}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Image x:Name="Icon"
+                                       Grid.Column="0"
+                                       Width="18" Height="18"
+                                       Margin="16,0,0,0"
+                                       VerticalAlignment="Center"
+                                       Source="{TemplateBinding Icon}"
+                                       RenderOptions.BitmapScalingMode="HighQuality"
+                                       WindowChrome.IsHitTestVisibleInChrome="False" />
+                                <TextBlock x:Name="TitleText"
+                                           Grid.Column="1"
+                                           Margin="10,0,16,0"
+                                           VerticalAlignment="Center"
+                                           Text="{TemplateBinding Title}"
+                                           FontWeight="SemiBold"
+                                           FontSize="13"
+                                           Foreground="{TemplateBinding Foreground}"
+                                           TextTrimming="CharacterEllipsis" />
+                                <ContentPresenter x:Name="NonClientContent"
+                                                  Grid.Column="2"
+                                                  Content="{TemplateBinding NonClientAreaContent}"
+                                                  ContentTemplate="{TemplateBinding NonClientAreaContentTemplate}"
+                                                  WindowChrome.IsHitTestVisibleInChrome="True" />
+                                <StackPanel x:Name="CaptionButtons"
+                                            Grid.Column="3"
+                                            Margin="0,0,6,0"
+                                            Orientation="Horizontal"
+                                            WindowChrome.IsHitTestVisibleInChrome="True">
+                                    <Button x:Name="PART_MinimizeButton"
+                                            Style="{StaticResource Muzzle.CaptionButton}"
+                                            Command="{x:Static SystemCommands.MinimizeWindowCommand}"
+                                            ToolTip="Minimize"
+                                            AutomationProperties.Name="Minimize">
+                                        <Path Width="10" Height="10" Data="M 0,5 L 10,5"
+                                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                              StrokeThickness="1.3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                                    </Button>
+                                    <Button x:Name="PART_MaximizeButton"
+                                            Style="{StaticResource Muzzle.CaptionButton}"
+                                            Command="{x:Static SystemCommands.MaximizeWindowCommand}"
+                                            AutomationProperties.Name="Maximize">
+                                        <Grid Width="10" Height="10">
+                                            <Path x:Name="MaximizeGlyph"
+                                                  Data="M 2.5,0.5 H 7.5 A 2,2 0 0 1 9.5,2.5 V 7.5 A 2,2 0 0 1 7.5,9.5 H 2.5 A 2,2 0 0 1 0.5,7.5 V 2.5 A 2,2 0 0 1 2.5,0.5 Z"
+                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                                  StrokeThickness="1.2" />
+                                            <Path x:Name="RestoreGlyph"
+                                                  Visibility="Collapsed"
+                                                  Data="M 3,0.6 H 8 A 1.5,1.5 0 0 1 9.5,2 V 7 M 1.8,2.6 H 6.2 A 1.4,1.4 0 0 1 7.6,4 V 8.2 A 1.4,1.4 0 0 1 6.2,9.6 H 1.8 A 1.4,1.4 0 0 1 0.4,8.2 V 4 A 1.4,1.4 0 0 1 1.8,2.6 Z"
+                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                                  StrokeThickness="1.2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                                        </Grid>
+                                    </Button>
+                                    <Button x:Name="PART_CloseButton"
+                                            Style="{StaticResource Muzzle.CaptionButton.Close}"
+                                            Command="{x:Static SystemCommands.CloseWindowCommand}"
+                                            ToolTip="Close"
+                                            AutomationProperties.Name="Close">
+                                        <Path Width="10" Height="10" Data="M 0.5,0.5 L 9.5,9.5 M 9.5,0.5 L 0.5,9.5"
+                                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                              StrokeThickness="1.3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+
+                            <AdornerDecorator Grid.Row="1">
+                                <ContentPresenter />
+                            </AdornerDecorator>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="WindowState" Value="Maximized">
+                            <Setter TargetName="MaximizeGlyph" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="RestoreGlyph" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="PART_MaximizeButton" Property="AutomationProperties.Name" Value="Restore" />
+                            <Setter TargetName="PART_Root" Property="BorderThickness" Value="0" />
+                        </Trigger>
+                        <Trigger Property="IsActive" Value="False">
+                            <Setter TargetName="TitleText" Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextSecondary}" />
+                            <Setter TargetName="CaptionButtons" Property="Opacity" Value="0.7" />
+                        </Trigger>
+                        <Trigger Property="ShowTitle" Value="False">
+                            <Setter TargetName="TitleText" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="ShowIcon" Value="False">
+                            <Setter TargetName="Icon" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="Icon" Value="{x:Null}">
+                            <Setter TargetName="Icon" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="TitleText" Property="Margin" Value="16,0,16,0" />
+                        </Trigger>
+                        <Trigger Property="ShowMinimizeButton" Value="False">
+                            <Setter TargetName="PART_MinimizeButton" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="ShowMaximizeButton" Value="False">
+                            <Setter TargetName="PART_MaximizeButton" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="ResizeMode" Value="CanMinimize">
+                            <Setter TargetName="PART_MaximizeButton" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="ResizeMode" Value="NoResize">
+                            <Setter TargetName="PART_MinimizeButton" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="PART_MaximizeButton" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

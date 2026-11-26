@@ -1,0 +1,70 @@
+<UserControl x:Class="Muzzle.Gallery.Pages.WindowPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mz="http://schemas.muzzle.dev/wpf"
+             xmlns:local="clr-namespace:Muzzle.Gallery"
+             xmlns:controls="clr-namespace:Muzzle.Gallery.Controls">
+    <ScrollViewer Style="{StaticResource Gallery.PageScroller}">
+        <StackPanel Margin="4,4,20,28">
+            <TextBlock Text="MuzzleWindow" Style="{StaticResource Gallery.PageHeader}" />
+            <TextBlock Style="{StaticResource Gallery.PageLead}"
+                       Text="This very window is a MuzzleWindow: custom chrome via WindowChrome, Windows 11 rounded corners and snap layouts (hover the maximize button), and a NonClientAreaContent slot holding the search box, switch and button above." />
+
+            <mz:Card>
+                <StackPanel>
+                    <TextBlock Text="Tune this window live" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="These controls are bound straight to the MuzzleWindow dependency properties." Style="{StaticResource Gallery.SectionLead}" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="170" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="56" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock VerticalAlignment="Center" Text="NonClientAreaHeight" Style="{StaticResource Muzzle.Text.Code}" />
+                        <Slider x:Name="HeightSlider" Grid.Column="1" Minimum="36" Maximum="80"
+                                Value="{Binding NonClientAreaHeight, RelativeSource={RelativeSource AncestorType={x:Type mz:MuzzleWindow}}, Mode=TwoWay}" />
+                        <TextBlock Grid.Column="2" VerticalAlignment="Center" TextAlignment="Right" FontWeight="SemiBold"
+                                   Text="{Binding Value, ElementName=HeightSlider, StringFormat={}{0:0}px}" />
+
+                        <TextBlock Grid.Row="1" Margin="0,16,0,0" VerticalAlignment="Center" Text="ShowTitle" Style="{StaticResource Muzzle.Text.Code}" />
+                        <mz:ToggleSwitch Grid.Row="1" Grid.Column="1" Margin="0,16,0,0"
+                                         IsChecked="{Binding ShowTitle, RelativeSource={RelativeSource AncestorType={x:Type mz:MuzzleWindow}}, Mode=TwoWay}" />
+
+                        <TextBlock Grid.Row="2" Margin="0,16,0,0" VerticalAlignment="Center" Text="ShowIcon" Style="{StaticResource Muzzle.Text.Code}" />
+                        <mz:ToggleSwitch Grid.Row="2" Grid.Column="1" Margin="0,16,0,0"
+                                         IsChecked="{Binding ShowIcon, RelativeSource={RelativeSource AncestorType={x:Type mz:MuzzleWindow}}, Mode=TwoWay}" />
+
+                        <TextBlock Grid.Row="3" Margin="0,16,0,0" VerticalAlignment="Center" Text="ShowMinimizeButton" Style="{StaticResource Muzzle.Text.Code}" />
+                        <mz:ToggleSwitch Grid.Row="3" Grid.Column="1" Margin="0,16,0,0"
+                                         IsChecked="{Binding ShowMinimizeButton, RelativeSource={RelativeSource AncestorType={x:Type mz:MuzzleWindow}}, Mode=TwoWay}" />
+                    </Grid>
+                </StackPanel>
+            </mz:Card>
+
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="Open another window" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="A second MuzzleWindow with tab-like title-bar buttons, a tool button and no title text." Style="{StaticResource Gallery.SectionLead}" />
+                    <WrapPanel>
+                        <Button Margin="0,0,12,0" Content="Open demo window" Style="{StaticResource Muzzle.Button.Primary}" Click="OnOpenDemoClick" />
+                        <Button Content="Open a fixed-size dialog" Style="{StaticResource Muzzle.Button.Secondary}" Click="OnOpenDialogClick" />
+                    </WrapPanel>
+                </StackPanel>
+            </mz:Card>
+
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="Snippet" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Derive your window from MuzzleWindow (XAML root + code-behind base class)." Style="{StaticResource Gallery.SectionLead}" />
+                    <controls:SnippetView Code="{x:Static local:Snippets.Window}" />
+                </StackPanel>
+            </mz:Card>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

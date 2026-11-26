@@ -1,0 +1,186 @@
+<!--
+    ColorPicker: rounded HSV canvas (hue × white→ × →black), hue + alpha sliders (Muzzle's squishy thumbs),
+    pastel preset swatches and Hex / R / G / B inputs.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mz="clr-namespace:Muzzle.Theme"
+                    xmlns:mzc="clr-namespace:Muzzle.Theme.Controls"
+                    xmlns:mzv="clr-namespace:Muzzle.Theme.Converters">
+
+    <LinearGradientBrush x:Key="Muzzle.ColorPicker.HueSpectrum" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="#FF0000" />
+        <GradientStop Offset="0.1667" Color="#FFFF00" />
+        <GradientStop Offset="0.3333" Color="#00FF00" />
+        <GradientStop Offset="0.5" Color="#00FFFF" />
+        <GradientStop Offset="0.6667" Color="#0000FF" />
+        <GradientStop Offset="0.8333" Color="#FF00FF" />
+        <GradientStop Offset="1" Color="#FF0000" />
+    </LinearGradientBrush>
+
+    <!-- Transparency checkerboard: Muzzle.Brush.Checker, defined per theme in the palette dictionaries. -->
+
+    <Style x:Key="Muzzle.ColorPicker.Swatch" TargetType="{x:Type Button}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Width" Value="26" />
+        <Setter Property="Height" Value="26" />
+        <Setter Property="Margin" Value="0,0,7,7" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource Muzzle.FocusVisual.Round}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border x:Name="Swatch" CornerRadius="13" Background="{TemplateBinding Background}"
+                            BorderBrush="{DynamicResource Muzzle.Brush.SwatchOutline}" BorderThickness="1" mz:MuzzleAssist.Jelly="Hover, Press" />
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Swatch" Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.TextSecondary}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Muzzle.ColorPicker" TargetType="{x:Type mzc:ColorPicker}">
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="Width" Value="300" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="KeyboardNavigation.TabNavigation" Value="Local" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type mzc:ColorPicker}">
+                    <StackPanel>
+                        <!-- Saturation (x) / brightness (y) canvas -->
+                        <Grid x:Name="PART_Spectrum"
+                              Height="168"
+                              Background="Transparent"
+                              Focusable="True"
+                              Cursor="Cross"
+                              FocusVisualStyle="{DynamicResource Muzzle.FocusVisual}"
+                              AutomationProperties.Name="Saturation and brightness">
+                            <Border CornerRadius="12" Background="{TemplateBinding HueBrush}" />
+                            <Border CornerRadius="12">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Offset="0" Color="#FFFFFFFF" />
+                                        <GradientStop Offset="1" Color="#00FFFFFF" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
+                            <Border CornerRadius="12">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStop Offset="0" Color="#00000000" />
+                                        <GradientStop Offset="1" Color="#FF000000" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
+                            <Canvas IsHitTestVisible="False">
+                                <Ellipse x:Name="PART_SpectrumThumb"
+                                         Width="18" Height="18"
+                                         Fill="{TemplateBinding SelectedBrush}"
+                                         Stroke="White"
+                                         StrokeThickness="3"
+                                         Effect="{DynamicResource Muzzle.Shadow.Raised}" />
+                            </Canvas>
+                        </Grid>
+
+                        <!-- Preview + hue / alpha -->
+                        <Grid Margin="0,14,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Width="42" Height="42" VerticalAlignment="Center" mz:MuzzleAssist.Jelly="Hover">
+                                <Ellipse Fill="{DynamicResource Muzzle.Brush.Checker}" />
+                                <Ellipse Fill="{TemplateBinding SelectedBrush}" Stroke="{DynamicResource Muzzle.Brush.SwatchOutline}" StrokeThickness="1" />
+                            </Grid>
+                            <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
+                                <Slider Minimum="0" Maximum="360" SmallChange="1" LargeChange="15"
+                                        Background="{StaticResource Muzzle.ColorPicker.HueSpectrum}"
+                                        Foreground="Transparent"
+                                        Value="{Binding Hue, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                        AutomationProperties.Name="Hue" />
+                                <Grid x:Name="AlphaRow" Margin="0,2,0,0">
+                                    <Border Height="6" Margin="0,0,0,0" CornerRadius="3" VerticalAlignment="Center"
+                                            Background="{DynamicResource Muzzle.Brush.Checker}" />
+                                    <Slider Minimum="0" Maximum="255" SmallChange="1" LargeChange="16"
+                                            Background="{TemplateBinding AlphaGradient}"
+                                            Foreground="Transparent"
+                                            Value="{Binding Alpha, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                            AutomationProperties.Name="Opacity" />
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Presets -->
+                        <TextBlock Margin="2,14,0,8" Text="Pastels" Style="{DynamicResource Muzzle.Text.Overline}" />
+                        <ItemsControl Focusable="False" ItemsSource="{TemplateBinding Presets}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource Muzzle.ColorPicker.Swatch}"
+                                            Background="{Binding Converter={x:Static mzv:ColorToBrushConverter.Instance}}"
+                                            ToolTip="{Binding}"
+                                            AutomationProperties.Name="{Binding}"
+                                            Command="{x:Static mzc:ColorPicker.ApplyPresetCommand}"
+                                            CommandParameter="{Binding}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Hex / RGB -->
+                        <Grid Margin="0,6,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock VerticalAlignment="Center" Text="Hex" Style="{DynamicResource Muzzle.Text.Caption}" Width="30" />
+                            <TextBox Grid.Column="1"
+                                     Style="{DynamicResource Muzzle.TextBox.Compact}"
+                                     FontFamily="{DynamicResource Muzzle.FontFamily.Mono}"
+                                     Text="{Binding HexText, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     AutomationProperties.Name="Hex colour" />
+                        </Grid>
+                        <UniformGrid Margin="0,8,0,0" Columns="3">
+                            <DockPanel Margin="0,0,6,0">
+                                <TextBlock DockPanel.Dock="Top" Margin="2,0,0,4" Text="R" Style="{DynamicResource Muzzle.Text.Caption}" />
+                                <mzc:NumericUpDown Minimum="0" Maximum="255" MinHeight="32" Padding="10,0,6,0" FontSize="13" ShowSpinButtons="False" mz:MuzzleAssist.CornerRadius="8"
+                                                   Value="{Binding Red, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                                   AutomationProperties.Name="Red" />
+                            </DockPanel>
+                            <DockPanel Margin="3,0">
+                                <TextBlock DockPanel.Dock="Top" Margin="2,0,0,4" Text="G" Style="{DynamicResource Muzzle.Text.Caption}" />
+                                <mzc:NumericUpDown Minimum="0" Maximum="255" MinHeight="32" Padding="10,0,6,0" FontSize="13" ShowSpinButtons="False" mz:MuzzleAssist.CornerRadius="8"
+                                                   Value="{Binding Green, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                                   AutomationProperties.Name="Green" />
+                            </DockPanel>
+                            <DockPanel Margin="6,0,0,0">
+                                <TextBlock DockPanel.Dock="Top" Margin="2,0,0,4" Text="B" Style="{DynamicResource Muzzle.Text.Caption}" />
+                                <mzc:NumericUpDown Minimum="0" Maximum="255" MinHeight="32" Padding="10,0,6,0" FontSize="13" ShowSpinButtons="False" mz:MuzzleAssist.CornerRadius="8"
+                                                   Value="{Binding Blue, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                                   AutomationProperties.Name="Blue" />
+                            </DockPanel>
+                        </UniformGrid>
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="ShowAlpha" Value="False">
+                            <Setter TargetName="AlphaRow" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type mzc:ColorPicker}" BasedOn="{StaticResource Muzzle.ColorPicker}" />
+
+</ResourceDictionary>

@@ -1,0 +1,180 @@
+<!--
+    TextBox & PasswordBox: soft white field, a pastel focus ring that springs outward, and a subtle
+    scale pulse on focus. Set mz:MuzzleAssist.Placeholder for hint text.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mz="clr-namespace:Muzzle.Theme"
+                    xmlns:mzc="clr-namespace:Muzzle.Theme.Controls"
+                    xmlns:mzv="clr-namespace:Muzzle.Theme.Converters">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Animations/JellyEasings.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <Storyboard x:Key="Muzzle.Storyboard.FocusRingIn">
+        <DoubleAnimation Storyboard.TargetName="FocusRing" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.18" />
+        <ThicknessAnimation Storyboard.TargetName="FocusRing" Storyboard.TargetProperty="Margin" From="0" To="-3" Duration="0:0:0.5"
+                            EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+    </Storyboard>
+
+    <Storyboard x:Key="Muzzle.Storyboard.FocusRingOut">
+        <DoubleAnimation Storyboard.TargetName="FocusRing" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
+        <ThicknessAnimation Storyboard.TargetName="FocusRing" Storyboard.TargetProperty="Margin" To="0" Duration="0:0:0.2"
+                            EasingFunction="{StaticResource Muzzle.Ease.Squish}" />
+    </Storyboard>
+
+    <ControlTemplate x:Key="Muzzle.TextBoxTemplate" TargetType="{x:Type TextBox}">
+        <Grid x:Name="Root" mz:MuzzleAssist.Jelly="Focus">
+            <mzc:SoftBorder x:Name="FocusRing"
+                    Opacity="0"
+                    BorderThickness="3"
+                    BorderBrush="{DynamicResource Muzzle.Brush.FocusRing}"
+                    CornerRadius="{TemplateBinding mz:MuzzleAssist.CornerRadius, Converter={x:Static mzv:CornerRadiusOffsetConverter.Instance}, ConverterParameter=3}"
+                    IsHitTestVisible="False" />
+            <mzc:SoftBorder x:Name="Body"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="{TemplateBinding mz:MuzzleAssist.CornerRadius}"
+                    Effect="{TemplateBinding mz:MuzzleAssist.ShadowDepth, Converter={x:Static mzv:ShadowDepthToEffectConverter.Instance}}" />
+            <Grid Margin="{TemplateBinding BorderThickness}">
+                <TextBlock x:Name="Placeholder"
+                           Margin="{TemplateBinding Padding}"
+                           Padding="2,0,0,0"
+                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                           Text="{TemplateBinding mz:MuzzleAssist.Placeholder}"
+                           Foreground="{DynamicResource Muzzle.Brush.TextTertiary}"
+                           TextTrimming="CharacterEllipsis"
+                           IsHitTestVisible="False"
+                           Visibility="Collapsed" />
+                <ScrollViewer x:Name="PART_ContentHost"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              Focusable="False"
+                              HorizontalScrollBarVisibility="Hidden"
+                              VerticalScrollBarVisibility="Hidden" />
+            </Grid>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="Text" Value="">
+                <Setter TargetName="Placeholder" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="IsReadOnly" Value="True">
+                <Setter TargetName="Body" Property="Background" Value="{DynamicResource Muzzle.Brush.CanvasAlt}" />
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Body" Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.ControlBorderHover}" />
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter TargetName="Body" Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.Primary}" />
+                <Trigger.EnterActions>
+                    <BeginStoryboard Storyboard="{StaticResource Muzzle.Storyboard.FocusRingIn}" />
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard Storyboard="{StaticResource Muzzle.Storyboard.FocusRingOut}" />
+                </Trigger.ExitActions>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="Root" Property="Opacity" Value="0.5" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="Muzzle.PasswordBoxTemplate" TargetType="{x:Type PasswordBox}">
+        <Grid x:Name="Root" mz:MuzzleAssist.Jelly="Focus">
+            <mzc:SoftBorder x:Name="FocusRing"
+                    Opacity="0"
+                    BorderThickness="3"
+                    BorderBrush="{DynamicResource Muzzle.Brush.FocusRing}"
+                    CornerRadius="{TemplateBinding mz:MuzzleAssist.CornerRadius, Converter={x:Static mzv:CornerRadiusOffsetConverter.Instance}, ConverterParameter=3}"
+                    IsHitTestVisible="False" />
+            <mzc:SoftBorder x:Name="Body"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="{TemplateBinding mz:MuzzleAssist.CornerRadius}"
+                    Effect="{TemplateBinding mz:MuzzleAssist.ShadowDepth, Converter={x:Static mzv:ShadowDepthToEffectConverter.Instance}}" />
+            <Grid Margin="{TemplateBinding BorderThickness}">
+                <TextBlock x:Name="Placeholder"
+                           Margin="{TemplateBinding Padding}"
+                           Padding="2,0,0,0"
+                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                           Text="{TemplateBinding mz:MuzzleAssist.Placeholder}"
+                           Foreground="{DynamicResource Muzzle.Brush.TextTertiary}"
+                           TextTrimming="CharacterEllipsis"
+                           IsHitTestVisible="False"
+                           Visibility="Collapsed" />
+                <ScrollViewer x:Name="PART_ContentHost"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              Focusable="False"
+                              HorizontalScrollBarVisibility="Hidden"
+                              VerticalScrollBarVisibility="Hidden" />
+            </Grid>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="mz:MuzzleAssist.HasText" Value="False">
+                <Setter TargetName="Placeholder" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Body" Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.ControlBorderHover}" />
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter TargetName="Body" Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.Primary}" />
+                <Trigger.EnterActions>
+                    <BeginStoryboard Storyboard="{StaticResource Muzzle.Storyboard.FocusRingIn}" />
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard Storyboard="{StaticResource Muzzle.Storyboard.FocusRingOut}" />
+                </Trigger.ExitActions>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="Root" Property="Opacity" Value="0.5" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="Muzzle.TextBoxBase" TargetType="{x:Type Control}">
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="Background" Value="{DynamicResource Muzzle.Brush.ControlBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.ControlBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="MinHeight" Value="38" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
+        <Setter Property="AllowDrop" Value="True" />
+        <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst" />
+        <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
+        <Setter Property="mz:MuzzleAssist.CornerRadius" Value="10" />
+    </Style>
+
+    <Style x:Key="Muzzle.TextBox" TargetType="{x:Type TextBox}" BasedOn="{StaticResource Muzzle.TextBoxBase}">
+        <Setter Property="CaretBrush" Value="{DynamicResource Muzzle.Brush.PrimaryText}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource Muzzle.Brush.Primary}" />
+        <Setter Property="SelectionOpacity" Value="0.4" />
+        <Setter Property="Template" Value="{StaticResource Muzzle.TextBoxTemplate}" />
+    </Style>
+
+    <Style x:Key="Muzzle.TextBox.Compact" TargetType="{x:Type TextBox}" BasedOn="{StaticResource Muzzle.TextBox}">
+        <Setter Property="Padding" Value="10,5" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="mz:MuzzleAssist.CornerRadius" Value="8" />
+    </Style>
+
+    <Style x:Key="Muzzle.PasswordBox" TargetType="{x:Type PasswordBox}" BasedOn="{StaticResource Muzzle.TextBoxBase}">
+        <Setter Property="PasswordChar" Value="●" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Muzzle.Brush.PrimaryText}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource Muzzle.Brush.Primary}" />
+        <Setter Property="SelectionOpacity" Value="0.4" />
+        <Setter Property="mz:MuzzleAssist.TrackPassword" Value="True" />
+        <Setter Property="Template" Value="{StaticResource Muzzle.PasswordBoxTemplate}" />
+    </Style>
+
+    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource Muzzle.TextBox}" />
+    <Style TargetType="{x:Type PasswordBox}" BasedOn="{StaticResource Muzzle.PasswordBox}" />
+
+</ResourceDictionary>

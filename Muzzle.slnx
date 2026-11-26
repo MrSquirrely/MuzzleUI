@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Muzzle.Theme/Muzzle.Theme.csproj" />
+    <Project Path="src/Muzzle.Gallery/Muzzle.Gallery.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Muzzle.Theme.Tests/Muzzle.Theme.Tests.csproj" />
+  </Folder>
+</Solution>

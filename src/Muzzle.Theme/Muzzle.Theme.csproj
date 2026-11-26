@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net9.0-windows;net10.0-windows</TargetFrameworks>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Muzzle.Theme</RootNamespace>
+    <AssemblyName>Muzzle.Theme</AssemblyName>
+  </PropertyGroup>
+
+  <!-- Package identity & metadata -->
+  <PropertyGroup>
+    <PackageId>Muzzle.Theme</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Mr. Squirrely</Authors>
+    <Company>Muzzle UI</Company>
+    <Product>Muzzle</Product>
+    <Copyright>Copyright © 2026 Mr. Squirrely (Muzzle UI)</Copyright>
+    <Description>Muzzle: a cozy, pastel design system for WPF. Light and Dark themes with Coral, Lavender, Mint, Peach or custom accents switchable at runtime, soft elevation shadows, and tactile jelly physics on every control. Includes 40+ restyled and custom controls (MuzzleWindow, PropertyGrid, DataGrid, CommandPalette, Growl, Dialog, Drawer, NavigationView, pickers, Avatar, Carousel…), attached behaviors (JellyBehavior, ClipHelper, ScrollViewerAssist, FocusTrap, WindowStateSaver, Mica/Acrylic backdrops), converters and a 156-icon vector pack.</Description>
+    <PackageTags>wpf;xaml;ui;theme;pastel;jelly;animation;fluent;design-system;controls;dotnet</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/MrSquirrely/MuzzleUI</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MrSquirrely/MuzzleUI.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>muzzle-icon.png</PackageIcon>
+    <PackageReleaseNotes>https://github.com/MrSquirrely/MuzzleUI/releases</PackageReleaseNotes>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+  <!-- Build, docs, symbols & SourceLink (the .NET SDK includes the GitHub SourceLink provider) -->
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <Deterministic>true</Deterministic>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <EnablePackageValidation>true</EnablePackageValidation>
+  </PropertyGroup>
+
+  <!-- Reproducible paths on CI (GitHub Actions sets GITHUB_ACTIONS=true). -->
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Atkinson Hyperlegible Next (Braille Institute, SIL OFL 1.1), all 7 weights + italics, embedded so apps need no installed font. -->
+    <Resource Include="Themes\Fonts\*.ttf" />
+    <None Include="Themes\Fonts\AtkinsonHyperlegibleNext-OFL.txt" Pack="true" PackagePath="licenses\" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" Link="Package\README.md" />
+    <None Include="..\..\assets\muzzle-icon.png" Pack="true" PackagePath="\" Link="Package\muzzle-icon.png" />
+    <None Include="..\..\LICENSE" Pack="true" PackagePath="\" Link="Package\LICENSE" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,206 @@
+<!--
+    StepBar: numbered circles joined by a pastel track. Completed circles fill with blush and a checkmark springs in;
+    the current circle gets a halo; the blush progress track glides between circles (sized in StepBar.cs).
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mzc="clr-namespace:Muzzle.Theme.Controls">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Animations/JellyEasings.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <!-- The circle is shared by both orientations. -->
+    <ControlTemplate x:Key="Muzzle.StepBarItem.Circle" TargetType="{x:Type ContentControl}">
+        <Grid Width="32" Height="32">
+            <Ellipse x:Name="Halo" Margin="-6" Fill="{DynamicResource Muzzle.Brush.FocusRing}" Opacity="0" RenderTransformOrigin="0.5,0.5">
+                <Ellipse.RenderTransform>
+                    <ScaleTransform ScaleX="0.6" ScaleY="0.6" />
+                </Ellipse.RenderTransform>
+            </Ellipse>
+            <Ellipse x:Name="Disc" Fill="{DynamicResource Muzzle.Brush.Surface}" Stroke="{DynamicResource Muzzle.Brush.ControlBorderStrong}" StrokeThickness="2" />
+            <Ellipse x:Name="Fill" Fill="{DynamicResource Muzzle.Brush.Primary}" Opacity="0" RenderTransformOrigin="0.5,0.5">
+                <Ellipse.RenderTransform>
+                    <ScaleTransform ScaleX="0.4" ScaleY="0.4" />
+                </Ellipse.RenderTransform>
+            </Ellipse>
+            <TextBlock x:Name="Number"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Text="{Binding Number, RelativeSource={RelativeSource AncestorType={x:Type mzc:StepBarItem}}}"
+                       FontSize="13" FontWeight="SemiBold"
+                       Foreground="{DynamicResource Muzzle.Brush.TextSecondary}" />
+            <Path x:Name="Check"
+                  Width="16" Height="16"
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  Data="M 3,8.6 L 6.6,12 L 13,4.6"
+                  Stroke="{DynamicResource Muzzle.Brush.Surface}"
+                  StrokeThickness="2.4" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                  RenderTransformOrigin="0.5,0.5">
+                <Path.RenderTransform>
+                    <ScaleTransform ScaleX="0" ScaleY="0" />
+                </Path.RenderTransform>
+            </Path>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <DataTrigger Binding="{Binding Status, RelativeSource={RelativeSource AncestorType={x:Type mzc:StepBarItem}}}" Value="Current">
+                <Setter TargetName="Disc" Property="Stroke" Value="{DynamicResource Muzzle.Brush.Primary}" />
+                <Setter TargetName="Disc" Property="StrokeThickness" Value="2.5" />
+                <Setter TargetName="Number" Property="Foreground" Value="{DynamicResource Muzzle.Brush.PrimaryText}" />
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="Halo" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2" />
+                            <DoubleAnimation Storyboard.TargetName="Halo" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                             To="1" Duration="0:0:0.6" EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+                            <DoubleAnimation Storyboard.TargetName="Halo" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                             To="1" Duration="0:0:0.6" EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.EnterActions>
+                <DataTrigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="Halo" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
+                            <DoubleAnimation Storyboard.TargetName="Halo" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                             To="0.6" Duration="0:0:0.2" />
+                            <DoubleAnimation Storyboard.TargetName="Halo" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                             To="0.6" Duration="0:0:0.2" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.ExitActions>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Status, RelativeSource={RelativeSource AncestorType={x:Type mzc:StepBarItem}}}" Value="Completed">
+                <Setter TargetName="Disc" Property="Stroke" Value="{DynamicResource Muzzle.Brush.Primary}" />
+                <Setter TargetName="Number" Property="Visibility" Value="Hidden" />
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="Fill" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.12" />
+                            <DoubleAnimation Storyboard.TargetName="Fill" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                             To="1" Duration="0:0:0.4" EasingFunction="{StaticResource Muzzle.Ease.Back}" />
+                            <DoubleAnimation Storyboard.TargetName="Fill" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                             To="1" Duration="0:0:0.4" EasingFunction="{StaticResource Muzzle.Ease.Back}" />
+                            <DoubleAnimation Storyboard.TargetName="Check" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                             From="0" To="1" BeginTime="0:0:0.08" Duration="0:0:0.7" EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+                            <DoubleAnimation Storyboard.TargetName="Check" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                             From="0" To="1" BeginTime="0:0:0.08" Duration="0:0:0.7" EasingFunction="{StaticResource Muzzle.Ease.Jelly}" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.EnterActions>
+                <DataTrigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="Fill" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
+                            <DoubleAnimation Storyboard.TargetName="Fill" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                             To="0.4" Duration="0:0:0.2" EasingFunction="{StaticResource Muzzle.Ease.BackIn}" />
+                            <DoubleAnimation Storyboard.TargetName="Fill" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                             To="0.4" Duration="0:0:0.2" EasingFunction="{StaticResource Muzzle.Ease.BackIn}" />
+                            <DoubleAnimation Storyboard.TargetName="Check" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                             To="0" Duration="0:0:0.15" />
+                            <DoubleAnimation Storyboard.TargetName="Check" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                             To="0" Duration="0:0:0.15" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.ExitActions>
+            </DataTrigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="Muzzle.StepBarItem.Horizontal" TargetType="{x:Type mzc:StepBarItem}">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top">
+            <ContentControl x:Name="PART_Circle" HorizontalAlignment="Center" Focusable="False" Template="{StaticResource Muzzle.StepBarItem.Circle}" />
+            <ContentPresenter x:Name="Label"
+                              Margin="6,10,6,0"
+                              HorizontalAlignment="Center"
+                              TextBlock.TextAlignment="Center"
+                              TextElement.Foreground="{DynamicResource Muzzle.Brush.TextSecondary}"
+                              TextElement.FontSize="13" />
+        </StackPanel>
+        <ControlTemplate.Triggers>
+            <Trigger Property="Status" Value="Current">
+                <Setter TargetName="Label" Property="TextElement.Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+                <Setter TargetName="Label" Property="TextElement.FontWeight" Value="SemiBold" />
+            </Trigger>
+            <Trigger Property="Status" Value="Completed">
+                <Setter TargetName="Label" Property="TextElement.Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="Muzzle.StepBarItem.Vertical" TargetType="{x:Type mzc:StepBarItem}">
+        <Grid VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <ContentControl x:Name="PART_Circle" VerticalAlignment="Top" Focusable="False" Template="{StaticResource Muzzle.StepBarItem.Circle}" />
+            <ContentPresenter x:Name="Label"
+                              Grid.Column="1"
+                              Margin="14,6,0,0"
+                              VerticalAlignment="Top"
+                              TextElement.Foreground="{DynamicResource Muzzle.Brush.TextSecondary}"
+                              TextElement.FontSize="13" />
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="Status" Value="Current">
+                <Setter TargetName="Label" Property="TextElement.Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+                <Setter TargetName="Label" Property="TextElement.FontWeight" Value="SemiBold" />
+            </Trigger>
+            <Trigger Property="Status" Value="Completed">
+                <Setter TargetName="Label" Property="TextElement.Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="Muzzle.StepBarItem" TargetType="{x:Type mzc:StepBarItem}">
+        <Setter Property="Template" Value="{StaticResource Muzzle.StepBarItem.Horizontal}" />
+        <Setter Property="AutomationProperties.ItemStatus" Value="{Binding Status, RelativeSource={RelativeSource Self}}" />
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Vertical">
+                <Setter Property="Template" Value="{StaticResource Muzzle.StepBarItem.Vertical}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="Muzzle.StepBar" TargetType="{x:Type mzc:StepBar}">
+        <Setter Property="Foreground" Value="{DynamicResource Muzzle.Brush.TextPrimary}" />
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="1" />
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type mzc:StepBar}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Padding="{TemplateBinding Padding}">
+                        <Grid>
+                            <Border x:Name="PART_Track" CornerRadius="2" Background="{DynamicResource Muzzle.Brush.Track}" />
+                            <Border x:Name="PART_Progress" CornerRadius="2" Background="{DynamicResource Muzzle.Brush.Primary}" />
+                            <ItemsPresenter />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Vertical">
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="1" />
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="{x:Type mzc:StepBar}" BasedOn="{StaticResource Muzzle.StepBar}" />
+    <Style TargetType="{x:Type mzc:StepBarItem}" BasedOn="{StaticResource Muzzle.StepBarItem}" />
+
+</ResourceDictionary>

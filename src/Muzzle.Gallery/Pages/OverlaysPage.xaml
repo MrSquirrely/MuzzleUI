@@ -1,0 +1,94 @@
+<UserControl x:Class="Muzzle.Gallery.Pages.OverlaysPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mz="http://schemas.muzzle.dev/wpf"
+             xmlns:local="clr-namespace:Muzzle.Gallery"
+             xmlns:controls="clr-namespace:Muzzle.Gallery.Controls">
+    <ScrollViewer Style="{StaticResource Gallery.PageScroller}">
+        <StackPanel Margin="4,4,20,28">
+            <TextBlock Text="Overlays &amp; notifications" Style="{StaticResource Gallery.PageHeader}" />
+            <TextBlock Style="{StaticResource Gallery.PageLead}"
+                       Text="Growl toasts slide in with a springy overshoot, dialogs pop up over a soft backdrop, and drawers bounce out from any edge. All three reuse Muzzle's tokens, shadows and jelly easings." />
+
+            <!-- Growl -->
+            <mz:Card>
+                <StackPanel>
+                    <TextBlock Text="Growl" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Toasts appear top-right in this window (the root Grid has mz:Growl.GrowlParent). Hover one to pause its countdown." Style="{StaticResource Gallery.SectionLead}" />
+                    <WrapPanel>
+                        <Button Margin="0,0,10,10" Content="Info" Click="OnGrowlInfo"
+                                Background="{DynamicResource Muzzle.Brush.InfoSoft}" Foreground="{DynamicResource Muzzle.Brush.InfoText}"
+                                Style="{StaticResource Muzzle.Button.Secondary}"
+                                mz:MuzzleAssist.HoverBackground="{DynamicResource Muzzle.Brush.Info}" mz:MuzzleAssist.PressedBackground="{DynamicResource Muzzle.Brush.Info}" />
+                        <Button Margin="0,0,10,10" Content="Success" Click="OnGrowlSuccess" Style="{StaticResource Muzzle.Button.Mint}" />
+                        <Button Margin="0,0,10,10" Content="Warning" Click="OnGrowlWarning"
+                                Background="{DynamicResource Muzzle.Brush.WarningSoft}" Foreground="{DynamicResource Muzzle.Brush.WarningText}"
+                                Style="{StaticResource Muzzle.Button.Secondary}"
+                                mz:MuzzleAssist.HoverBackground="{DynamicResource Muzzle.Brush.Warning}" mz:MuzzleAssist.PressedBackground="{DynamicResource Muzzle.Brush.Warning}" />
+                        <Button Margin="0,0,10,10" Content="Error" Click="OnGrowlError"
+                                Background="{DynamicResource Muzzle.Brush.ErrorSoft}" Foreground="{DynamicResource Muzzle.Brush.ErrorText}"
+                                Style="{StaticResource Muzzle.Button.Secondary}"
+                                mz:MuzzleAssist.HoverBackground="{DynamicResource Muzzle.Brush.Error}" mz:MuzzleAssist.PressedBackground="{DynamicResource Muzzle.Brush.Error}" />
+                        <Button Margin="0,0,10,10" Content="Ask…" Click="OnGrowlAsk" Style="{StaticResource Muzzle.Button.Secondary}" />
+                        <Button Margin="0,0,10,10" Content="Fatal (stays)" Click="OnGrowlFatal" />
+                        <Button Margin="0,0,10,10" Content="Desktop corner" Click="OnGrowlGlobal" ToolTip="Shows in the transparent desktop-corner GrowlWindow" />
+                        <Button Margin="0,0,10,10" Content="Clear all" Click="OnGrowlClear" Style="{StaticResource Muzzle.Button.Ghost}" />
+                    </WrapPanel>
+                    <controls:SnippetView Margin="0,8,0,0" Code="{x:Static local:Snippets.Growl}" />
+                </StackPanel>
+            </mz:Card>
+
+            <!-- Dialog -->
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="Dialog" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Modal overlays over the window's client area (the title bar stays usable). Click the backdrop of a strict dialog and it wobbles instead of closing." Style="{StaticResource Gallery.SectionLead}" />
+                    <WrapPanel>
+                        <Button Margin="0,0,10,10" Content="Adoption form (typed result)" Click="OnFormDialog" Style="{StaticResource Muzzle.Button.Primary}" />
+                        <Button Margin="0,0,10,10" Content="Confirm (IDialogResultable)" Click="OnConfirmDialog" Style="{StaticResource Muzzle.Button.Secondary}" />
+                        <Button Margin="0,0,10,10" Content="Click outside to close" Click="OnLightDialog" />
+                    </WrapPanel>
+                    <controls:SnippetView Margin="0,8,0,0" Code="{x:Static local:Snippets.Dialog}" />
+                </StackPanel>
+            </mz:Card>
+
+            <!-- Drawer -->
+            <mz:Card Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBlock Text="Drawer" Style="{StaticResource Gallery.SectionTitle}" />
+                    <TextBlock Text="Window-level drawers opened from code. Each overshoots its edge and settles with a jelly bounce; click the mask, press Esc or use the close button." Style="{StaticResource Gallery.SectionLead}" />
+                    <WrapPanel>
+                        <Button Margin="0,0,10,10" Content="Left" Tag="Left" Click="OnOpenDrawer" Style="{StaticResource Muzzle.Button.Secondary}" />
+                        <Button Margin="0,0,10,10" Content="Right" Tag="Right" Click="OnOpenDrawer" Style="{StaticResource Muzzle.Button.Secondary}" />
+                        <Button Margin="0,0,10,10" Content="Top" Tag="Top" Click="OnOpenDrawer" Style="{StaticResource Muzzle.Button.Secondary}" />
+                        <Button Margin="0,0,10,10" Content="Bottom" Tag="Bottom" Click="OnOpenDrawer" Style="{StaticResource Muzzle.Button.Secondary}" />
+                    </WrapPanel>
+
+                    <TextBlock Margin="0,10,0,8" Text="Declarative, inside a DrawerContainer" Style="{StaticResource Muzzle.Text.Overline}" />
+                    <Border CornerRadius="14" Background="{DynamicResource Muzzle.Brush.CanvasAlt}" Height="230">
+                        <mz:DrawerContainer x:Name="Sandbox" mz:MuzzleAssist.CornerRadius="14">
+                            <StackPanel Margin="20" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <TextBlock Text="This drawer lives in the XAML of this card." Style="{StaticResource Muzzle.Text.Secondary}" />
+                                <mz:ToggleSwitch Margin="0,14,0,0" Content="IsOpen (two-way bound)"
+                                                 IsChecked="{Binding IsOpen, ElementName=SandboxDrawer}" />
+                                <mz:ToggleSwitch x:Name="MaskSwitch" Margin="0,10,0,0" Content="ShowMask" IsChecked="True" />
+                            </StackPanel>
+                            <mz:Drawer x:Name="SandboxDrawer"
+                                       Dock="Right"
+                                       DrawerSize="270"
+                                       Header="Inline drawer"
+                                       ShowMask="{Binding IsChecked, ElementName=MaskSwitch}"
+                                       MaskCanClose="True">
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource Muzzle.Text.Secondary}" Text="Bound both ways: closing me flips the switch back." />
+                                    <CheckBox Margin="0,14,0,0" Content="Extra cozy" IsChecked="True" />
+                                </StackPanel>
+                            </mz:Drawer>
+                        </mz:DrawerContainer>
+                    </Border>
+                    <controls:SnippetView Margin="0,16,0,0" Code="{x:Static local:Snippets.Drawer}" />
+                </StackPanel>
+            </mz:Card>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
