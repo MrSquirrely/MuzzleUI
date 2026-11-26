@@ -78,7 +78,7 @@
             </mz:NavigationView.PaneHeader>
             <mz:NavigationView.PaneFooter>
                 <TextBlock Margin="12,0" Style="{StaticResource Muzzle.Text.Caption}" TextWrapping="NoWrap">
-                    <Run Text="v1.0 · .NET 9 / 10 · " /><Run Text="{DynamicResource Muzzle.ThemeName}" /><Run Text=" pastel" />
+                    <Run Text="v1.0 · .NET 10 · " /><Run Text="{DynamicResource Muzzle.ThemeName}" /><Run Text=" pastel" />
                 </TextBlock>
             </mz:NavigationView.PaneFooter>
             <mz:NavigationView.Resources>

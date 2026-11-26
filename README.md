@@ -12,12 +12,12 @@
   <a href="https://www.nuget.org/packages/Muzzle.Theme"><img src="https://img.shields.io/nuget/v/Muzzle.Theme?color=F497A9&label=NuGet" alt="NuGet version" /></a>
   <a href="https://github.com/MrSquirrely/MuzzleUI/actions/workflows/ci.yml"><img src="https://github.com/MrSquirrely/MuzzleUI/actions/workflows/ci.yml/badge.svg?branch=dev" alt="CI" /></a>
   <a href="https://github.com/MrSquirrely/MuzzleUI/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-A896E6" alt="MIT licence" /></a>
-  <img src="https://img.shields.io/badge/.NET-9%20%7C%2010-7CCBB9" alt=".NET 9 and 10" />
+  <img src="https://img.shields.io/badge/.NET-10-7CCBB9" alt=".NET 10" />
 </p>
 
 ## Overview
 
-**Muzzle.Theme** restyles every standard WPF control and adds 50+ custom ones (toasts, dialogs, drawers, a command palette, pickers, a property grid, a carousel and more). Its look is soft, rounded and pastel. Buttons squish when pressed and spring back with an elastic overshoot, and selection pills slide and stretch. Popups bounce open, and toasts glide in.
+**Muzzle.Theme** restyles every standard WPF control and adds 40+ custom ones (toasts, dialogs, drawers, a command palette, pickers, a property grid, a carousel and more). Its look is soft, rounded and pastel. Buttons squish when pressed and spring back with an elastic overshoot, and selection pills slide and stretch. Popups bounce open, and toasts glide in.
 
 - **Light and Dark** palettes ("Pastel Twilight") with identical keys, plus a **System** mode that follows Windows.
 - **Four accents**: Coral, Lavender, Mint and Peach. You can also use any custom colour, and Muzzle derives a full ramp from it. Theme and accent switch at runtime, with an optional crossfade.
@@ -33,7 +33,7 @@
   - window-placement saving;
   - a XAML tray icon.
 
-It targets `net9.0-windows` and `net10.0-windows` and has no third-party dependencies.
+It targets `net10.0-windows` and has no third-party dependencies.
 
 ## Quick start
 
@@ -254,7 +254,7 @@ Every control's properties, events, keys and motion details are in **[docs/REFER
 
 ## Building from source
 
-You need the .NET 10 SDK (it also builds the .NET 9 target) on Windows.
+You need the .NET 10 SDK on Windows.
 
 ```powershell
 git clone https://github.com/MrSquirrely/MuzzleUI.git
@@ -282,7 +282,7 @@ The pack command writes `Muzzle.Theme.<version>.nupkg` and a `.snupkg` symbols p
 |---|---|
 | `src/Muzzle.Theme` | The library: `Themes/` (palettes, accents, tokens, one dictionary per control), `Controls/`, `Behaviors/`, `Windowing/`, `Converters/` |
 | `src/Muzzle.Gallery` | The showcase app. `Muzzle.Gallery.exe --snapshot <dir>` renders every page to PNG for visual checks |
-| `tests/Muzzle.Theme.Tests` | The xUnit suite: 234 tests on each target framework |
+| `tests/Muzzle.Theme.Tests` | The xUnit suite: 234 tests |
 | `tools/` | Generators for the palettes, icons and package icon. Edit their tables, not the generated files |
 | `docs/` | The full reference |
 

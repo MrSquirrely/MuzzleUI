@@ -36,7 +36,7 @@ tools/
 ├─ Generate-Palettes.ps1        base palettes + accent overlays from one token table
 └─ Generate-Icons.ps1           Themes/Icons/MuzzleIcons.xaml + MuzzleIconKind.cs from one icon table
 tests/
-└─ Muzzle.Theme.Tests/         xUnit + Xunit.StaFact suite (net9.0-windows and net10.0-windows)
+└─ Muzzle.Theme.Tests/         xUnit + Xunit.StaFact suite (net10.0-windows)
 ├─ JellyController.cs, Jelly.cs, MuzzleEasings.cs, MuzzleShadows.cs, TabIndicatorController.cs
 ```
 
@@ -468,7 +468,7 @@ MuzzleThemeManager.AccentChanged += (_, e) => Debug.WriteLine(e.Accent);
 dotnet test tests/Muzzle.Theme.Tests
 ```
 
-`Muzzle.Theme.Tests` is an xUnit suite (with `Xunit.StaFact`) that runs on both net9.0-windows and net10.0-windows: 234 tests each, about 25 s.
+`Muzzle.Theme.Tests` is an xUnit suite (with `Xunit.StaFact`) that runs on net10.0-windows: 234 tests, about 25 s.
 
 - **`MuzzleWpfTestFixture`** (a collection fixture shared by every WPF test):
   - It starts one `Application` on a dedicated STA thread, or adopts an existing one, and merges `Themes/Muzzle.xaml` exactly as an app does.
