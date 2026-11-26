@@ -1,8 +1,9 @@
 name: Release
 
-# Every update to main is a production release: build, test, pack, tag v<Version>, publish a GitHub Release,
-# and push to NuGet.org when the NUGET_API_KEY repository secret is set. Bump <Version> in
-# src/Muzzle.Theme/Muzzle.Theme.csproj before merging; an existing tag is never overwritten.
+# Every update to main is a production release: build, test, pack, tag v<Version> and publish a GitHub Release,
+# then push to NuGet.org with Trusted Publishing (OIDC, no stored API key) when the NUGET_USER repository variable
+# holds your nuget.org profile name. Bump <Version> in src/Muzzle.Theme/Muzzle.Theme.csproj before merging. An
+# existing GitHub Release is never overwritten, and versions already on NuGet.org are skipped, so re-runs are safe.
 on:
   push:
     branches: [main]
@@ -13,7 +14,8 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write
+  contents: write   # create the tag and GitHub Release
+  id-token: write   # let NuGet/login exchange a GitHub OIDC token for a one-hour NuGet API key
 
 env:
   DOTNET_NOLOGO: true
@@ -25,8 +27,6 @@ jobs:
     name: Build, test and publish
     runs-on: windows-latest
     timeout-minutes: 30
-    env:
-      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
     steps:
       - name: Check out
         uses: actions/checkout@v5
@@ -59,7 +59,7 @@ jobs:
           gh release view '${{ steps.version.outputs.tag }}' --repo '${{ github.repository }}' *> $null
           if ($LASTEXITCODE -eq 0) {
             "exists=true" >> $env:GITHUB_OUTPUT
-            Write-Host "::warning::Release ${{ steps.version.outputs.tag }} already exists. Bump <Version> in Muzzle.Theme.csproj to publish a new one."
+            Write-Host "::warning::Release ${{ steps.version.outputs.tag }} already exists, so no new GitHub Release is created. Bump <Version> in Muzzle.Theme.csproj to publish a new one."
           }
           else {
             "exists=false" >> $env:GITHUB_OUTPUT
@@ -98,13 +98,24 @@ jobs:
             --generate-notes
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      # Trusted Publishing: no stored secret. The temporary key lasts an hour, so it is requested right before the push.
+      - name: NuGet login (OIDC to temporary API key)
+        id: nuget-login
+        if: vars.NUGET_USER != ''
+        uses: NuGet/login@v1
+        with:
+          user: ${{ vars.NUGET_USER }}
+
       - name: Publish to NuGet.org
-        if: steps.existing.outputs.exists == 'false' && env.NUGET_API_KEY != ''
+        if: vars.NUGET_USER != ''
         shell: pwsh
+        env:
+          NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
         run: |
+          # The .snupkg next to the .nupkg is pushed to the NuGet symbol server automatically.
           dotnet nuget push 'artifacts/*.nupkg' --api-key $env:NUGET_API_KEY --source https://api.nuget.org/v3/index.json --skip-duplicate
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Note skipped NuGet publish
-        if: steps.existing.outputs.exists == 'false' && env.NUGET_API_KEY == ''
-        run: echo "::notice::NUGET_API_KEY is not set, so the package was attached to the GitHub Release but not pushed to NuGet.org."
+        if: vars.NUGET_USER == ''
+        run: echo "::notice::The NUGET_USER repository variable is not set, so NuGet.org publishing was skipped. See AGENTS.md (Branches and releases) to set up Trusted Publishing."
