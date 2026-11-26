@@ -19,5 +19,8 @@ public enum PropertyEditorKind {
     /// <summary>A solid-colour brush editor (swatch, hex text and presets).</summary>
     Brush,
     /// <summary>A read-only display (no setter, or <c>[ReadOnly(true)]</c>).</summary>
-    ReadOnly
+    ReadOnly,
+
+    /// <summary>An element created by the <see cref="PropertyEditorBase"/> named in the property's <c>[Editor]</c> attribute.</summary>
+    Custom
 }

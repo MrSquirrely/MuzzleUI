@@ -129,6 +129,35 @@ Reflects public, writable, `[Browsable]` properties via `TypeDescriptor`, honour
 
 Also: `SearchText`, `SelectedProperty`, `ShowDescription`, read-only `Categories`/`Properties`. Values update live when the object raises `PropertyChanged` (or for DependencyObjects, when a DP changes).
 
+**Order.** `SortMode="Declared"` keeps the order the type declares its properties in, or `[Display(Order = n)]` where present; each category sits where its first property does. The default, `Alphabetical`, sorts by display name with "Misc" last.
+
+**As a settings pane.** `ShowHeader="False"` drops the overline, type name and count; `ShowTypeNames="False"` hides CLR type names in the header and the description panel. `LabelWidth` (a `GridLength`, default `2*`), `MinLabelWidth` (90) and `MaxLabelWidth` size the label column. A property without `[Description]` has an empty description. Every built-in text is a `Muzzle.String.PropertyGrid.*` resource (see [Themes/Tokens/Strings.xaml](../src/Muzzle.Theme/Themes/Tokens/Strings.xaml)); declare the same key in your app's resources to translate it.
+
+**Reset to default.** `ShowResetButtons="True"` ends each row in a button that restores the default (`[DefaultValue]` or a `ResetXxx` method) and is disabled while the value is the default. `PropertyItem.CanReset` and `ResetCommand` do the same from your own template.
+
+**Steps and formats.** `[PropertyStep(0.25, Format = "0.00×")]` sets the step of a numeric editor and snaps values to it. With a `Format`, a range editor shows the formatted value as a label instead of an editable box.
+
+**Custom editors.** Three ways in, from narrowest to widest:
+
+```csharp
+public sealed class FontEditor : PropertyEditorBase {
+    public override FrameworkElement CreateElement(PropertyItem item) {
+        return new ComboBox { ItemsSource = Fonts.SystemFontFamilies.Select(static f => f.Source) };
+    }
+
+    public override DependencyProperty? GetDependencyProperty() {
+        return Selector.SelectedItemProperty;   // bound two-way to the property value
+    }
+}
+
+[Editor(typeof(FontEditor), typeof(PropertyEditorBase))]
+public string Font { get; set; }
+```
+
+- **`[Editor]`** with a `PropertyEditorBase`, as above. The element's `DataContext` is the `PropertyItem`; `item.Descriptor` and `item.Component` give access to custom attributes and the edited object.
+- **`EditorTemplateSelector`** on the grid: a `DataTemplateSelector` asked for every property first. Return `null` to keep the built-in editor.
+- **`RowTemplate`** / **`CategoryTemplate`** replace a whole row or category card. Host the standard editor in your own row with `<ContentControl Content="{Binding}" ContentTemplateSelector="{StaticResource Muzzle.PropertyGrid.EditorSelector}" />`.
+
 ## Overlays & notifications
 
 Status tokens back all three: `Muzzle.Brush.Info|Success|Warning|Error` (`#98C9F2`, `#9FD8CB`, `#F7CF8B`, `#F2949C`), each with a `…Soft` tint and a readable `…Text` colour, plus `Muzzle.Brush.Backdrop` (`#402E2B36`).

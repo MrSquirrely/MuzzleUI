@@ -1,0 +1,28 @@
+<!--
+    Every piece of text the theme shows on its own. Each key is read with DynamicResource, so an app translates or
+    rewords one by declaring the same key in its own resources, after the Muzzle dictionary:
+
+        <sys:String x:Key="Muzzle.String.PropertyGrid.Header">Einstellungen</sys:String>
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <!-- PropertyGrid -->
+    <sys:String x:Key="Muzzle.String.PropertyGrid.Header">Inspector</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.CountSuffix">props</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.Search">Search properties</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.SearchPlaceholder">Search properties…</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.NoSelection">No selection</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.Empty">Nothing to inspect yet. Set SelectedObject to begin.</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.NoMatches">No properties match your search.</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.SelectPrompt">Select a property</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.DescriptionPrompt">Its description will appear here.</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.Reset">Reset to default</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.Increase">Increase</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.Decrease">Decrease</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.ChooseColor">Choose colour</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.PickColor">Pick a pastel</sys:String>
+    <sys:String x:Key="Muzzle.String.PropertyGrid.Presets">Pastel presets</sys:String>
+
+</ResourceDictionary>

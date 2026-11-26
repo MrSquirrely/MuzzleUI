@@ -25,6 +25,8 @@
              MuzzleThemeManager.ApplyAccent swaps it (and keeps its Light / Dark variant in step with the palette). -->
         <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Accents/Muzzle.Accent.Coral.Light.xaml" />
         <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Tokens/Typography.xaml" />
+        <!-- Built-in text (Muzzle.String.*); override a key in the app's resources to translate it. -->
+        <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Tokens/Strings.xaml" />
         <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Icons/MuzzleIcons.xaml" />
         <ResourceDictionary Source="/Muzzle.Theme;component/Themes/Animations/JellyEasings.xaml" />
 

@@ -83,12 +83,12 @@
                      AutomationProperties.Name="{Binding DisplayName}" />
             <StackPanel Grid.Column="1" Margin="6,0,0,0" Orientation="Horizontal">
                 <RepeatButton Style="{DynamicResource Muzzle.Button.Spin}" Command="{Binding DecrementCommand}"
-                              AutomationProperties.Name="Decrease" Delay="350" Interval="60">
+                              AutomationProperties.Name="{DynamicResource Muzzle.String.PropertyGrid.Decrease}" Delay="350" Interval="60">
                     <Path Width="10" Height="10" Data="M 1,5 L 9,5" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type RepeatButton}}}"
                           StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
                 </RepeatButton>
                 <RepeatButton Margin="4,0,0,0" Style="{DynamicResource Muzzle.Button.Spin}" Command="{Binding IncrementCommand}"
-                              AutomationProperties.Name="Increase" Delay="350" Interval="60">
+                              AutomationProperties.Name="{DynamicResource Muzzle.String.PropertyGrid.Increase}" Delay="350" Interval="60">
                     <Path Width="10" Height="10" Data="M 1,5 L 9,5 M 5,1 L 5,9" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type RepeatButton}}}"
                           StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
                 </RepeatButton>
@@ -113,7 +113,7 @@
                     Maximum="{Binding Maximum, Mode=OneTime}"
                     SmallChange="{Binding SmallChange, Mode=OneTime}"
                     LargeChange="{Binding LargeChange, Mode=OneTime}"
-                    IsSnapToTickEnabled="{Binding IsIntegral, Mode=OneTime}"
+                    IsSnapToTickEnabled="{Binding SnapsToStep, Mode=OneTime}"
                     TickFrequency="{Binding SmallChange, Mode=OneTime}"
                     Value="{Binding NumericValue}"
                     AutomationProperties.Name="{Binding DisplayName}" />
@@ -123,8 +123,21 @@
                      Style="{DynamicResource Muzzle.TextBox.Compact}"
                      HorizontalContentAlignment="Center"
                      Text="{Binding EditText, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock x:Name="ValueLabel"
+                       Grid.Column="1"
+                       Margin="10,0,0,0"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Center"
+                       Text="{Binding FormattedValue}"
+                       Foreground="{DynamicResource Muzzle.Brush.TextSecondary}"
+                       FontSize="13"
+                       Visibility="Collapsed" />
         </Grid>
         <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding HasValueFormat}" Value="True">
+                <Setter TargetName="Editor" Property="Visibility" Value="Collapsed" />
+                <Setter TargetName="ValueLabel" Property="Visibility" Value="Visible" />
+            </DataTrigger>
             <DataTrigger Binding="{Binding HasError}" Value="True">
                 <Setter TargetName="Editor" Property="BorderBrush" Value="{DynamicResource Muzzle.Brush.Danger}" />
                 <Setter TargetName="Editor" Property="ToolTip" Value="{Binding ErrorText}" />
@@ -167,8 +180,8 @@
                           Background="{Binding SwatchBrush}"
                           IsChecked="{Binding IsOpen, ElementName=Presets, Mode=TwoWay}"
                           IsHitTestVisible="{Binding IsOpen, ElementName=Presets, Converter={x:Static mzv:InverseBooleanConverter.Instance}}"
-                          ToolTip="Pick a pastel"
-                          AutomationProperties.Name="Choose colour" />
+                          ToolTip="{DynamicResource Muzzle.String.PropertyGrid.PickColor}"
+                          AutomationProperties.Name="{DynamicResource Muzzle.String.PropertyGrid.ChooseColor}" />
             <TextBox x:Name="Editor"
                      Grid.Column="1"
                      Margin="8,0,0,0"
@@ -195,7 +208,7 @@
                             CornerRadius="14"
                             Effect="{DynamicResource Muzzle.Shadow.Floating}" />
                     <StackPanel Margin="10">
-                        <TextBlock Margin="3,0,0,6" Text="Pastel presets" Style="{DynamicResource Muzzle.Text.Overline}" />
+                        <TextBlock Margin="3,0,0,6" Text="{DynamicResource Muzzle.String.PropertyGrid.Presets}" Style="{DynamicResource Muzzle.Text.Overline}" />
                         <ItemsControl Width="128" ItemsSource="{Binding PresetColors, Mode=OneTime}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -266,8 +279,11 @@
                 Visibility="{Binding IsVisible, Converter={StaticResource Muzzle.BoolToVisibility}}">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*" MinWidth="90" />
+                    <ColumnDefinition Width="{Binding LabelWidth, RelativeSource={RelativeSource AncestorType={x:Type mzc:PropertyGrid}}}"
+                                      MinWidth="{Binding MinLabelWidth, RelativeSource={RelativeSource AncestorType={x:Type mzc:PropertyGrid}}}"
+                                      MaxWidth="{Binding MaxLabelWidth, RelativeSource={RelativeSource AncestorType={x:Type mzc:PropertyGrid}}}" />
                     <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TextBlock x:Name="Label"
                            Margin="0,0,12,0"
@@ -284,9 +300,24 @@
                                 IsTabStop="False"
                                 Content="{Binding}"
                                 ContentTemplateSelector="{StaticResource Muzzle.PropertyGrid.EditorSelector}" />
+                <Button Grid.Column="2"
+                        Width="26" Height="26"
+                        Margin="6,0,0,0"
+                        VerticalAlignment="Center"
+                        Style="{DynamicResource Muzzle.Button.Icon}"
+                        Command="{Binding ResetCommand}"
+                        IsEnabled="{Binding CanReset}"
+                        ToolTip="{DynamicResource Muzzle.String.PropertyGrid.Reset}"
+                        AutomationProperties.Name="{DynamicResource Muzzle.String.PropertyGrid.Reset}"
+                        Visibility="{Binding ShowResetButtons, RelativeSource={RelativeSource AncestorType={x:Type mzc:PropertyGrid}}, Converter={StaticResource Muzzle.BoolToVisibility}}">
+                    <mzc:MuzzleIcon Kind="Undo" IconSize="14" />
+                </Button>
             </Grid>
         </Border>
         <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding Description, Mode=OneTime}" Value="">
+                <Setter TargetName="Label" Property="ToolTip" Value="{x:Null}" />
+            </DataTrigger>
             <Trigger SourceName="Row" Property="IsMouseOver" Value="True">
                 <Setter TargetName="Row" Property="Background" Value="{DynamicResource Muzzle.Brush.HoverTint}" />
             </Trigger>
@@ -318,7 +349,7 @@
             <ItemsControl Margin="-6,-4,-6,0"
                           Focusable="False"
                           ItemsSource="{Binding Items, Mode=OneTime}"
-                          ItemTemplate="{StaticResource Muzzle.PropertyGrid.RowTemplate}" />
+                          ItemTemplate="{Binding RowTemplate, RelativeSource={RelativeSource AncestorType={x:Type mzc:PropertyGrid}}}" />
         </Expander>
     </DataTemplate>
 
@@ -334,6 +365,8 @@
         <Setter Property="KeyboardNavigation.TabNavigation" Value="Local" />
         <Setter Property="mz:MuzzleAssist.CornerRadius" Value="16" />
         <Setter Property="mz:MuzzleAssist.ShadowDepth" Value="Soft" />
+        <Setter Property="RowTemplate" Value="{StaticResource Muzzle.PropertyGrid.RowTemplate}" />
+        <Setter Property="CategoryTemplate" Value="{StaticResource Muzzle.PropertyGrid.CategoryTemplate}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type mzc:PropertyGrid}">
@@ -352,15 +385,15 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <DockPanel Grid.Row="0" Margin="4,0,4,10" LastChildFill="True">
+                            <DockPanel x:Name="Header" Grid.Row="0" Margin="4,0,4,10" LastChildFill="True">
                                 <Border DockPanel.Dock="Right" Style="{DynamicResource Muzzle.Chip}" VerticalAlignment="Center">
                                     <TextBlock>
                                         <Run Text="{Binding Properties.Count, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
-                                        <Run Text="props" />
+                                        <Run Text="{DynamicResource Muzzle.String.PropertyGrid.CountSuffix}" />
                                     </TextBlock>
                                 </Border>
                                 <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="Inspector" Style="{DynamicResource Muzzle.Text.Overline}" />
+                                    <TextBlock Text="{DynamicResource Muzzle.String.PropertyGrid.Header}" Style="{DynamicResource Muzzle.Text.Overline}" />
                                     <TextBlock x:Name="TypeName"
                                                Text="{TemplateBinding SelectedObjectTypeName}"
                                                FontSize="15"
@@ -374,8 +407,8 @@
                                      Margin="0,0,0,12"
                                      Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource TemplatedParent}}"
                                      Visibility="{Binding ShowSearchBox, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Muzzle.BoolToVisibility}}"
-                                     mz:MuzzleAssist.Placeholder="Search properties…"
-                                     AutomationProperties.Name="Search properties" />
+                                     mz:MuzzleAssist.Placeholder="{DynamicResource Muzzle.String.PropertyGrid.SearchPlaceholder}"
+                                     AutomationProperties.Name="{DynamicResource Muzzle.String.PropertyGrid.Search}" />
 
                             <ScrollViewer Grid.Row="2"
                                           Padding="0,0,4,0"
@@ -386,22 +419,22 @@
                                     <ItemsControl x:Name="CategoryList"
                                                   Focusable="False"
                                                   ItemsSource="{TemplateBinding Categories}"
-                                                  ItemTemplate="{StaticResource Muzzle.PropertyGrid.CategoryTemplate}" />
+                                                  ItemTemplate="{TemplateBinding CategoryTemplate}" />
                                     <ItemsControl x:Name="FlatList"
                                                   Focusable="False"
                                                   Visibility="Collapsed"
                                                   ItemsSource="{TemplateBinding Properties}"
-                                                  ItemTemplate="{StaticResource Muzzle.PropertyGrid.RowTemplate}" />
+                                                  ItemTemplate="{TemplateBinding RowTemplate}" />
                                     <TextBlock x:Name="EmptyText"
                                                Margin="0,24"
                                                HorizontalAlignment="Center"
-                                               Text="Nothing to inspect yet. Set SelectedObject to begin."
+                                               Text="{DynamicResource Muzzle.String.PropertyGrid.Empty}"
                                                Style="{DynamicResource Muzzle.Text.Secondary}"
                                                Visibility="Collapsed" />
                                     <TextBlock x:Name="NoMatchesText"
                                                Margin="0,24"
                                                HorizontalAlignment="Center"
-                                               Text="No properties match your search."
+                                               Text="{DynamicResource Muzzle.String.PropertyGrid.NoMatches}"
                                                Style="{DynamicResource Muzzle.Text.Secondary}"
                                                Visibility="Collapsed" />
                                 </Grid>
@@ -431,18 +464,21 @@
                                         </EventTrigger>
                                     </StackPanel.Triggers>
                                     <DockPanel>
-                                        <TextBlock DockPanel.Dock="Right"
+                                        <TextBlock x:Name="PropertyTypeName"
+                                                   DockPanel.Dock="Right"
                                                    VerticalAlignment="Center"
                                                    Text="{Binding TypeName, FallbackValue=''}"
                                                    FontFamily="{DynamicResource Muzzle.FontFamily.Mono}"
                                                    FontSize="11.5"
                                                    Foreground="{DynamicResource Muzzle.Brush.PrimaryText}" />
-                                        <TextBlock Text="{Binding DisplayName, FallbackValue='Select a property'}"
+                                        <TextBlock x:Name="DescriptionTitle"
+                                                   Text="{Binding DisplayName}"
                                                    FontWeight="SemiBold"
                                                    TextTrimming="CharacterEllipsis" />
                                     </DockPanel>
-                                    <TextBlock Margin="0,3,0,0"
-                                               Text="{Binding Description, FallbackValue='Its description will appear here.'}"
+                                    <TextBlock x:Name="DescriptionText"
+                                               Margin="0,3,0,0"
+                                               Text="{Binding Description}"
                                                Style="{DynamicResource Muzzle.Text.Caption}" />
                                 </StackPanel>
                             </Border>
@@ -458,7 +494,18 @@
                         </Trigger>
                         <Trigger Property="SelectedObject" Value="{x:Null}">
                             <Setter TargetName="EmptyText" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="TypeName" Property="Text" Value="No selection" />
+                            <Setter TargetName="TypeName" Property="Text" Value="{DynamicResource Muzzle.String.PropertyGrid.NoSelection}" />
+                        </Trigger>
+                        <Trigger Property="SelectedProperty" Value="{x:Null}">
+                            <Setter TargetName="DescriptionTitle" Property="Text" Value="{DynamicResource Muzzle.String.PropertyGrid.SelectPrompt}" />
+                            <Setter TargetName="DescriptionText" Property="Text" Value="{DynamicResource Muzzle.String.PropertyGrid.DescriptionPrompt}" />
+                        </Trigger>
+                        <Trigger Property="ShowHeader" Value="False">
+                            <Setter TargetName="Header" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="ShowTypeNames" Value="False">
+                            <Setter TargetName="TypeName" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="PropertyTypeName" Property="Visibility" Value="Collapsed" />
                         </Trigger>
                         <Trigger Property="ShowDescription" Value="False">
                             <Setter TargetName="DescriptionPanel" Property="Visibility" Value="Collapsed" />

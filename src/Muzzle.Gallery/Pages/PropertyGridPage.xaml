@@ -22,13 +22,18 @@
         </StackPanel>
 
         <DockPanel Grid.Row="1">
-            <StackPanel DockPanel.Dock="Top" Margin="2,0,0,12" Orientation="Horizontal">
-                <RadioButton x:Name="InspectModel" GroupName="Target" Content="Sample model" IsChecked="True" Checked="OnTargetChanged" />
-                <RadioButton x:Name="InspectButton" Margin="18,0,0,0" GroupName="Target" Content="The live preview Button" Checked="OnTargetChanged" />
-                <mz:ToggleSwitch x:Name="CategorySwitch" Margin="24,0,0,0" Content="Categories" IsChecked="True" />
-            </StackPanel>
+            <WrapPanel DockPanel.Dock="Top" Margin="2,0,0,4">
+                <RadioButton x:Name="InspectModel" Margin="0,0,18,8" GroupName="Target" Content="Sample model" IsChecked="True" Checked="OnTargetChanged" />
+                <RadioButton x:Name="InspectButton" Margin="0,0,18,8" GroupName="Target" Content="The live preview Button" Checked="OnTargetChanged" />
+                <mz:ToggleSwitch x:Name="CategorySwitch" Margin="0,0,18,8" Content="Categories" IsChecked="True" />
+                <mz:ToggleSwitch x:Name="HeaderSwitch" Margin="0,0,18,8" Content="Header" IsChecked="True" />
+                <mz:ToggleSwitch x:Name="ResetSwitch" Margin="0,0,18,8" Content="Reset buttons" />
+                <mz:ToggleSwitch x:Name="DeclaredSwitch" Margin="0,0,18,8" Content="Declared order" Checked="OnSortChanged" Unchecked="OnSortChanged" />
+            </WrapPanel>
             <mz:PropertyGrid x:Name="Inspector"
                              ShowCategories="{Binding IsChecked, ElementName=CategorySwitch}"
+                             ShowHeader="{Binding IsChecked, ElementName=HeaderSwitch}"
+                             ShowResetButtons="{Binding IsChecked, ElementName=ResetSwitch}"
                              ShowSearchBox="True" />
         </DockPanel>
 

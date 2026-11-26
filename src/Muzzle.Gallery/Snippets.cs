@@ -97,6 +97,17 @@ public static class Snippets {
 
         [Browsable(false)]            // hidden from the grid
         public string Secret { get; set; }
+
+        // For an end-user settings pane: your order, no inspector chrome, reset buttons
+        <mz:PropertyGrid SelectedObject="{Binding Settings}" SortMode="Declared"
+                         ShowHeader="False" ShowTypeNames="False" ShowResetButtons="True" />
+
+        [DefaultValue(1.0)]           // what the reset button restores
+        [Range(1.0, 3.0), PropertyStep(0.25, Format = "0.00×")]
+        public double LineHeight { get; set; } = 1.0;
+
+        [Editor(typeof(FontEditor), typeof(PropertyEditorBase))]   // your own editor
+        public string Font { get; set; }
         """;
 
     public const string Jelly = """
