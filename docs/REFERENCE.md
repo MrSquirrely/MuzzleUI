@@ -104,7 +104,9 @@ From code: `Jelly.Wobble(element)`, `MuzzleEasings.Get(element, MuzzleEasings.Je
 - `WindowChrome` with `GlassFrameThickness="0"`, `CornerRadius="16"`, caption height = `NonClientAreaHeight`; Windows 11 DWM rounded corners.
 - Windows 11 **snap layouts**: the maximize button answers `WM_NCHITTEST` with `HTMAXBUTTON` and its jelly hover/press is driven from the non-client messages.
 - Maximized frame compensation from `GetSystemMetricsForDpi` (per-monitor DPI aware).
-- Properties: `NonClientAreaContent`, `NonClientAreaContentTemplate`, `NonClientAreaHeight`, `NonClientAreaBackground`, `ShowTitle`, `ShowIcon`, `ShowMinimizeButton`, `ShowMaximizeButton`. `ResizeMode` hides buttons automatically.
+- Properties: `NonClientAreaContent`, `NonClientAreaContentTemplate`, `NonClientAreaHeight`, `NonClientAreaBackground`, `NonClientAreaForeground`, `IsFullScreen`, `ShowTitle`, `ShowIcon`, `ShowMinimizeButton`, `ShowMaximizeButton`. `ResizeMode` hides buttons automatically.
+- `NonClientAreaForeground` colours the title text and the caption glyphs, for a custom `NonClientAreaBackground`. Left unset, the theme colours apply.
+- `IsFullScreen` covers the whole monitor (taskbar included), hides the title bar and border, and restores the previous bounds and state when turned off. It binds two-way; the window adds no key of its own, so bind Esc or F11 yourself.
 - Elements in `NonClientAreaContent` are hit-test visible in chrome; empty space still drags the window.
 - `SizeToContent` works with the custom chrome: the window re-measures once its handle exists, so it fits the content, title bar and border exactly.
 
@@ -374,7 +376,7 @@ drawer.IsOpen = false;                                                          
   - **Restoring**: it restores them on `SourceInitialized`, so XAML sizes and `CenterScreen` don't win.
   - **Monitor check**: the title strip must land on a connected monitor's work area, otherwise the size is kept and the window is centred.
   - **Static API**: `StorageFolder`, `IsEnabled`, `Save` / `Restore` / `Forget`.
-- **`BackdropHelper.BackdropType`** (`None`, `Mica`, `Acrylic`, `Tabbed`): Windows 11 22H2+ system backdrops via `DwmSetWindowAttribute`.
+- **`BackdropHelper.BackdropType`** (`None`, `Mica`, `Acrylic`, `Tabbed`): Windows 11 22H2+ system backdrops via `DwmSetWindowAttribute`. `BackdropHelper.TintBackground="False"` keeps the window's own `Background` instead of switching to `Muzzle.Brush.BackdropCanvas`. The system menu (Alt+Space, right-click on the title bar) stays available while a backdrop is on.
   - **While active**: it extends the frame, makes the composition background transparent and swaps the window background for the translucent, theme-aware `Muzzle.Brush.BackdropCanvas`.
   - **Caption buttons**: it hides the native caption buttons that DWM would otherwise draw behind Muzzle's (it removes `WS_SYSMENU` while active, so Alt+Space has no system menu then).
   - **Older Windows**: it does nothing (`IsSupported`, `IsBackdropActive`).

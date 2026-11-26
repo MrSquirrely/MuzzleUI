@@ -133,7 +133,7 @@ A borderless window with rounded corners and jelly caption buttons. It supports 
 </mz:MuzzleWindow>
 ```
 
-Properties include `NonClientAreaContent`, `NonClientAreaHeight`, `NonClientAreaBackground`, `ShowTitle`, `ShowIcon`, `ShowMinimizeButton` and `ShowMaximizeButton`. The caption buttons follow `ResizeMode`.
+Properties include `NonClientAreaContent`, `NonClientAreaHeight`, `NonClientAreaBackground`, `NonClientAreaForeground`, `IsFullScreen`, `ShowTitle`, `ShowIcon`, `ShowMinimizeButton` and `ShowMaximizeButton`. The caption buttons follow `ResizeMode`.
 
 ### Growl (toasts)
 
@@ -229,7 +229,7 @@ All of these are attached properties in the `mz` namespace, so they work on any 
 | **`ClipHelper`** | `mz:ClipHelper.CornerRadius="20"` | Keeps a rounded clip in step with the element's size. On a `Border`, it clips the child inside the border and padding, so images never bleed past the corners. |
 | **`ScrollViewerAssist`** | `mz:ScrollViewerAssist.EnableSmoothScroll="True"`, `EnableShiftHorizontalScroll="True"` | Glides to the wheel target (`WheelStep`, 96 DIP) and makes Shift + wheel scroll sideways. At the ends it hands the wheel to the outer scroller. |
 | **`WindowStateSaver`** | `mz:WindowStateSaver.Key="MainWindow"` | Saves a window's bounds and maximised state to `%LOCALAPPDATA%\<app>\window-state.json` and restores them on the next run. If the saved spot is on a disconnected monitor, the window is centred instead. |
-| **`BackdropHelper`** | `mz:BackdropHelper.BackdropType="Mica"` | Windows 11 system backdrops (`Mica`, `Acrylic`, `Tabbed`) with a translucent, theme-aware canvas. On older Windows it does nothing; check `BackdropHelper.IsSupported`. |
+| **`BackdropHelper`** | `mz:BackdropHelper.BackdropType="Mica"` | Windows 11 system backdrops (`Mica`, `Acrylic`, `Tabbed`) with a translucent, theme-aware canvas. Set `mz:BackdropHelper.TintBackground="False"` to keep your own window background. On older Windows it does nothing; check `BackdropHelper.IsSupported`. |
 | `FocusTrap`, `EscapeKeyBehavior` | `mz:FocusTrap.IsEnabled="True"`, `mz:EscapeKeyBehavior.IsOpen="{Binding IsOpen}"` | Keep Tab cycling inside a panel, and close it on Esc. |
 
 From code, `Jelly.Wobble(element)` plays a "no" wobble, and `MuzzleEasings.Get(element, MuzzleEasings.JellyKey)` returns the signature spring.
